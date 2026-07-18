@@ -1,0 +1,155 @@
+﻿# ==========================================================================
+# [ATD-ENH] Favor-economy / subject cultural-view enhancements - CMM wiring.
+# External contribution (azimali322). All enhancement logic lives in atd_enh_*
+# files; the only touch points inside the base mod are marked with [ATD-ENH]
+# (grep for that tag). To remove the whole feature set: delete the atd_enh_*
+# files and revert those marked lines.
+#
+# Touch points in base files:
+#   atd_cmm_effects.txt          - improve_relations item_count 11 -> 14,
+#                                  enforce item_count 2 -> 3,
+#                                  one call to atd_enh_register
+#   atd_improve_relations_effects.txt - 3 switch cases (enh_curry/enh_gifts/enh_culture)
+#   atd_enforce_effects.txt      - 1 switch case (enh_improve_cultural_view),
+#                                  2 skip-leaders guards in enforce culture
+# ==========================================================================
+
+# Registers the enhancement list items, aliases, and settings. Called from the
+# end of atd_register_cmf_mod. Root scope: country.
+atd_enh_register = {
+	# Unified priority list additions (items 12-14 of atd__improve_relations).
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = improve_relations
+		item = 12
+		value = flag:enh_curry
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = improve_relations
+		item = 13
+		value = flag:enh_gifts
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = improve_relations
+		item = 14
+		value = flag:enh_culture
+	}
+	# Count-field aliases (count = max actions per month, 0 = off).
+	cmm_sync_setting_alias = {
+		setting = atd__improve_relations_i12_f1
+		alias = atd_enh_curry_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__improve_relations_i13_f1
+		alias = atd_enh_gift_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__improve_relations_i14_f1
+		alias = atd_enh_culture_count
+	}
+
+	# Subject Actions list addition (item 3 of atd__enforce).
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enforce
+		item = 3
+		value = flag:enh_improve_cultural_view
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enforce_i3_f1
+		alias = atd_enh_subject_cv_enabled
+	}
+
+	# Favors (favors) Tab - Send Gifts configuration.
+	## Gifts (gifts) Group
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_gift_culture_leaders_only
+		tab_id = favors
+		group_id = gifts
+		default_value = 1
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_gift_culture_leaders_only
+		alias = atd_enh_gift_culture_leaders_only
+	}
+
+	cmm_register_slider_setting = {
+		mod_id = atd
+		setting_id = enh_gift_percent
+		tab_id = favors
+		group_id = gifts
+		default_value = 25
+		min_value = 0
+		max_value = 100
+		step_value = 5
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_gift_percent
+		alias = atd_enh_gift_percent
+	}
+
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_gift_notify_enabled
+		tab_id = favors
+		group_id = gifts
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_gift_notify_enabled
+		alias = atd_enh_gift_notify_enabled
+	}
+
+	# Subjects (subjects) Tab - enforce-culture option.
+	## Options (options) Group
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_enforce_culture_skip_leaders
+		tab_id = subjects
+		group_id = options
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_enforce_culture_skip_leaders
+		alias = atd_enh_enforce_culture_skip_leaders
+	}
+}
+
+# Callback handler for the enhancement settings. Hooked to cmf_on_callback via
+# atd_enh_on_actions.txt (runs alongside the base mod's handler; flags the base
+# handler doesn't know are ignored by its switch, and vice versa).
+# Scope: country
+atd_enh_handle_cmf_callback = {
+	switch = {
+		trigger = var:cmf_callback
+		flag:atd__enh_gift_culture_leaders_only = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_gift_culture_leaders_only
+				alias = atd_enh_gift_culture_leaders_only
+			}
+		}
+		flag:atd__enh_gift_percent = {
+			cmm_sync_setting_alias = {
+				setting = atd__enh_gift_percent
+				alias = atd_enh_gift_percent
+			}
+		}
+		flag:atd__enh_gift_notify_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_gift_notify_enabled
+				alias = atd_enh_gift_notify_enabled
+			}
+			# Reflect the toggle on the alert straight away.
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd__enh_enforce_culture_skip_leaders = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_enforce_culture_skip_leaders
+				alias = atd_enh_enforce_culture_skip_leaders
+			}
+		}
+	}
+}

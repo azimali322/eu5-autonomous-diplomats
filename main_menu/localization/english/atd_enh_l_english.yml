@@ -1,0 +1,51 @@
+﻿l_english:
+ # [ATD-ENH] Localization for the favor-economy / subject cultural-view
+ # enhancements (external contribution, azimali322). Deleting this file with the
+ # other atd_enh_* files removes all enhancement strings.
+
+ # Unified priority list items (12-14 on the Improve Relations tab)
+ atd__improve_relations_i12_name: "Curry Favors"
+ atd__improve_relations_i12_desc: "Build favors with non-great-power culture-leader nations using the Influence Nation action (+5 favors each), stopping once a nation owes you 25 favors. Gifts then top them up toward the 50 that Culture Improve needs. Great-power culture leaders can only be reached with gifts. Uses a diplomat per action."
+ atd__improve_relations_i13_name: "Send Gifts"
+ atd__improve_relations_i13_desc: "Send gold gifts to build favors. The game chooses the gift amount; set the treasury cap and targeting on the Favors tab. Can reach great-power culture leaders. Uses a diplomat per action."
+ atd__improve_relations_i14_name: "Culture Improve"
+ atd__improve_relations_i14_desc: "Spend 50 favors to improve a culture leader's cultural view toward your culture. Only works while you are the dominant country of your own culture. Uses a diplomat per action."
+
+ # Subject Actions list item 3 + tooltips for the base items (additive keys)
+ atd__enforce_i1_desc: "Automatically enforce your state religion on loyal subjects (loyalty >= 50, liberty desire < 50) that can be converted. Uses a diplomat per action."
+ atd__enforce_i2_desc: "Automatically enforce your primary culture on loyal subjects (loyalty >= 50, liberty desire < 50). Uses a diplomat per action."
+ atd__enforce_i3_name: "Improve Cultural View"
+ atd__enforce_i3_desc: "Ask culture-leader subjects (the dominant country of their culture) to improve their culture's view of yours, replicating the Improve Cultural View subject action. Has a 50-year cooldown per subject and only works while you lead your own culture. Uses a diplomat per action."
+
+ # Favors (favors) Tab - Send Gifts configuration
+ atd__favors_name: "Favors"
+ ## Gifts (gifts) Group
+ atd__favors__gifts_name: "Gifts"
+ atd__enh_gift_culture_leaders_only_name: "Culture Leaders Only"
+ atd__enh_gift_culture_leaders_only_desc: "When on, Send Gifts only targets nations that are the dominant country of their culture (the targets Culture Improve cares about). When off, gifts may go to any discovered nation in diplomatic range."
+ atd__enh_gift_percent_name: "Max Treasury Per Month"
+ atd__enh_gift_percent_desc: "The most of your current treasury Send Gifts will spend in a single month. Gifting stops once your treasury drops to this share of what it was at the start of the month."
+ atd__enh_gift_percent_format: "[CMMV('atd__enh_gift_percent')|0]%"
+ atd__enh_gift_notify_enabled_name: "Notify When Giftable"
+ atd__enh_gift_notify_enabled_desc: "Show an alert when a culture-leader nation owes you 25-49 favors, so a gift can top it up toward the 50 that Culture Improve needs. A manual-play reminder that works even when Send Gifts automation is off."
+
+ # Subjects (subjects) Tab - Options group
+ atd__subjects__options_name: "Options"
+ atd__enh_enforce_culture_skip_leaders_name: "Enforce Culture: Skip Culture Leaders"
+ atd__enh_enforce_culture_skip_leaders_desc: "When on, Enforce Culture leaves subjects that are the dominant country of their culture alone, so you can use Improve Cultural View on them instead of converting their culture."
+
+ # Gift-availability alert
+ atd_enh_alert_giftable_leaders: "atd_enh_alert_giftable_leaders"
+ atd_enh_alert_giftable_leaders_color: "yellow"
+ atd_enh_alert_giftable_leaders_icon: "@gold_income!"
+ atd_enh_alert_giftable_leaders_name: "Ready for Gift Top-Up"
+ atd_enh_alert_giftable_leaders_tooltip: "A culture-leader nation owes you 25+ favors - send it gifts to reach the 50 needed to improve your culture's standing. Right-click to dismiss."
+
+ # Self-referencing flag keys to suppress engine warnings
+ atd__favors: "atd__favors"
+ atd__favors__gifts: "atd__favors__gifts"
+ atd__subjects__options: "atd__subjects__options"
+ atd__enh_gift_culture_leaders_only: "atd__enh_gift_culture_leaders_only"
+ atd__enh_gift_percent: "atd__enh_gift_percent"
+ atd__enh_gift_notify_enabled: "atd__enh_gift_notify_enabled"
+ atd__enh_enforce_culture_skip_leaders: "atd__enh_enforce_culture_skip_leaders"

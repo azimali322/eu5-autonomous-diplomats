@@ -1,0 +1,209 @@
+﻿# ==========================================================================
+# [ATD-ENH] Favor-economy actions: Curry Favors / Send Gifts / Culture Improve.
+# External contribution (azimali322). See atd_enh_cmm_effects.txt for the full
+# list of base-file touch points and removal instructions.
+#
+# The three actions are items 12-14 of the unified priority list on the Improve
+# Relations tab, invoked from the [ATD-ENH] switch cases in
+# atd_improve_relations_each_item, in the user's chosen order. They draw from
+# the SAME diplomat pool as the improve-relations categories:
+#   * gated on num_of_diplomats >= var:atd_action_threshold
+#     (= atd_min_diplomats + 1, so the diplomat reserve is respected)
+#   * gated on modifier:monthly_diplomats >= var:atd_min_diplomat_gain
+#   * each item's count slider (var:atd_enh_*_count) caps actions/month (0 = off)
+#
+# The favor pipeline: Curry builds favors on non-great-power culture leaders up
+# to 25; Send Gifts tops targets up from 25 toward the 50 that Culture Improve
+# spends (and is the only favor source for great-power culture leaders, which
+# influence_nation cannot target).
+#
+# All three perform the REAL diplomatic actions via perform_diplomatic_action,
+# so the engine applies each action's own cost (favors for improve_cultural_view,
+# gold for send_gift). We do NOT manually deduct diplomats: if the engine
+# consumes one per action, the shared budget self-limits; if not, the per-month
+# count caps still bound the work.
+#
+# Scope for all effects: player country, with actor_scope saved by
+# atd_improve_relations before the list iteration.
+# ==========================================================================
+
+# --- Curry Favors (list item flag:enh_curry) ------------------------------
+# influence_nation (+5 favors) on non-great-power culture leaders that owe us
+# fewer than 25 favors.
+atd_enh_curry_favors = {
+	set_variable = { name = atd_enh_curry_done value = 0 }
+	if = {
+		limit = { has_variable_list = atd_enh_curried_this_tick }
+		clear_variable_list = atd_enh_curried_this_tick
+	}
+	while = {
+		count = 10
+		limit = {
+			var:atd_enh_curry_done < var:atd_enh_curry_count
+			num_of_diplomats >= var:atd_action_threshold
+			modifier:monthly_diplomats >= var:atd_min_diplomat_gain
+			modifier:allow_diplomacy_influence_nation = yes
+			any_country_in_diplomatic_range = {
+				atd_enh_is_curry_target = yes
+			}
+		}
+		ordered_country_in_diplomatic_range = {
+			limit = { atd_enh_is_curry_target = yes }
+			order_by = { value = 0 }
+			max = 1
+			save_scope_as = target_country
+			scope:actor_scope = {
+				perform_diplomatic_action = {
+					type = influence_nation
+					actor = scope:actor_scope
+					recipient = scope:target_country
+				}
+				add_to_variable_list = {
+					name = atd_enh_curried_this_tick
+					target = scope:target_country
+				}
+				change_variable = { name = atd_enh_curry_done add = 1 }
+			}
+		}
+	}
+	remove_variable = atd_enh_curry_done
+	if = {
+		limit = { has_variable_list = atd_enh_curried_this_tick }
+		clear_variable_list = atd_enh_curried_this_tick
+	}
+}
+
+# --- Send Gifts (list item flag:enh_gifts) --------------------------------
+# send_gift (engine-decided amount) to bank favors. Two extra limits beyond the
+# shared diplomat budget: the per-month count, and a treasury spend cap
+# (atd_enh_gift_percent% of month-start gold). Targets are culture leaders only
+# when atd_enh_gift_culture_leaders_only is set, else any discovered nation in
+# range.
+atd_enh_send_gifts = {
+	set_variable = { name = atd_enh_gift_done value = 0 }
+	if = {
+		limit = { has_variable_list = atd_enh_gifted_this_tick }
+		clear_variable_list = atd_enh_gifted_this_tick
+	}
+	# Floor = gold * (100 - percent) / 100 -> stop gifting once treasury hits it.
+	set_variable = { name = atd_enh_gift_keep_pct value = 100 }
+	change_variable = { name = atd_enh_gift_keep_pct subtract = var:atd_enh_gift_percent }
+	set_variable = { name = atd_enh_gift_floor value = gold }
+	change_variable = { name = atd_enh_gift_floor multiply = var:atd_enh_gift_keep_pct }
+	change_variable = { name = atd_enh_gift_floor divide = 100 }
+
+	while = {
+		count = 20
+		limit = {
+			var:atd_enh_gift_done < var:atd_enh_gift_count
+			num_of_diplomats >= var:atd_action_threshold
+			modifier:monthly_diplomats >= var:atd_min_diplomat_gain
+			gold > var:atd_enh_gift_floor
+			gold >= 25
+			any_country_in_diplomatic_range = {
+				atd_enh_is_gift_target = yes
+			}
+		}
+		ordered_country_in_diplomatic_range = {
+			limit = { atd_enh_is_gift_target = yes }
+			order_by = { value = 0 }
+			max = 1
+			save_scope_as = target_country
+			scope:actor_scope = {
+				perform_diplomatic_action = {
+					type = send_gift
+					actor = scope:actor_scope
+					recipient = scope:target_country
+				}
+				add_to_variable_list = {
+					name = atd_enh_gifted_this_tick
+					target = scope:target_country
+				}
+				change_variable = { name = atd_enh_gift_done add = 1 }
+			}
+		}
+	}
+
+	remove_variable = atd_enh_gift_floor
+	remove_variable = atd_enh_gift_keep_pct
+	remove_variable = atd_enh_gift_done
+	if = {
+		limit = { has_variable_list = atd_enh_gifted_this_tick }
+		clear_variable_list = atd_enh_gifted_this_tick
+	}
+}
+
+# --- Culture Improve (list item flag:enh_culture) -------------------------
+# improve_cultural_view (costs 50 favors) on culture leaders not already at
+# kindred. Only called while the player leads their own culture (checked at the
+# switch case). The engine enforces the 50-favor cost; unaffordable targets are
+# simply skipped.
+atd_enh_culture_improve = {
+	set_variable = { name = atd_enh_culture_done value = 0 }
+	if = {
+		limit = { has_variable_list = atd_enh_culture_improved_this_tick }
+		clear_variable_list = atd_enh_culture_improved_this_tick
+	}
+	while = {
+		count = 10
+		limit = {
+			var:atd_enh_culture_done < var:atd_enh_culture_count
+			num_of_diplomats >= var:atd_action_threshold
+			modifier:monthly_diplomats >= var:atd_min_diplomat_gain
+			any_country_in_diplomatic_range = {
+				atd_enh_is_culture_target = yes
+			}
+		}
+		ordered_country_in_diplomatic_range = {
+			limit = { atd_enh_is_culture_target = yes }
+			order_by = { value = 0 }
+			max = 1
+			save_scope_as = target_country
+			scope:actor_scope = {
+				perform_diplomatic_action = {
+					type = improve_cultural_view
+					actor = scope:actor_scope
+					recipient = scope:target_country
+				}
+				add_to_variable_list = {
+					name = atd_enh_culture_improved_this_tick
+					target = scope:target_country
+				}
+				change_variable = { name = atd_enh_culture_done add = 1 }
+			}
+		}
+	}
+	remove_variable = atd_enh_culture_done
+	if = {
+		limit = { has_variable_list = atd_enh_culture_improved_this_tick }
+		clear_variable_list = atd_enh_culture_improved_this_tick
+	}
+}
+
+# --- Gift-availability notify alert ---------------------------------------
+# Raises/clears the atd_enh_alert_giftable_leaders CMF alert when at least one
+# giftable culture-leader nation is in the gift "top-up window": it already owes
+# us 25+ favors (curry's cap) but fewer than 50 (what Culture Improve spends).
+# Hooked to the monthly pulse via atd_enh_on_actions.txt, independent of the
+# automation toggles, so it also serves manual play. Scope: player country.
+atd_enh_update_gift_notify = {
+	if = {
+		limit = {
+			has_variable = atd_enh_gift_notify_enabled
+			gold >= 25
+			any_country_in_diplomatic_range = {
+				NOT = { this = root }
+				is_discovered_by = root
+				is_dominant_country_of = culture
+				NOT = { is_subject_of = root }
+				NOT = { is_at_war_with = root }
+				prev_favors_with_this >= 25
+				prev_favors_with_this < 50
+			}
+		}
+		cmf_show_alert = { alert = atd_enh_alert_giftable_leaders }
+	}
+	else = {
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_leaders }
+	}
+}

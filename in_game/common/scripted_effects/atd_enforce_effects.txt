@@ -27,6 +27,18 @@ atd_enforce_each_item = {
 				atd_enforce_culture_on_subjects = yes
 			}
 		}
+		# [ATD-ENH] Improve Subject Cultural View (item 3). Logic lives in
+		# atd_enh_subject_effects.txt; remove this case to detach.
+		flag:enh_improve_cultural_view = {
+			if = {
+				limit = {
+					has_variable = atd_enh_subject_cv_enabled
+					# improve_cultural_view_subject requires we lead our own culture.
+					is_dominant_country_of = culture
+				}
+				atd_enh_improve_subject_cultural_view = yes
+			}
+		}
 	}
 
 	cmf_suppress = { v = $i$ }
@@ -90,6 +102,12 @@ atd_enforce_culture_on_subjects = {
 				NOT = { culture = scope:actor_scope.culture }
 				subject_loyalty >= 50
 				liberty_desire < 50
+				# [ATD-ENH] Optionally leave culture-leader subjects for the
+				# Improve Subject Cultural View action. Remove to detach.
+				trigger_if = {
+					limit = { scope:actor_scope = { has_variable = atd_enh_enforce_culture_skip_leaders } }
+					NOT = { is_dominant_country_of = culture }
+				}
 			}
 		}
 		count = 10
@@ -98,6 +116,11 @@ atd_enforce_culture_on_subjects = {
 				NOT = { culture = scope:actor_scope.culture }
 				subject_loyalty >= 50
 				liberty_desire < 50
+				# [ATD-ENH] Same guard as the existence check above.
+				trigger_if = {
+					limit = { scope:actor_scope = { has_variable = atd_enh_enforce_culture_skip_leaders } }
+					NOT = { is_dominant_country_of = culture }
+				}
 			}
 			save_scope_as = atd_target_subject
 			enforce_culture_effect = {

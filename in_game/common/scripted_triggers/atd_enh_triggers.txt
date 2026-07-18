@@ -1,0 +1,97 @@
+﻿# ==========================================================================
+# [ATD-ENH] Target-eligibility triggers for the enhancement actions.
+# External contribution (azimali322). See atd_enh_cmm_effects.txt for the full
+# list of base-file touch points and removal instructions.
+#
+# Each trigger is evaluated in the CANDIDATE country's scope;
+# scope:actor_scope is the player (saved by atd_improve_relations /
+# atd_enforce_on_subjects). All respect the base mod's Block Autonomous
+# Improving flag (atd_improve_blocked).
+# ==========================================================================
+
+# A curry (influence_nation) target: a non-great-power culture leader that owes
+# us fewer than 25 favors and hasn't been curried this tick. influence_nation
+# cannot target great powers; those are reached via gifts instead. Currying is
+# the cheap way to build favors to 25; gifts do the 25 -> 50 stretch that
+# Culture Improve spends.
+atd_enh_is_curry_target = {
+	NOT = { this = scope:actor_scope }
+	is_discovered_by = scope:actor_scope
+	is_dominant_country_of = culture
+	is_great_power = no
+	NOT = { is_subject_of = scope:actor_scope }
+	NOT = { is_at_war_with = scope:actor_scope }
+	NOT = { has_variable = atd_improve_blocked }
+	# prev = player, this = candidate: favors the candidate owes us.
+	prev_favors_with_this < 25
+	scope:actor_scope = {
+		OR = {
+			NOT = { has_variable_list = atd_enh_curried_this_tick }
+			NOT = { is_target_in_variable_list = { name = atd_enh_curried_this_tick target = prev } }
+		}
+	}
+}
+
+# A gift target: any discovered nation in range not gifted this tick, restricted
+# to culture leaders when atd_enh_gift_culture_leaders_only is set.
+atd_enh_is_gift_target = {
+	NOT = { this = scope:actor_scope }
+	is_discovered_by = scope:actor_scope
+	NOT = { is_subject_of = scope:actor_scope }
+	NOT = { is_at_war_with = scope:actor_scope }
+	NOT = { has_variable = atd_improve_blocked }
+	trigger_if = {
+		limit = { scope:actor_scope = { has_variable = atd_enh_gift_culture_leaders_only } }
+		is_dominant_country_of = culture
+	}
+	scope:actor_scope = {
+		OR = {
+			NOT = { has_variable_list = atd_enh_gifted_this_tick }
+			NOT = { is_target_in_variable_list = { name = atd_enh_gifted_this_tick target = prev } }
+		}
+	}
+}
+
+# An improve_cultural_view target: a culture leader whose culture does not
+# already view ours as kindred, not improved this tick.
+atd_enh_is_culture_target = {
+	NOT = { this = scope:actor_scope }
+	is_discovered_by = scope:actor_scope
+	is_dominant_country_of = culture
+	NOT = { is_subject_of = scope:actor_scope }
+	NOT = { is_at_war_with = scope:actor_scope }
+	NOT = { has_variable = atd_improve_blocked }
+	NOT = {
+		culture = {
+			cultural_view = {
+				target = scope:actor_scope.culture
+				value = kindred
+			}
+		}
+	}
+	scope:actor_scope = {
+		OR = {
+			NOT = { has_variable_list = atd_enh_culture_improved_this_tick }
+			NOT = { is_target_in_variable_list = { name = atd_enh_culture_improved_this_tick target = prev } }
+		}
+	}
+}
+
+# An Improve Subject Cultural View target. Evaluated in the SUBJECT's scope.
+# Mirrors the vanilla improve_cultural_view_subject select_trigger (dominant of
+# its culture, not already kindred toward us, loyal, low liberty desire) plus an
+# off-cooldown check (the action has a 50-year per-subject cooldown).
+atd_enh_is_subject_cv_target = {
+	is_dominant_country_of = culture
+	NOT = {
+		culture = {
+			cultural_view = {
+				target = scope:actor_scope.culture
+				value = kindred
+			}
+		}
+	}
+	subject_loyalty >= 50
+	liberty_desire < 50
+	NOT = { has_cooldown = improve_cultural_view_subject }
+}

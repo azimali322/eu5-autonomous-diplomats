@@ -1,0 +1,36 @@
+﻿# ==========================================================================
+# [ATD-ENH] On-action hooks for the enhancement features.
+# External contribution (azimali322). See atd_enh_cmm_effects.txt for the full
+# list of base-file touch points and removal instructions.
+#
+# These hooks run alongside the base mod's own hooks on the same CMF
+# on_actions; deleting this file detaches the callback handling and the
+# gift-availability alert without touching base files.
+# ==========================================================================
+
+# Handle setting changes for the enhancement settings.
+cmf_on_callback = {
+	on_actions = {
+		atd_enh_on_cmf_callback
+	}
+}
+
+atd_enh_on_cmf_callback = {
+	effect = {
+		atd_enh_handle_cmf_callback = yes
+	}
+}
+
+# Refresh the gift-availability alert monthly (independent of the automation
+# toggles, so it also serves manual play).
+cmf_monthly_human_country_pulse = {
+	on_actions = {
+		atd_enh_on_monthly
+	}
+}
+
+atd_enh_on_monthly = {
+	effect = {
+		atd_enh_update_gift_notify = yes
+	}
+}

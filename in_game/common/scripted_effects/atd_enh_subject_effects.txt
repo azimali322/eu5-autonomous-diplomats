@@ -1,0 +1,43 @@
+﻿# ==========================================================================
+# [ATD-ENH] Improve Subject Cultural View - autonomous subject action.
+# External contribution (azimali322). See atd_enh_cmm_effects.txt for the full
+# list of base-file touch points and removal instructions.
+#
+# Replicates the vanilla improve_cultural_view_subject action
+# (change_cultural_view +1 toward our culture, mild liberty desire) on subjects
+# that are the dominant country of their culture and off its 50-year cooldown.
+# The cooldown is set manually via add_cooldown so the vanilla action reads it
+# as used too. Invoked as item 3 of the Subject Actions list via the [ATD-ENH]
+# switch case in atd_enforce_each_item; mirrors the enforce structure (diplomat
+# gate + manual add_diplomats/threshold).
+# Scope: player country (actor_scope saved by atd_enforce_on_subjects).
+# ==========================================================================
+
+atd_enh_improve_subject_cultural_view = {
+	while = {
+		limit = {
+			num_of_diplomats >= var:atd_enforce_threshold
+			any_subject = {
+				atd_enh_is_subject_cv_target = yes
+			}
+		}
+		count = 10
+		random_subject = {
+			limit = { atd_enh_is_subject_cv_target = yes }
+			save_scope_as = atd_target_subject
+			culture = {
+				change_cultural_view = {
+					target = scope:actor_scope.culture
+					change = 1
+				}
+			}
+			add_liberty_desire = liberty_desire_mild_plus
+			add_cooldown = {
+				type = improve_cultural_view_subject
+				years = 50
+			}
+		}
+		add_diplomats = -1
+		change_variable = { name = atd_enforce_threshold add = 1 }
+	}
+}
