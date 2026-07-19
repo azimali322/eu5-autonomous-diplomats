@@ -49,7 +49,7 @@ atd_register_cmf_mod = {
 		mod_id = atd
 		setting_id = improve_relations
 		tab_id = improve_relations
-		item_count = 14 # [ATD-ENH] was 11; items 12-14 are the favor-economy actions (see atd_enh_cmm_effects.txt)
+		item_count = 11
 		is_ordered = 1
 	}
 

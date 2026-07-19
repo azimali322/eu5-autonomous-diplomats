@@ -331,17 +331,6 @@ atd_improve_relations_each_item = {
 		flag:kingdoms = { atd_improve_kingdoms = yes }
 		flag:imperial_circle_leaders = { atd_improve_imperial_circle_leaders = yes }
 		flag:largest = { atd_improve_largest = yes }
-		# [ATD-ENH] Favor-economy actions (items 12-14). Logic lives in
-		# atd_enh_favor_effects.txt; remove these three cases to detach.
-		flag:enh_curry = { atd_enh_curry_favors = yes }
-		flag:enh_gifts = { atd_enh_send_gifts = yes }
-		flag:enh_culture = {
-			if = {
-				# improve_cultural_view requires we lead our own culture.
-				limit = { is_dominant_country_of = culture }
-				atd_enh_culture_improve = yes
-			}
-		}
 	}
 
 	cmf_suppress = { v = $i$ }

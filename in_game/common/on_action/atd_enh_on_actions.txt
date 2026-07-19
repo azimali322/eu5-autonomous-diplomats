@@ -4,8 +4,8 @@
 # list of base-file touch points and removal instructions.
 #
 # These hooks run alongside the base mod's own hooks on the same CMF
-# on_actions; deleting this file detaches the callback handling and the
-# gift-availability alert without touching base files.
+# on_actions; deleting this file detaches the favor engine, callback handling,
+# and the gift-availability alert without touching base files.
 # ==========================================================================
 
 # Handle setting changes for the enhancement settings.
@@ -21,8 +21,9 @@ atd_enh_on_cmf_callback = {
 	}
 }
 
-# Refresh the gift-availability alert monthly (independent of the automation
-# toggles, so it also serves manual play).
+# Monthly: run the favor engine, then refresh the gift-availability alert
+# (the alert is independent of the automation toggles, so it also serves
+# manual play).
 cmf_monthly_human_country_pulse = {
 	on_actions = {
 		atd_enh_on_monthly
@@ -31,6 +32,7 @@ cmf_monthly_human_country_pulse = {
 
 atd_enh_on_monthly = {
 	effect = {
+		atd_enh_favor_economy = yes
 		atd_enh_update_gift_notify = yes
 	}
 }

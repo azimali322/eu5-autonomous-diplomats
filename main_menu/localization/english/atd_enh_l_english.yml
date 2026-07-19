@@ -3,13 +3,61 @@
  # enhancements (external contribution, azimali322). Deleting this file with the
  # other atd_enh_* files removes all enhancement strings.
 
- # Unified priority list items (12-14 on the Improve Relations tab)
- atd__improve_relations_i12_name: "Curry Favors"
- atd__improve_relations_i12_desc: "Build favors with non-great-power culture-leader nations using the Influence Nation action (+5 favors each), stopping once a nation owes you 25 favors. Gifts then top them up toward the 50 that Culture Improve needs. Great-power culture leaders can only be reached with gifts. Uses a diplomat per action."
- atd__improve_relations_i13_name: "Send Gifts"
- atd__improve_relations_i13_desc: "Send gold gifts to build favors. The game chooses the gift amount; set the treasury cap and targeting on the Favors tab. Can reach great-power culture leaders. Uses a diplomat per action."
- atd__improve_relations_i14_name: "Culture Improve"
- atd__improve_relations_i14_desc: "Spend 50 favors to improve a culture leader's cultural view toward your culture. Only works while you are the dominant country of your own culture. Uses a diplomat per action."
+ # Favors (favors) Tab
+ atd__favors_name: "Favors"
+ ## Automation (automation) Group
+ atd__favors__automation_name: "Automation"
+ atd__enh_favors_enabled_name: "Improve Favors"
+ atd__enh_favors_enabled_desc: "Master switch for the favor automation below. Each month, favors are built with the target categories in priority order (using Curry Favors and/or Send Gifts), and Culture Improve can spend them. Respects your diplomat reserve."
+ atd__enh_curry_enabled_name: "Curry Favors"
+ atd__enh_curry_enabled_desc: "Build favors using the Influence Nation action (+5 favors each). Cannot target great powers - those can only be reached with gifts. Stops once a nation owes you the Curry Favors Up To amount."
+ atd__enh_gifts_enabled_name: "Send Gifts"
+ atd__enh_gifts_enabled_desc: "Build favors by sending gold gifts (the game chooses each gift's size). Used when currying is not possible for a target (e.g. great powers) or past its cap. Configure targeting and the treasury cap in the Gifts section below."
+ atd__enh_culture_improve_enabled_name: "Culture Improve"
+ atd__enh_culture_improve_enabled_desc: "Spend 50 favors to improve a culture leader's cultural view toward your culture. Only works while you are the dominant country of your own culture, and only when the target owes you enough favors."
+ atd__enh_culture_improve_count_name: "Culture Improves Per Month"
+ atd__enh_culture_improve_count_desc: "The most Culture Improve actions performed in a single month."
+ atd__enh_culture_improve_count_format: "[CMMV('atd__enh_culture_improve_count')|0]"
+ ## Limits (limits) Group
+ atd__favors__limits_name: "Limits"
+ atd__enh_curry_favor_cap_name: "Curry Favors Up To"
+ atd__enh_curry_favor_cap_desc: "Curry Favors stops targeting a nation once it owes you this many favors. Gifts take over from there toward the Send Gifts cap."
+ atd__enh_curry_favor_cap_format: "[CMMV('atd__enh_curry_favor_cap')|0]"
+ atd__enh_gift_favor_cap_name: "Send Gifts Up To"
+ atd__enh_gift_favor_cap_desc: "Send Gifts stops targeting a nation once it owes you this many favors. Culture Improve spends 50 favors, so 50 covers one use."
+ atd__enh_gift_favor_cap_format: "[CMMV('atd__enh_gift_favor_cap')|0]"
+ ## Target-category list
+ atd__enh_favor_targets_name: "Favor Targets"
+ atd__enh_favor_targets_desc: "Categories of countries to build favors with, in priority order (drag to reorder; higher = first). Each category's slider sets how many favor-building actions it may use per month; 0 disables it."
+ atd__enh_favor_targets_item_column_name: "Category"
+ atd__enh_favor_targets_i1_name: "Culture Leaders"
+ atd__enh_favor_targets_i1_desc: "Build favors with nations that are the dominant country of their culture - the targets Culture Improve can spend favors on."
+ atd__enh_favor_targets_i2_name: "Neighboring Countries"
+ atd__enh_favor_targets_i2_desc: "Build favors with countries that border you."
+ atd__enh_favor_targets_i3_name: "Own Subject Countries"
+ atd__enh_favor_targets_i3_desc: "Build favors with your subject countries."
+ atd__enh_favor_targets_i4_name: "Outraged Countries"
+ atd__enh_favor_targets_i4_desc: "Build favors with countries that are antagonistic toward you, most antagonistic first."
+ atd__enh_favor_targets_i5_name: "Allies"
+ atd__enh_favor_targets_i5_desc: "Build favors with your allies and defensive league members."
+ atd__enh_favor_targets_i6_name: "Threatening Countries"
+ atd__enh_favor_targets_i6_desc: "Build favors with countries that threaten you, greatest threats first."
+ atd__enh_favor_targets_i7_name: "Market Owners"
+ atd__enh_favor_targets_i7_desc: "Build favors with countries that own a market."
+ atd__enh_favor_targets_i8_name: "Kingdoms and Empires"
+ atd__enh_favor_targets_i8_desc: "Build favors with kingdoms and empires."
+ atd__enh_favor_targets_i9_name: "Largest Nations"
+ atd__enh_favor_targets_i9_desc: "Build favors with the largest nations in diplomatic range, biggest first."
+ atd__enh_favor_targets__count_name: "Actions"
+ ## Gifts (gifts) Group
+ atd__favors__gifts_name: "Gifts"
+ atd__enh_gift_culture_leaders_only_name: "Gifts: Culture Leaders Only"
+ atd__enh_gift_culture_leaders_only_desc: "When on, the Send Gifts method only gifts nations that are the dominant country of their culture, even when other target categories are active. When off, gifts may go to any eligible target."
+ atd__enh_gift_percent_name: "Max Treasury Per Month"
+ atd__enh_gift_percent_desc: "The most of your current treasury Send Gifts will spend in a single month. Gifting stops once your treasury drops to this share of what it was at the start of the month."
+ atd__enh_gift_percent_format: "[CMMV('atd__enh_gift_percent')|0]%"
+ atd__enh_gift_notify_enabled_name: "Notify When Giftable"
+ atd__enh_gift_notify_enabled_desc: "Show an alert when a culture-leader nation's favors owed to you sit between the curry cap and the gift cap, so a gift can top it up toward what Culture Improve spends. Works even when the automation is off."
 
  # Subject Actions list item 3 + tooltips for the base items (additive keys)
  atd__enforce_i1_desc: "Automatically enforce your state religion on loyal subjects (loyalty >= 50, liberty desire < 50) that can be converted. Uses a diplomat per action."
@@ -17,21 +65,9 @@
  atd__enforce_i3_name: "Improve Cultural View"
  atd__enforce_i3_desc: "Ask culture-leader subjects (the dominant country of their culture) to improve their culture's view of yours, replicating the Improve Cultural View subject action. Has a 50-year cooldown per subject and only works while you lead your own culture. Uses a diplomat per action."
 
- # Favors (favors) Tab - Send Gifts configuration
- atd__favors_name: "Favors"
- ## Gifts (gifts) Group
- atd__favors__gifts_name: "Gifts"
- atd__enh_gift_culture_leaders_only_name: "Culture Leaders Only"
- atd__enh_gift_culture_leaders_only_desc: "When on, Send Gifts only targets nations that are the dominant country of their culture (the targets Culture Improve cares about). When off, gifts may go to any discovered nation in diplomatic range."
- atd__enh_gift_percent_name: "Max Treasury Per Month"
- atd__enh_gift_percent_desc: "The most of your current treasury Send Gifts will spend in a single month. Gifting stops once your treasury drops to this share of what it was at the start of the month."
- atd__enh_gift_percent_format: "[CMMV('atd__enh_gift_percent')|0]%"
- atd__enh_gift_notify_enabled_name: "Notify When Giftable"
- atd__enh_gift_notify_enabled_desc: "Show an alert when a culture-leader nation owes you 25-49 favors, so a gift can top it up toward the 50 that Culture Improve needs. A manual-play reminder that works even when Send Gifts automation is off."
-
  # Subjects (subjects) Tab - Options group
  atd__subjects__options_name: "Options"
- atd__enh_enforce_culture_skip_leaders_name: "Enforce Culture: Skip Culture Leaders"
+ atd__enh_enforce_culture_skip_leaders_name: "Enforce Culture: Skip Subject Culture Leaders"
  atd__enh_enforce_culture_skip_leaders_desc: "When on, Enforce Culture leaves subjects that are the dominant country of their culture alone, so you can use Improve Cultural View on them instead of converting their culture."
 
  # Gift-availability alert
@@ -39,12 +75,29 @@
  atd_enh_alert_giftable_leaders_color: "yellow"
  atd_enh_alert_giftable_leaders_icon: "@gold_income!"
  atd_enh_alert_giftable_leaders_name: "Ready for Gift Top-Up"
- atd_enh_alert_giftable_leaders_tooltip: "A culture-leader nation owes you 25+ favors - send it gifts to reach the 50 needed to improve your culture's standing. Right-click to dismiss."
+ atd_enh_alert_giftable_leaders_tooltip: "A culture-leader nation owes you enough favors that gifts can top it up toward a Culture Improve. Right-click to dismiss."
+
+ # Mod Action Log entries ([action] [target name])
+ atd_enh_log_curry: "Curried favors with"
+ atd_enh_log_gift: "Sent a gift to"
+ atd_enh_log_culture: "Improved cultural view with"
+ atd_enh_log_subject_cv: "Improved subject cultural view with"
 
  # Self-referencing flag keys to suppress engine warnings
  atd__favors: "atd__favors"
+ atd__favors__automation: "atd__favors__automation"
+ atd__favors__limits: "atd__favors__limits"
  atd__favors__gifts: "atd__favors__gifts"
  atd__subjects__options: "atd__subjects__options"
+ atd__enh_favors_enabled: "atd__enh_favors_enabled"
+ atd__enh_curry_enabled: "atd__enh_curry_enabled"
+ atd__enh_gifts_enabled: "atd__enh_gifts_enabled"
+ atd__enh_culture_improve_enabled: "atd__enh_culture_improve_enabled"
+ atd__enh_culture_improve_count: "atd__enh_culture_improve_count"
+ atd__enh_curry_favor_cap: "atd__enh_curry_favor_cap"
+ atd__enh_gift_favor_cap: "atd__enh_gift_favor_cap"
+ atd__enh_favor_targets: "atd__enh_favor_targets"
+ atd__enh_favor_targets__count: "atd__enh_favor_targets__count"
  atd__enh_gift_culture_leaders_only: "atd__enh_gift_culture_leaders_only"
  atd__enh_gift_percent: "atd__enh_gift_percent"
  atd__enh_gift_notify_enabled: "atd__enh_gift_notify_enabled"

@@ -6,64 +6,231 @@
 # files and revert those marked lines.
 #
 # Touch points in base files:
-#   atd_cmm_effects.txt          - improve_relations item_count 11 -> 14,
-#                                  enforce item_count 2 -> 3,
-#                                  one call to atd_enh_register
-#   atd_improve_relations_effects.txt - 3 switch cases (enh_curry/enh_gifts/enh_culture)
-#   atd_enforce_effects.txt      - 1 switch case (enh_improve_cultural_view),
-#                                  2 skip-leaders guards in enforce culture
+#   atd_cmm_effects.txt     - enforce item_count 2 -> 3,
+#                             one call to atd_enh_register
+#   atd_enforce_effects.txt - 1 switch case (enh_improve_cultural_view),
+#                             2 skip-leaders guards in enforce culture
+#
+# The Favors tab is entirely enhancement-owned: an Automation group (master
+# toggle + methods + Culture Improve), a Limits group (favor caps), a
+# priority-ordered target-category list mirroring the Improve Relations
+# categories, and the Gifts configuration group. The favor engine runs from
+# its own monthly on_action hook (atd_enh_on_actions.txt), not from the base
+# mod's improve-relations pass.
 # ==========================================================================
 
-# Registers the enhancement list items, aliases, and settings. Called from the
-# end of atd_register_cmf_mod. Root scope: country.
+# Registers the enhancement settings. Called from the end of
+# atd_register_cmf_mod. Root scope: country.
 atd_enh_register = {
-	# Unified priority list additions (items 12-14 of atd__improve_relations).
-	cmm_set_list_item_value = {
+	# ----- Favors (favors) Tab -------------------------------------------
+	## Automation (automation) Group
+	cmm_register_bool_setting = {
 		mod_id = atd
-		setting_id = improve_relations
-		item = 12
-		value = flag:enh_curry
-	}
-	cmm_set_list_item_value = {
-		mod_id = atd
-		setting_id = improve_relations
-		item = 13
-		value = flag:enh_gifts
-	}
-	cmm_set_list_item_value = {
-		mod_id = atd
-		setting_id = improve_relations
-		item = 14
-		value = flag:enh_culture
-	}
-	# Count-field aliases (count = max actions per month, 0 = off).
-	cmm_sync_setting_alias = {
-		setting = atd__improve_relations_i12_f1
-		alias = atd_enh_curry_count
-	}
-	cmm_sync_setting_alias = {
-		setting = atd__improve_relations_i13_f1
-		alias = atd_enh_gift_count
-	}
-	cmm_sync_setting_alias = {
-		setting = atd__improve_relations_i14_f1
-		alias = atd_enh_culture_count
-	}
-
-	# Subject Actions list addition (item 3 of atd__enforce).
-	cmm_set_list_item_value = {
-		mod_id = atd
-		setting_id = enforce
-		item = 3
-		value = flag:enh_improve_cultural_view
+		setting_id = enh_favors_enabled
+		tab_id = favors
+		group_id = automation
+		default_value = 0
 	}
 	cmm_sync_bool_alias = {
-		setting = atd__enforce_i3_f1
-		alias = atd_enh_subject_cv_enabled
+		setting = atd__enh_favors_enabled
+		alias = atd_enh_favors_enabled
 	}
 
-	# Favors (favors) Tab - Send Gifts configuration.
-	## Gifts (gifts) Group
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_curry_enabled
+		tab_id = favors
+		group_id = automation
+		default_value = 1
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_curry_enabled
+		alias = atd_enh_curry_enabled
+	}
+
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_gifts_enabled
+		tab_id = favors
+		group_id = automation
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_gifts_enabled
+		alias = atd_enh_gifts_enabled
+	}
+
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_culture_improve_enabled
+		tab_id = favors
+		group_id = automation
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_culture_improve_enabled
+		alias = atd_enh_culture_improve_enabled
+	}
+
+	cmm_register_slider_setting = {
+		mod_id = atd
+		setting_id = enh_culture_improve_count
+		tab_id = favors
+		group_id = automation
+		default_value = 3
+		min_value = 0
+		max_value = 10
+		step_value = 1
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_culture_improve_count
+		alias = atd_enh_culture_improve_count
+	}
+
+	## Limits (limits) Group
+	cmm_register_slider_setting = {
+		mod_id = atd
+		setting_id = enh_curry_favor_cap
+		tab_id = favors
+		group_id = limits
+		default_value = 25
+		min_value = 0
+		max_value = 100
+		step_value = 5
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_curry_favor_cap
+		alias = atd_enh_curry_favor_cap
+	}
+
+	cmm_register_slider_setting = {
+		mod_id = atd
+		setting_id = enh_gift_favor_cap
+		tab_id = favors
+		group_id = limits
+		default_value = 50
+		min_value = 0
+		max_value = 100
+		step_value = 5
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_gift_favor_cap
+		alias = atd_enh_gift_favor_cap
+	}
+
+	## Target-category priority list (mirrors the Improve Relations categories)
+	cmm_register_settings_list = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		tab_id = favors
+		item_count = 9
+		is_ordered = 1
+	}
+
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 1
+		value = flag:culture_leaders
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 2
+		value = flag:neighbors
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 3
+		value = flag:subjects
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 4
+		value = flag:outraged
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 5
+		value = flag:allies
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 6
+		value = flag:threatening
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 7
+		value = flag:market_owners
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 8
+		value = flag:kingdoms
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		item = 9
+		value = flag:largest
+	}
+
+	cmm_register_list_slider_field = {
+		mod_id = atd
+		setting_id = enh_favor_targets
+		field_id = count
+		default_value = 0
+		min_value = 0
+		max_value = 10
+		step_value = 1
+	}
+
+	# Sync list field alias: count (= favor-building actions per month, 0 = off)
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i1_f1
+		alias = atd_enh_ft_culture_leaders_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i2_f1
+		alias = atd_enh_ft_neighbors_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i3_f1
+		alias = atd_enh_ft_subjects_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i4_f1
+		alias = atd_enh_ft_outraged_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i5_f1
+		alias = atd_enh_ft_allies_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i6_f1
+		alias = atd_enh_ft_threatening_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i7_f1
+		alias = atd_enh_ft_market_owners_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i8_f1
+		alias = atd_enh_ft_kingdoms_count
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_favor_targets_i9_f1
+		alias = atd_enh_ft_largest_count
+	}
+
+	## Gifts (gifts) Group - configuration for the gift method
 	cmm_register_bool_setting = {
 		mod_id = atd
 		setting_id = enh_gift_culture_leaders_only
@@ -103,7 +270,19 @@ atd_enh_register = {
 		alias = atd_enh_gift_notify_enabled
 	}
 
-	# Subjects (subjects) Tab - enforce-culture option.
+	# ----- Subject Actions list addition (item 3 of atd__enforce) --------
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enforce
+		item = 3
+		value = flag:enh_improve_cultural_view
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enforce_i3_f1
+		alias = atd_enh_subject_cv_enabled
+	}
+
+	# ----- Subjects (subjects) Tab - enforce-culture option --------------
 	## Options (options) Group
 	cmm_register_bool_setting = {
 		mod_id = atd
@@ -119,12 +298,57 @@ atd_enh_register = {
 }
 
 # Callback handler for the enhancement settings. Hooked to cmf_on_callback via
-# atd_enh_on_actions.txt (runs alongside the base mod's handler; flags the base
-# handler doesn't know are ignored by its switch, and vice versa).
+# atd_enh_on_actions.txt (runs alongside the base mod's handler; flags each
+# handler doesn't know are ignored by its switch).
 # Scope: country
 atd_enh_handle_cmf_callback = {
 	switch = {
 		trigger = var:cmf_callback
+		# Favors tab - Automation
+		flag:atd__enh_favors_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_favors_enabled
+				alias = atd_enh_favors_enabled
+			}
+		}
+		flag:atd__enh_curry_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_curry_enabled
+				alias = atd_enh_curry_enabled
+			}
+		}
+		flag:atd__enh_gifts_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_gifts_enabled
+				alias = atd_enh_gifts_enabled
+			}
+		}
+		flag:atd__enh_culture_improve_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_culture_improve_enabled
+				alias = atd_enh_culture_improve_enabled
+			}
+		}
+		flag:atd__enh_culture_improve_count = {
+			cmm_sync_setting_alias = {
+				setting = atd__enh_culture_improve_count
+				alias = atd_enh_culture_improve_count
+			}
+		}
+		# Favors tab - Limits
+		flag:atd__enh_curry_favor_cap = {
+			cmm_sync_setting_alias = {
+				setting = atd__enh_curry_favor_cap
+				alias = atd_enh_curry_favor_cap
+			}
+		}
+		flag:atd__enh_gift_favor_cap = {
+			cmm_sync_setting_alias = {
+				setting = atd__enh_gift_favor_cap
+				alias = atd_enh_gift_favor_cap
+			}
+		}
+		# Favors tab - Gifts
 		flag:atd__enh_gift_culture_leaders_only = {
 			cmm_sync_bool_alias = {
 				setting = atd__enh_gift_culture_leaders_only
@@ -145,6 +369,7 @@ atd_enh_handle_cmf_callback = {
 			# Reflect the toggle on the alert straight away.
 			atd_enh_update_gift_notify = yes
 		}
+		# Subjects tab - Options
 		flag:atd__enh_enforce_culture_skip_leaders = {
 			cmm_sync_bool_alias = {
 				setting = atd__enh_enforce_culture_skip_leaders

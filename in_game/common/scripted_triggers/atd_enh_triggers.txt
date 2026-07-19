@@ -3,52 +3,59 @@
 # External contribution (azimali322). See atd_enh_cmm_effects.txt for the full
 # list of base-file touch points and removal instructions.
 #
-# Each trigger is evaluated in the CANDIDATE country's scope;
-# scope:actor_scope is the player (saved by atd_improve_relations /
-# atd_enforce_on_subjects). All respect the base mod's Block Autonomous
-# Improving flag (atd_improve_blocked).
+# Evaluated in the CANDIDATE country's scope; scope:actor_scope is the player
+# (saved by atd_enh_favor_economy / atd_enforce_on_subjects). All respect the
+# base mod's Block Autonomous Improving flag (atd_improve_blocked). In picker
+# limits, prev = the player, so prev_favors_with_this = favors the candidate
+# owes the player.
 # ==========================================================================
 
-# A curry (influence_nation) target: a non-great-power culture leader that owes
-# us fewer than 25 favors and hasn't been curried this tick. influence_nation
-# cannot target great powers; those are reached via gifts instead. Currying is
-# the cheap way to build favors to 25; gifts do the 25 -> 50 stretch that
-# Culture Improve spends.
-atd_enh_is_curry_target = {
+# A country we can build favors with this tick using at least one enabled
+# method. Category membership (neighbor, ally, ...) is checked by the caller.
+atd_enh_is_favor_candidate = {
 	NOT = { this = scope:actor_scope }
 	is_discovered_by = scope:actor_scope
-	is_dominant_country_of = culture
-	is_great_power = no
-	NOT = { is_subject_of = scope:actor_scope }
 	NOT = { is_at_war_with = scope:actor_scope }
 	NOT = { has_variable = atd_improve_blocked }
-	# prev = player, this = candidate: favors the candidate owes us.
-	prev_favors_with_this < 25
 	scope:actor_scope = {
 		OR = {
-			NOT = { has_variable_list = atd_enh_curried_this_tick }
-			NOT = { is_target_in_variable_list = { name = atd_enh_curried_this_tick target = prev } }
+			NOT = { has_variable_list = atd_enh_favor_done_this_tick }
+			NOT = { is_target_in_variable_list = { name = atd_enh_favor_done_this_tick target = prev } }
+		}
+	}
+	OR = {
+		AND = {
+			scope:actor_scope = { has_variable = atd_enh_curry_enabled }
+			atd_enh_can_curry_target = yes
+		}
+		AND = {
+			scope:actor_scope = { has_variable = atd_enh_gifts_enabled }
+			atd_enh_can_gift_target = yes
 		}
 	}
 }
 
-# A gift target: any discovered nation in range not gifted this tick, restricted
-# to culture leaders when atd_enh_gift_culture_leaders_only is set.
-atd_enh_is_gift_target = {
-	NOT = { this = scope:actor_scope }
-	is_discovered_by = scope:actor_scope
-	NOT = { is_subject_of = scope:actor_scope }
-	NOT = { is_at_war_with = scope:actor_scope }
-	NOT = { has_variable = atd_improve_blocked }
+# Curry (influence_nation) eligibility: non-great-power owing fewer favors than
+# the curry cap, and the actor is allowed to use Influence Nation.
+atd_enh_can_curry_target = {
+	is_great_power = no
+	prev_favors_with_this < scope:actor_scope.var:atd_enh_curry_favor_cap
+	scope:actor_scope = {
+		modifier:allow_diplomacy_influence_nation = yes
+	}
+}
+
+# Gift (send_gift) eligibility: owes fewer favors than the gift cap, treasury
+# above the per-tick spend floor, and (optionally) a culture leader only.
+atd_enh_can_gift_target = {
+	prev_favors_with_this < scope:actor_scope.var:atd_enh_gift_favor_cap
 	trigger_if = {
 		limit = { scope:actor_scope = { has_variable = atd_enh_gift_culture_leaders_only } }
 		is_dominant_country_of = culture
 	}
 	scope:actor_scope = {
-		OR = {
-			NOT = { has_variable_list = atd_enh_gifted_this_tick }
-			NOT = { is_target_in_variable_list = { name = atd_enh_gifted_this_tick target = prev } }
-		}
+		gold >= 25
+		gold > var:atd_enh_gift_floor
 	}
 }
 

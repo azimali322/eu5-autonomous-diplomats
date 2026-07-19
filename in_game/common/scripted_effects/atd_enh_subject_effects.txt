@@ -36,6 +36,11 @@ atd_enh_improve_subject_cultural_view = {
 				type = improve_cultural_view_subject
 				years = 50
 			}
+			# Record to the CMF Mod Action Log.
+			save_scope_as = cmf_log_arg2
+			scope:actor_scope = {
+				cmf_log_with_scope_arg = { action = atd_enh_log_subject_cv }
+			}
 		}
 		add_diplomats = -1
 		change_variable = { name = atd_enforce_threshold add = 1 }
