@@ -95,7 +95,7 @@ atd_enh_register = {
 		group_id = limits
 		default_value = 25
 		min_value = 0
-		max_value = 100
+		max_value = 25
 		step_value = 5
 	}
 	cmm_sync_setting_alias = {
@@ -268,6 +268,36 @@ atd_enh_register = {
 	cmm_sync_bool_alias = {
 		setting = atd__enh_gift_notify_enabled
 		alias = atd_enh_gift_notify_enabled
+	}
+
+	# ----- Settings (settings) Tab - automation priority -----------------
+	# Order in which the three automations claim diplomats each month:
+	# Subjects / Favors / Improve Relations (default in that order).
+	cmm_register_settings_list = {
+		mod_id = atd
+		setting_id = enh_priority
+		tab_id = settings
+		item_count = 3
+		is_ordered = 1
+	}
+
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_priority
+		item = 1
+		value = flag:subjects_pass
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_priority
+		item = 2
+		value = flag:favors_pass
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_priority
+		item = 3
+		value = flag:improve_pass
 	}
 
 	# ----- Subject Actions list addition (item 3 of atd__enforce) --------

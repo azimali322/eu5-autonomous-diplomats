@@ -25,6 +25,35 @@
 # what the automation did each month is visible in the log window.
 # ==========================================================================
 
+# Runs the three automations (Subjects / Favors / Improve Relations) in the
+# user's Automation Priority order (Settings tab). Called from the base mod's
+# atd_gui_sync_step via a marked [ATD-ENH] edit, replacing its fixed
+# enforce-then-improve order. Each automation keeps its own enable gates.
+# Scope: player country.
+atd_enh_run_prioritized_pass = {
+	cmm_for_each_list_item = {
+		setting = atd__enh_priority
+		effect = atd_enh_priority_each_item
+	}
+}
+
+atd_enh_priority_each_item = {
+	switch = {
+		trigger = scope:cmm_list_current_item_value
+		flag:subjects_pass = { atd_enforce_on_subjects = yes }
+		flag:favors_pass = { atd_enh_favor_economy = yes }
+		flag:improve_pass = {
+			if = {
+				limit = { has_variable = atd_improve_relations_enabled }
+				atd_improve_relations = yes
+			}
+		}
+	}
+
+	cmf_suppress = { v = $i$ }
+	cmf_suppress = { v = $setting$ }
+}
+
 # Entry point. Scope: player country.
 atd_enh_favor_economy = {
 	if = {
