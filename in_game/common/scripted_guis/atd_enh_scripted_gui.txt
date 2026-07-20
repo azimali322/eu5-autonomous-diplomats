@@ -1,0 +1,68 @@
+﻿# ==========================================================================
+# [ATD-ENH] Scripted GUIs for the enhancement settings lists.
+# External contribution (azimali322). See atd_enh_cmm_effects.txt for the full
+# list of base-file touch points and removal instructions.
+#
+# The CMM list widget executes a scripted GUI named
+# `<mod_id>__<setting_id>_on_changed` to apply row edits (drag-reorder, field
+# changes) - a list does not render without it. Mirrors the base mod's
+# atd__improve_relations_on_changed pattern.
+# ==========================================================================
+
+# Favors tab - Favor Targets category list.
+atd__enh_favor_targets_on_changed = {
+	scope = country
+
+	effect = {
+		cmm_apply_list_change = {
+			setting = atd__enh_favor_targets
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i1_f1
+			alias = atd_enh_ft_culture_leaders_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i2_f1
+			alias = atd_enh_ft_neighbors_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i3_f1
+			alias = atd_enh_ft_subjects_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i4_f1
+			alias = atd_enh_ft_outraged_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i5_f1
+			alias = atd_enh_ft_allies_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i6_f1
+			alias = atd_enh_ft_threatening_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i7_f1
+			alias = atd_enh_ft_market_owners_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i8_f1
+			alias = atd_enh_ft_kingdoms_count
+		}
+		cmm_sync_setting_alias = {
+			setting = atd__enh_favor_targets_i9_f1
+			alias = atd_enh_ft_largest_count
+		}
+	}
+}
+
+# Settings tab - automation priority list (no per-item fields to sync).
+atd__enh_priority_on_changed = {
+	scope = country
+
+	effect = {
+		cmm_apply_list_change = {
+			setting = atd__enh_priority
+		}
+	}
+}

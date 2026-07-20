@@ -22,6 +22,33 @@ depends on it — it has its own master toggle) or set a high diplomat reserve.
 Workshop Autonomous Diplomats at the same time. Check
 `logs\error.log` for `atd_enh` entries after each session.
 
+**⚠️ Curry Favors availability:** the game only unlocks the Influence Nation
+action for the **Diplomatic Hegemon** (`allow_diplomacy_influence_nation`
+modifier). The mod checks this, so until you hold that hegemony **Curry Favors
+will silently never fire — that is correct behavior, not a bug** — and gifts
+are your only automated favor source. Early-game Granada will not curry.
+
+**Round-2 changes to verify (fixes from your first UI pass):**
+- Favor Targets list rows should now **render** (missing `_on_changed`
+  scripted GUI added) and the section header should read **"Favor Targets"**
+  instead of a raw key.
+- "Culture Improve" renamed to **"Culture Improve Non-Subjects"**.
+- **Curry Favors Up To** slider now maxes at **25**; **Send Gifts Up To** stays
+  adjustable 0–100, default 50.
+- **NEW: Automation Priority** list on the **Settings tab** — drag to order
+  Subjects / Favors / Improve Relations (default in that order). The monthly
+  pass runs them in that order, so the higher automation claims diplomats
+  first. NOTE: with this change the Favors engine runs inside the base pass
+  when **Settings → Enabled is ON**; when Enabled is OFF, Favors still runs
+  standalone each month. (The earlier advice to keep Enabled OFF while testing
+  favors still works — but to test *priority*, Enabled must be ON, which also
+  activates the game's own diplomacy automation; set a diplomat reserve to keep
+  it from draining your bank.)
+- [ ] **Priority test:** with Enabled ON, give Subjects/Favors/Improve each
+  some work and a scarce diplomat budget; check the Mod Action Log + outliner —
+  the top-priority automation's actions should happen first. Reorder and
+  verify the order flips.
+
 ---
 
 ## 1. UI presence (5 minutes, do first)
