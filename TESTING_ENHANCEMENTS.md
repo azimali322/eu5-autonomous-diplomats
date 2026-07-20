@@ -26,10 +26,17 @@ Workshop Autonomous Diplomats at the same time. Check
 
 ## 1. UI presence (5 minutes, do first)
 
-- [ ] **Improve Relations tab is back to the base 11 rows** (no Curry/Gifts/Culture rows).
-- [ ] **Favors tab** has: **Automation** (Improve Favors master, Curry Favors, Send Gifts, Culture Improve, Culture Improves Per Month), **Limits** (Curry Favors Up To = 25, Send Gifts Up To = 50), **Favor Targets** list (9 draggable rows: Culture Leaders, Neighboring, Own Subjects, Outraged, Allies, Threatening, Market Owners, Kingdoms and Empires, Largest Nations — each with an Actions slider), and **Gifts** (Culture Leaders Only, Max Treasury Per Month, Notify When Giftable).
-- [ ] **Subjects tab**: 3 Subject Actions rows; Options shows **"Enforce Culture: Skip Subject Culture Leaders"** (renamed).
-- [ ] Tooltips on everything; settings persist through save/reload.
+- [x] **Improve Relations tab is back to the base 11 rows** (no Curry/Gifts/Culture rows). Ttested and looks correct.
+- [ ] **Favors tab** has: **Automation** (Improve Favors master, Curry Favors, Send Gifts, Culture Improve, Culture Improves Per Month), **Limits** (Curry Favors Up To = 25, Send Gifts Up To = 50), **Favor Targets** list (9 draggable rows: Culture Leaders, Neighboring, Own Subjects, Outraged, Allies, Threatening, Market Owners, Kingdoms and Empires, Largest Nations — each with an Actions slider), and **Gifts** (Culture Leaders Only, Max Treasury Per Month, Notify When Giftable). 
+
+I would like you to update Culture Improve to say "Culture Improve Non-Subjects"
+There is a bug with a section called atd_favors_enh_favor_targets_name. I do not see the 9 draggable rows. I do see gifts, limits, automation sections though.
+- [x] **Subjects tab**: 3 Subject Actions rows; Options shows **"Enforce Culture: Skip Subject Culture Leaders"** (renamed).
+
+I see this.
+- [x] Tooltips on everything; settings persist through save/reload.
+
+I see tooltips on everything.
 
 ## 2. Favor engine basics
 
