@@ -37,7 +37,11 @@ atd_enh_is_favor_candidate = {
 atd_enh_can_curry_target = {
 	# Game's relation floor for the action.
 	opinion = { target = scope:actor_scope value >= 10 }
-	prev_favors_with_this < scope:actor_scope.var:atd_enh_curry_favor_cap
+	# Hysteresis: a curry only STARTS once favors have fallen below the resume
+	# threshold, and only STOPS (tracking cleared) at the higher stop threshold.
+	# Starting at the stop threshold instead would re-curry the moment favors
+	# decayed by a single point, thrashing a diplomat on the same nation forever.
+	prev_favors_with_this < scope:actor_scope.var:atd_enh_curry_resume_below
 	scope:actor_scope = {
 		OR = {
 			NOT = { has_variable_list = atd_enh_currying_with }

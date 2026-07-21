@@ -99,6 +99,21 @@ atd_enh_register = {
 
 	cmm_register_slider_setting = {
 		mod_id = atd
+		setting_id = enh_curry_resume_below
+		tab_id = favors
+		group_id = limits
+		default_value = 10
+		min_value = 0
+		max_value = 25
+		step_value = 5
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_curry_resume_below
+		alias = atd_enh_curry_resume_below
+	}
+
+	cmm_register_slider_setting = {
+		mod_id = atd
 		setting_id = enh_gift_favor_cap
 		tab_id = favors
 		group_id = limits
@@ -364,12 +379,20 @@ atd_enh_handle_cmf_callback = {
 				alias = atd_enh_culture_improve_count
 			}
 		}
-		# Favors tab - Limits
+		# Favors tab - Favor Thresholds
 		flag:atd__enh_curry_favor_cap = {
 			cmm_sync_setting_alias = {
 				setting = atd__enh_curry_favor_cap
 				alias = atd_enh_curry_favor_cap
 			}
+			atd_enh_clamp_curry_resume = yes
+		}
+		flag:atd__enh_curry_resume_below = {
+			cmm_sync_setting_alias = {
+				setting = atd__enh_curry_resume_below
+				alias = atd_enh_curry_resume_below
+			}
+			atd_enh_clamp_curry_resume = yes
 		}
 		flag:atd__enh_gift_favor_cap = {
 			cmm_sync_setting_alias = {
@@ -399,6 +422,25 @@ atd_enh_handle_cmf_callback = {
 				setting = atd__enh_enforce_culture_skip_leaders
 				alias = atd_enh_enforce_culture_skip_leaders
 			}
+		}
+	}
+}
+
+# Keeps the resume threshold at or below the stop threshold. A resume value
+# above the stop value is nonsense - it would make a nation eligible to start
+# currying at a favor level the curry is meant to have already reached - so the
+# lower slider is pulled down to match rather than left in an unusable state.
+# Writes the CMM value map directly so the menu shows the corrected number
+# without firing another callback. Scope: country.
+atd_enh_clamp_curry_resume = {
+	if = {
+		limit = { var:atd_enh_curry_resume_below > var:atd_enh_curry_favor_cap }
+		set_variable = { name = atd_enh_curry_resume_below value = var:atd_enh_curry_favor_cap }
+		remove_from_variable_map = { name = cmm key = flag:atd__enh_curry_resume_below }
+		add_to_variable_map = {
+			name = cmm
+			key = flag:atd__enh_curry_resume_below
+			value = var:atd_enh_curry_favor_cap
 		}
 	}
 }

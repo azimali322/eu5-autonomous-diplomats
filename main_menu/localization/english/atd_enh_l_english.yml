@@ -10,7 +10,7 @@
  atd__enh_favors_enabled_name: "Improve Favors"
  atd__enh_favors_enabled_desc: "Master switch for the favor automation below. Each month, favors are built with the target categories in priority order (using Curry Favors and/or Send Gifts), and Culture Improve can spend them. Respects your diplomat reserve, and only runs while Enabled is on in the Settings tab."
  atd__enh_curry_enabled_name: "Curry Favors"
- atd__enh_curry_enabled_desc: "Build favors with the Curry Favors diplomatic action: an ongoing action that ties up a diplomat and adds about +0.75 favors owed to you each month (while you accrue +0.25 owed to them). The game requires at least 10 relations with the target and caps coexisting favors at 25, which is why the limit below cannot go higher. The automation starts it once per target and leaves it running; it will not re-issue it while it is already going."
+ atd__enh_curry_enabled_desc: "Build favors with the Curry Favors diplomatic action: an ongoing action that ties up a diplomat and adds about +0.75 favors owed to you each month (while you accrue +0.25 owed to them). The game requires at least 10 relations with the target and caps coexisting favors at 25. Each nation cycles inside a band: currying runs until it owes you the Curry Up To amount, then that diplomat is released, and it only restarts once favors fall back below Resume Currying Below."
  atd__enh_culture_improve_enabled_name: "Culture Improve Non-Subjects"
  atd__enh_culture_improve_enabled_desc: "Spend 50 favors to improve a non-subject dominant country of a primary culture's view toward your culture. Only targets nations that already owe you the full 50 favors, and only while you are the dominant country of your own culture. (Subjects are handled by the Improve Cultural View subject action on the Subjects tab.)"
  atd__enh_culture_improve_count_name: "Culture Improves Per Month"
@@ -18,8 +18,11 @@
  atd__enh_culture_improve_count_format: "[CMMV('atd__enh_culture_improve_count')|0]"
  ## Limits (limits) Group
  atd__favors__limits_name: "Favor Thresholds"
- atd__enh_curry_favor_cap_name: "Stop Currying At"
- atd__enh_curry_favor_cap_desc: "A FAVOR threshold, not a country count: Curry Favors leaves a nation alone once it owes you this many favors, freeing that diplomat for the next target. The game itself caps curried favors at 25 (CURRY_FAVORS_MAX_FAVORS), so this cannot go higher. How MANY nations each category may curry at once is set by its slider in Favor Targets below."
+ atd__enh_curry_favor_cap_name: "Curry Up To"
+ atd__enh_curry_favor_cap_desc: "The TOP of the favor band: Curry Favors keeps working a nation until it owes you this many favors, then releases that diplomat. The game caps curried favors at 25 (CURRY_FAVORS_MAX_FAVORS), so this cannot go higher. How MANY nations a category may curry at once is its slider in Favor Targets below."
+ atd__enh_curry_resume_below_name: "Resume Currying Below"
+ atd__enh_curry_resume_below_desc: "The BOTTOM of the favor band. Once a nation has been curried up to the top value, it is left alone while favors slowly decay or get spent; currying only restarts after they fall below this number. That keeps each nation cycling inside a band instead of a diplomat being re-committed the instant favors tick down by one. Must be at or below Curry Up To - raising Curry Up To's partner above it pulls this down automatically."
+ atd__enh_curry_resume_below_format: "[CMMV('atd__enh_curry_resume_below')|0]"
  atd__enh_curry_favor_cap_format: "[CMMV('atd__enh_curry_favor_cap')|0]"
  atd__enh_gift_favor_cap_name: "Stop Listing Gifts At"
  atd__enh_gift_favor_cap_desc: "A FAVOR threshold: a nation stops being listed as giftable once it owes you this many favors. Culture Improve spends 50, so 50 covers one use."
@@ -28,7 +31,7 @@
  atd__favors__enh_favor_targets_name: "Favor Targets"
  atd__favors__enh_favor_targets_desc: "Categories of countries to build favors with, in priority order."
  atd__enh_favor_targets_name: "Favor Targets"
- atd__enh_favor_targets_desc: "Categories of countries to build favors with, in priority order (drag to reorder; higher = first). Each slider is how many diplomats that category may tie up currying AT ONCE - not new curries per month. Curry Favors is an ongoing action, so a diplomat stays committed until that nation reaches the Stop Currying At threshold. 0 disables the category."
+ atd__enh_favor_targets_desc: "Categories of countries to build favors with, in priority order (drag to reorder; higher = first). Each slider is how many diplomats that category may tie up currying AT ONCE - not new curries per month. Curry Favors is an ongoing action, so a diplomat stays committed until that nation reaches the Curry Up To threshold. 0 disables the category."
  atd__enh_favor_targets_item_column_name: "Category"
  atd__enh_favor_targets_i1_name: "Dominant Culture Countries"
  atd__enh_favor_targets_i1_desc: "Build favors with each dominant country of a primary culture - the only targets Culture Improve can spend favors on."
@@ -52,7 +55,7 @@
  ## Gifts (gifts) Group
  atd__favors__gifts_name: "Gifts"
  atd__enh_gift_notify_enabled_name: "Notify When Giftable"
- atd__enh_gift_notify_enabled_desc: "Show an alert naming the dominant countries of a primary culture you can send a gift to right now - ones off their 10-year gift cooldown that still owe you less than the Send Gifts Up To limit. Up to three are named by name, then 'and others'. Works even when the automation is off."
+ atd__enh_gift_notify_enabled_desc: "Show an alert naming the dominant countries of a primary culture you can send a gift to right now - ones off their 10-year gift cooldown that still owe you less than the Stop Listing Gifts At limit. Up to three are named in the alert; left-click it to open the full scrollable list. Works even when the automation is off."
 
  # Settings (settings) Tab - Estate group
  atd__settings__estate_name: "Estate"
@@ -133,6 +136,7 @@
  atd__enh_culture_improve_count: "atd__enh_culture_improve_count"
  atd__enh_curry_favor_cap: "atd__enh_curry_favor_cap"
  atd__enh_gift_favor_cap: "atd__enh_gift_favor_cap"
+ atd__enh_curry_resume_below: "atd__enh_curry_resume_below"
  atd__enh_favor_targets: "atd__enh_favor_targets"
  atd__enh_favor_targets__count: "atd__enh_favor_targets__count"
  atd__favors__enh_favor_targets: "atd__favors__enh_favor_targets"
