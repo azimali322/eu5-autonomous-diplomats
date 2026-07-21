@@ -45,8 +45,11 @@ atd_enh_can_curry_target = {
 	}
 }
 
-# Gift (send_gift) eligibility: owes fewer favors than the gift cap, treasury
-# above the per-tick spend floor, and (optionally) a culture leader only.
+# Gift (send_gift) eligibility: owes fewer favors than the gift cap, enough gold
+# to cover the minimum gift, and (optionally) a culture leader only. There is no
+# spend budget here by design - the game's own Send Gift window asks the player
+# for the amount (or lets them cancel), so the player sets the spend per gift.
+# The per-category Actions sliders cap how many gifts are offered each month.
 #
 # Send Gift is hardcoded with a PER-TARGET cooldown of
 # define:NDiplomacy|SEND_GIFT_COOLDOWN (120 months / 10 years). It has no
@@ -62,8 +65,8 @@ atd_enh_can_gift_target = {
 		is_dominant_country_of = culture
 	}
 	scope:actor_scope = {
+		# The minimum possible gift (prices/00_hardcoded.txt min_scale = 25).
 		gold >= 25
-		gold > var:atd_enh_gift_floor
 		# 10-year per-target gift cooldown still running.
 		NOT = { has_gifted_gold_to = prev }
 	}

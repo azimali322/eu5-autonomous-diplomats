@@ -95,14 +95,28 @@ Enable **Improve Favors** + **Curry Favors**; set **Culture Leaders** category t
 - [ ] **2d.** Category priority: give two categories counts, drag one above the other, verify with scarce diplomat budget the higher one logs first.
 - [ ] **2e.** Master OFF → nothing fires regardless of other toggles.
 
-## 3. Send Gifts method (least-certain feature)
+## 3. Send Gifts method (least-certain feature — THE key question)
 
-Also enable **Send Gifts**; note your treasury.
+Also enable **Send Gifts**; note your treasury. There is no longer any budget
+setting: the design assumes **the game's own Send Gift window opens and you pick
+the amount**. §3a decides whether that assumption holds.
 
-- [ ] **3a. Does it fire at all?** Log shows "Sent a gift to X"; treasury drops; target favors rise. **If no gift entries ever appear**, `send_gift` isn't script-triggerable → tell Claude (fallback: manual gold→favors replication with true % sizing).
-- [ ] **3b.** Gifts go to targets curry can't handle: great-power culture leaders, or nations between the curry cap (25) and gift cap (50).
-- [ ] **3c.** **Max Treasury Per Month** at 25% → gifting stops once treasury falls ~25% below month-start. At 0% → no gifts.
-- [ ] **3d.** **Gifts: Culture Leaders Only** ON → only culture leaders gifted even with other categories active; OFF → any eligible target.
+- [ ] **3a. What happens when a gift fires?** One of three outcomes — report which:
+  1. **The Send Gift slider window opens** and you choose the amount / cancel →
+     the intended design works. Check that multiple qualifying nations prompt
+     **one after another**.
+  2. **The gift happens silently** at some amount the engine chose → tell Claude
+     the amount (console: `variable atd_enh_last_gift_amount`, or watch the
+     treasury delta). We then decide between accepting the engine's amount or
+     replicating gifts in script for full control. ⚠️ In this case there is now
+     **no spend cap** — keep the per-category Actions sliders low while testing.
+  3. **Nothing happens at all** (no log entry, no treasury change) →
+     `send_gift` isn't script-triggerable; we switch to script replication.
+- [ ] **3b.** Gifts go to targets curry can't handle: great-power culture leaders,
+  or nations past the curry cap but under the gift cap.
+- [ ] **3c.** **Gifts: Culture Leaders Only** ON → only culture leaders gifted even
+  with other categories active; OFF → any eligible target.
+- [ ] **3d.** A nation gifted once is **not** offered again (10-year cooldown).
 
 ## 4. Culture Improve
 

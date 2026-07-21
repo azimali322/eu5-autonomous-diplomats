@@ -63,18 +63,6 @@ atd_enh_favor_economy = {
 		# Respect the base mod's diplomat reserve: threshold = reserve + 1.
 		set_variable = { name = atd_enh_action_threshold value = { value = var:atd_min_diplomats add = 1 } }
 
-		# Treasury floor for the gift method this tick:
-		# floor = gold * (100 - percent) / 100. Gifting stops at the floor.
-		if = {
-			limit = { has_variable = atd_enh_gifts_enabled }
-			set_variable = { name = atd_enh_gift_keep_pct value = 100 }
-			change_variable = { name = atd_enh_gift_keep_pct subtract = var:atd_enh_gift_percent }
-			set_variable = { name = atd_enh_gift_floor value = gold }
-			change_variable = { name = atd_enh_gift_floor multiply = var:atd_enh_gift_keep_pct }
-			change_variable = { name = atd_enh_gift_floor divide = 100 }
-			remove_variable = atd_enh_gift_keep_pct
-		}
-
 		if = {
 			limit = { has_variable_list = atd_enh_favor_done_this_tick }
 			clear_variable_list = atd_enh_favor_done_this_tick
@@ -99,10 +87,6 @@ atd_enh_favor_economy = {
 		if = {
 			limit = { has_variable_list = atd_enh_favor_done_this_tick }
 			clear_variable_list = atd_enh_favor_done_this_tick
-		}
-		if = {
-			limit = { has_variable = atd_enh_gift_floor }
-			remove_variable = atd_enh_gift_floor
 		}
 		remove_variable = atd_enh_action_threshold
 	}

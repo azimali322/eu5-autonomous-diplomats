@@ -251,21 +251,6 @@ atd_enh_register = {
 		alias = atd_enh_gift_culture_leaders_only
 	}
 
-	cmm_register_slider_setting = {
-		mod_id = atd
-		setting_id = enh_gift_percent
-		tab_id = favors
-		group_id = gifts
-		default_value = 25
-		min_value = 0
-		max_value = 100
-		step_value = 5
-	}
-	cmm_sync_setting_alias = {
-		setting = atd__enh_gift_percent
-		alias = atd_enh_gift_percent
-	}
-
 	cmm_register_bool_setting = {
 		mod_id = atd
 		setting_id = enh_gift_notify_enabled
@@ -407,12 +392,6 @@ atd_enh_handle_cmf_callback = {
 			cmm_sync_bool_alias = {
 				setting = atd__enh_gift_culture_leaders_only
 				alias = atd_enh_gift_culture_leaders_only
-			}
-		}
-		flag:atd__enh_gift_percent = {
-			cmm_sync_setting_alias = {
-				setting = atd__enh_gift_percent
-				alias = atd_enh_gift_percent
 			}
 		}
 		flag:atd__enh_gift_notify_enabled = {
