@@ -1,0 +1,103 @@
+﻿# [ATD-ENH] Giftable Countries window.
+# External contribution (azimali322). Registered in
+# gui/scripted_widgets/atd_enh_scripted_widgets.txt so it instantiates.
+# Visibility binds to the country variable atd_enh_gifts_window_open, toggled by
+# the CMF action-bar button and cleared by the close button.
+#
+# Lists every country currently giftable (off the 10-year per-target gift
+# cooldown, still owing less than the Send Gifts Up To cap, and - when "Gifts:
+# Dominant Culture Countries Only" is on - a dominant country of a primary
+# culture). The datamodel is the tracking list itself (atd_enh_giftable_list),
+# whose entries are country scopes, so rows render Scope.Country directly.
+# Clicking a row opens that country's diplomacy view via OpenDiplomacy.
+#
+# NOTE: parentanchor is not allowed on children of an hbox/vbox (they
+# auto-arrange), so the close button lives in a widget that is a DIRECT child of
+# the window, not inside the content vbox.
+window = {
+	name = "atd_enh_gifts_window"
+	movable = yes
+	resizable = no
+	parentanchor = center
+	widgetanchor = center
+	size = { 420 480 }
+	using = bg_window_default_alt
+	visible = "[Player.MakeScope.GetVariable('atd_enh_gifts_window_open').IsSet]"
+
+	widget = {
+		size = { 100% 100% }
+		button_close_alt = {
+			onclick = "[GetScriptedGui('atd_enh_close_gifts_window').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+		}
+	}
+
+	vbox = {
+		using = window_margin_alt
+		spacing = 6
+		layoutpolicy_horizontal = expanding
+		layoutpolicy_vertical = expanding
+
+		text_single = {
+			fontsize = 18
+			text = "atd_enh_gifts_window_title"
+		}
+
+		text_multi = {
+			layoutpolicy_horizontal = expanding
+			autoresize = yes
+			max_width = 380
+			text = "atd_enh_gifts_window_help"
+		}
+
+		# Empty state.
+		text_multi = {
+			visible = "[Not(DataModelHasItems(Player.MakeScope.GetList('atd_enh_giftable_list')))]"
+			layoutpolicy_horizontal = expanding
+			autoresize = yes
+			max_width = 380
+			text = "atd_enh_gifts_window_empty"
+		}
+
+		# Scrolling list of clickable countries.
+		scrollarea = {
+			layoutpolicy_horizontal = expanding
+			layoutpolicy_vertical = expanding
+			autoresizescrollarea = yes
+			autoresizeviewport = yes
+			alwaystransparent = yes
+			scrollbarpolicy_horizontal = always_off
+			scrollbarpolicy_vertical = as_needed
+
+			scrollwidget = {
+				vbox = {
+					layoutpolicy_horizontal = expanding
+					spacing = 2
+					datamodel = "[Player.MakeScope.GetList('atd_enh_giftable_list')]"
+
+					item = {
+						button_regular = {
+							layoutpolicy_horizontal = expanding
+							minimumsize = { 0 30 }
+							# Opens this country's diplomacy view. The Economy
+							# filter still has to be picked there - OpenDiplomacy
+							# takes only a country, with no category argument.
+							onclick = "[OpenDiplomacy(Scope.Country.Self)]"
+							tooltip = "atd_enh_gifts_window_row_tt"
+
+							hbox = {
+								layoutpolicy_horizontal = expanding
+								margin = { 8 2 }
+								spacing = 6
+
+								text_single = {
+									text = "[Scope.Country.GetName]"
+								}
+								expand = {}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

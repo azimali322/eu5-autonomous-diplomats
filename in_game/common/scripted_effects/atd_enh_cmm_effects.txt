@@ -25,6 +25,9 @@
 # Registers the enhancement settings. Called from the end of
 # atd_register_cmf_mod. Root scope: country.
 atd_enh_register = {
+	# Action-bar button that opens the Giftable Countries window (idempotent).
+	cmf_add_action_bar_element = { element = atd_enh_open_gifts }
+
 	# ----- Favors (favors) Tab -------------------------------------------
 	## Automation (automation) Group
 	cmm_register_bool_setting = {
@@ -326,6 +329,15 @@ atd_enh_register = {
 atd_enh_handle_cmf_callback = {
 	switch = {
 		trigger = var:cmf_callback
+		# Action bar: open/close the Giftable Countries window.
+		flag:atd_enh_open_gifts = {
+			atd_enh_toggle_gifts_window = yes
+		}
+		# Alert click opens the same window, so the alert is actionable.
+		flag:atd_enh_alert_giftable_1 = { atd_enh_toggle_gifts_window = yes }
+		flag:atd_enh_alert_giftable_2 = { atd_enh_toggle_gifts_window = yes }
+		flag:atd_enh_alert_giftable_3 = { atd_enh_toggle_gifts_window = yes }
+		flag:atd_enh_alert_giftable_more = { atd_enh_toggle_gifts_window = yes }
 		# Favors tab - Automation
 		flag:atd__enh_favors_enabled = {
 			cmm_sync_bool_alias = {

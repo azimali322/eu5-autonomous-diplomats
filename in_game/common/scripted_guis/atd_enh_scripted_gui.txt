@@ -56,6 +56,18 @@ atd__enh_favor_targets_on_changed = {
 	}
 }
 
+# Close button on the Giftable Countries window.
+atd_enh_close_gifts_window = {
+	scope = country
+
+	effect = {
+		if = {
+			limit = { has_variable = atd_enh_gifts_window_open }
+			remove_variable = atd_enh_gifts_window_open
+		}
+	}
+}
+
 # Settings tab - automation priority list (no per-item fields to sync).
 atd__enh_priority_on_changed = {
 	scope = country

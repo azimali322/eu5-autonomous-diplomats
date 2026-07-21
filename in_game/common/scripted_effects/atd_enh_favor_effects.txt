@@ -438,14 +438,50 @@ atd_enh_culture_improve = {
 }
 
 # ----- Gift-availability notify alert -------------------------------------
+# Rebuilds atd_enh_giftable_list: every country the player can send a gift to
+# right now. The Giftable Countries window binds its scrolling list straight to
+# this (datamodel), rendering one clickable row per country. Rebuilt on the
+# monthly pulse and whenever the window is opened, so it is current on screen.
+# Scope: player country (root).
+atd_enh_rebuild_giftable_list = {
+	if = {
+		limit = { has_variable_list = atd_enh_giftable_list }
+		clear_variable_list = atd_enh_giftable_list
+	}
+	every_country_in_diplomatic_range = {
+		limit = { atd_enh_is_giftable_now = yes }
+		root = {
+			add_to_variable_list = {
+				name = atd_enh_giftable_list
+				target = prev
+			}
+		}
+	}
+}
+
+# Opens/closes the Giftable Countries window (bound to atd_enh_gifts_window_open).
+# Scope: player country.
+atd_enh_toggle_gifts_window = {
+	if = {
+		limit = { has_variable = atd_enh_gifts_window_open }
+		remove_variable = atd_enh_gifts_window_open
+	}
+	else = {
+		atd_enh_rebuild_giftable_list = yes
+		set_variable = { name = atd_enh_gifts_window_open value = 1 }
+	}
+}
+
 # Names the dominant countries of a primary culture the player can gift right
 # now (off the 10-year gift cooldown, still owing less than the gift cap) and
 # raises the alert variant matching how many were found, so the tooltip can list
 # them by name. Hooked to the monthly pulse, independent of the automation
 # toggles. Scope: player country (root).
 atd_enh_update_gift_notify = {
-	# Rebuild the named slots every pulse so the tooltip never shows stale
-	# countries. Up to three are named; beyond that the tooltip says "and more".
+	# Rebuild the full clickable list used by the Giftable Countries window, plus
+	# the first three name slots the alert tooltip reads.
+	atd_enh_rebuild_giftable_list = yes
+
 	remove_variable = atd_enh_gift_t1
 	remove_variable = atd_enh_gift_t2
 	remove_variable = atd_enh_gift_t3

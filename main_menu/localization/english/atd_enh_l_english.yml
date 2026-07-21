@@ -107,6 +107,16 @@
  atd_enh_alert_giftable_more_name: "Gifts Available"
  atd_enh_alert_giftable_more_tooltip: "You can send gifts to [Player.MakeScope.GetVariable('atd_enh_gift_t1').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_gift_t2').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_gift_t3').Country.GetName] and others - every dominant country of a primary culture that is off its gift cooldown and still owes you less than the Send Gifts Up To limit. Right-click to dismiss."
 
+ # Giftable Countries window + its action-bar button
+ atd_enh_open_gifts_name: "Giftable Countries"
+ atd_enh_open_gifts_tooltip: "Open the list of countries you can send a gift to right now."
+ atd_enh_open_gifts_icon: "@favors!"
+ atd_enh_open_gifts_color: "gold"
+ atd_enh_gifts_window_title: "Countries You Can Gift"
+ atd_enh_gifts_window_help: "Gifts cannot be automated - the game only allows them through its own window, which is also where you set the amount. Click a country to jump to its diplomacy screen, then pick the Economy filter and Send Gift. Max the slider for the most favors (5 by default, up to 10)."
+ atd_enh_gifts_window_empty: "No country is giftable right now. Everyone eligible is either on the 10-year gift cooldown or already owes you at least the Send Gifts Up To limit."
+ atd_enh_gifts_window_row_tt: "Open this country's diplomacy screen. Choose the Economy filter there to find Send Gift."
+
  # Mod Action Log entries ([action] [target name])
  atd_enh_log_curry: "Curried favors with"
  atd_enh_log_culture: "Improved cultural view with"
