@@ -35,13 +35,22 @@ atd_enh_is_favor_candidate = {
 	}
 }
 
-# Curry (influence_nation) eligibility: non-great-power owing fewer favors than
-# the curry cap, and the actor is allowed to use Influence Nation.
+# Curry Favors eligibility. curry_favors is a hardcoded diplomatic action driven
+# by defines (NDiplomacy): CURRY_FAVORS_RELATION_REQUIRED = 10 is the relation
+# floor, CURRY_FAVORS_MAX_FAVORS = 25 is the hard cap on favors that can coexist.
+# It is an ONGOING action (it has its own outliner entry) that ties up a diplomat
+# while it runs at +0.75 favors/month, so we skip targets we have already started
+# currying - see atd_enh_currying_with, cleaned up once a target reaches the cap.
+# No great-power restriction and no hegemony requirement.
 atd_enh_can_curry_target = {
-	is_great_power = no
+	# Game's relation floor for the action.
+	opinion = { target = scope:actor_scope value >= 10 }
 	prev_favors_with_this < scope:actor_scope.var:atd_enh_curry_favor_cap
 	scope:actor_scope = {
-		modifier:allow_diplomacy_influence_nation = yes
+		OR = {
+			NOT = { has_variable_list = atd_enh_currying_with }
+			NOT = { is_target_in_variable_list = { name = atd_enh_currying_with target = prev } }
+		}
 	}
 }
 

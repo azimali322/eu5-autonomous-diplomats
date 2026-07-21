@@ -10,7 +10,7 @@
  atd__enh_favors_enabled_name: "Improve Favors"
  atd__enh_favors_enabled_desc: "Master switch for the favor automation below. Each month, favors are built with the target categories in priority order (using Curry Favors and/or Send Gifts), and Culture Improve can spend them. Respects your diplomat reserve."
  atd__enh_curry_enabled_name: "Curry Favors"
- atd__enh_curry_enabled_desc: "Build favors using the Influence Nation action (+5 favors each). Stops once a nation owes you the Curry Favors Up To amount, and cannot target great powers - use gifts for those.\n\nYou can see this setting because you currently hold the Diplomatic Hegemon hegemony, which is what unlocks Influence Nation. If you lose that hegemony this row disappears until you regain it, because the action becomes unavailable and the automation would have nothing to do. Your choice here is remembered while it is hidden, and gifts keep building favors in the meantime."
+ atd__enh_curry_enabled_desc: "Build favors with the Curry Favors diplomatic action: an ongoing action that ties up a diplomat and adds about +0.75 favors owed to you each month (while you accrue +0.25 owed to them). The game requires at least 10 relations with the target and caps coexisting favors at 25, which is why the limit below cannot go higher. The automation starts it once per target and leaves it running; it will not re-issue it while it is already going."
  atd__enh_gifts_enabled_name: "Send Gifts"
  atd__enh_gifts_enabled_desc: "Build favors by sending gold gifts. The automation only decides WHO to gift and WHEN - the game's own Send Gift window then opens and YOU choose the amount on its slider (max it out for the most favors) or cancel. If several nations qualify in the same month you are prompted for each in turn.\n\nWorks on its own - gifts can carry a nation from no favors all the way to the Send Gifts Up To cap - and also tops up nations Curry Favors has taken as far as it can. Often your only option: currying needs the Diplomatic Hegemon hegemony, cannot target great powers, and some nations will not accept it.\n\nThe game enforces a 10-year cooldown per target, so a given nation can only be gifted once a decade. Use the per-category Actions sliders to limit how many gifts you are offered per month, and simply turn this off in the early game when you cannot afford to gift."
  atd__enh_culture_improve_enabled_name: "Culture Improve Non-Subjects"
@@ -21,7 +21,7 @@
  ## Limits (limits) Group
  atd__favors__limits_name: "Limits"
  atd__enh_curry_favor_cap_name: "Curry Favors Up To"
- atd__enh_curry_favor_cap_desc: "Curry Favors stops targeting a nation once it owes you this many favors. Gifts take over from there toward the Send Gifts cap."
+ atd__enh_curry_favor_cap_desc: "Curry Favors stops targeting a nation once it owes you this many favors. The game itself caps curried favors at 25 (CURRY_FAVORS_MAX_FAVORS), so this cannot go higher - gifts take it the rest of the way toward the Send Gifts cap."
  atd__enh_curry_favor_cap_format: "[CMMV('atd__enh_curry_favor_cap')|0]"
  atd__enh_gift_favor_cap_name: "Send Gifts Up To"
  atd__enh_gift_favor_cap_desc: "Send Gifts stops targeting a nation once it owes you this many favors. Culture Improve spends 50 favors, so 50 covers one use."

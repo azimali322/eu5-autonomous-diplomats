@@ -68,6 +68,36 @@ atd_enh_favor_economy = {
 			clear_variable_list = atd_enh_favor_done_this_tick
 		}
 
+		# Forget curries that have finished (target reached the favor cap, or the
+		# country is gone) so they can be re-issued if favors ever fall back.
+		if = {
+			limit = { has_variable_list = atd_enh_currying_with }
+			every_in_list = {
+				variable = atd_enh_currying_with
+				limit = {
+					NOR = {
+						AND = {
+							exists = this
+							prev_favors_with_this < prev.var:atd_enh_curry_favor_cap
+						}
+					}
+				}
+				scope:actor_scope = {
+					add_to_variable_list = { name = atd_enh_curry_stale_tmp target = prev }
+				}
+			}
+			if = {
+				limit = { has_variable_list = atd_enh_curry_stale_tmp }
+				every_in_list = {
+					variable = atd_enh_curry_stale_tmp
+					scope:actor_scope = {
+						remove_list_variable = { name = atd_enh_currying_with target = prev }
+					}
+				}
+				clear_variable_list = atd_enh_curry_stale_tmp
+			}
+		}
+
 		# Build favors per category, in priority order.
 		cmm_for_each_list_item = {
 			setting = atd__enh_favor_targets
@@ -121,12 +151,18 @@ atd_enh_try_build_favor = {
 			scope:target_country = { atd_enh_can_curry_target = yes }
 		}
 		perform_diplomatic_action = {
-			type = influence_nation
+			type = curry_favors
 			actor = scope:actor_scope
 			recipient = scope:target_country
 		}
 		scope:target_country = { save_scope_as = cmf_log_arg2 }
 		cmf_log_with_scope_arg = { action = atd_enh_log_curry }
+		# Ongoing action: remember it so we do not re-issue it every month while
+		# it runs. Cleared once the target reaches the favor cap.
+		add_to_variable_list = {
+			name = atd_enh_currying_with
+			target = scope:target_country
+		}
 		add_to_variable_list = {
 			name = atd_enh_favor_done_this_tick
 			target = scope:target_country
