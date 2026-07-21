@@ -321,11 +321,24 @@ atd_enh_handle_cmf_callback = {
 		flag:atd_enh_open_gifts = {
 			atd_enh_toggle_gifts_window = yes
 		}
-		# Alert click opens the same window, so the alert is actionable.
-		flag:atd_enh_alert_giftable_1 = { atd_enh_toggle_gifts_window = yes }
-		flag:atd_enh_alert_giftable_2 = { atd_enh_toggle_gifts_window = yes }
-		flag:atd_enh_alert_giftable_3 = { atd_enh_toggle_gifts_window = yes }
-		flag:atd_enh_alert_giftable_more = { atd_enh_toggle_gifts_window = yes }
+		# Alert click opens the window. CMF clears an alert on left-click, so
+		# re-raise it afterwards - it is a standing reminder, not a one-shot.
+		flag:atd_enh_alert_giftable_1 = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd_enh_alert_giftable_2 = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd_enh_alert_giftable_3 = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd_enh_alert_giftable_more = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
 		# Favors tab - Automation
 		flag:atd__enh_favors_enabled = {
 			cmm_sync_bool_alias = {

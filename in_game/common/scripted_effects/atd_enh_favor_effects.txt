@@ -100,6 +100,7 @@ atd_enh_favor_economy = {
 					variable = atd_enh_curry_stale_tmp
 					scope:actor_scope = {
 						remove_list_variable = { name = atd_enh_currying_with target = prev }
+						remove_from_variable_map = { name = atd_enh_curry_type key = prev }
 					}
 				}
 				clear_variable_list = atd_enh_curry_stale_tmp
@@ -166,16 +167,60 @@ atd_enh_try_build_favor = {
 		scope:target_country = { save_scope_as = cmf_log_arg2 }
 		cmf_log_with_scope_arg = { action = atd_enh_log_curry }
 		# Ongoing action: remember it so we do not re-issue it every month while
-		# it runs. Cleared once the target reaches the favor cap.
+		# it runs, and remember WHICH category claimed it so that category's
+		# limit counts it for as long as it runs. Both cleared once the target
+		# reaches the favor cap.
 		add_to_variable_list = {
 			name = atd_enh_currying_with
 			target = scope:target_country
+		}
+		add_to_variable_map = {
+			name = atd_enh_curry_type
+			key = scope:target_country
+			value = flag:$type$
 		}
 		add_to_variable_list = {
 			name = atd_enh_favor_done_this_tick
 			target = scope:target_country
 		}
 		change_variable = { name = atd_enh_cat_done add = 1 }
+	}
+
+	# Suppress "used but never set" for the category flags passed via $type$.
+	if = {
+		limit = { always = no }
+		cmf_suppress = { v = culture_leaders }
+		cmf_suppress = { v = neighbors }
+		cmf_suppress = { v = subjects }
+		cmf_suppress = { v = outraged }
+		cmf_suppress = { v = allies }
+		cmf_suppress = { v = threatening }
+		cmf_suppress = { v = market_owners }
+		cmf_suppress = { v = kingdoms }
+		cmf_suppress = { v = largest }
+	}
+}
+
+# Seeds atd_enh_cat_done with the number of curries this category ALREADY has
+# running, so the category slider behaves like the base mod's Diplomats column:
+# a cap on concurrent diplomats tied up, not a number of new starts per month.
+# Without this the engine started a fresh batch every month and the count grew
+# without bound as diplomats freed up.
+# Scope: player country. Args: type (category flag).
+atd_enh_count_active_curries = {
+	set_variable = { name = atd_enh_cat_done value = 0 }
+	if = {
+		limit = { has_variable_map = atd_enh_curry_type }
+		every_key_in_variable_map = {
+			variable = atd_enh_curry_type
+			save_scope_as = atd_enh_ct_key
+			scope:actor_scope = {
+				if = {
+					limit = { "variable_map(atd_enh_curry_type|scope:atd_enh_ct_key)" = flag:$type$ }
+					change_variable = { name = atd_enh_cat_done add = 1 }
+				}
+			}
+		}
 	}
 }
 
@@ -185,7 +230,7 @@ atd_enh_try_build_favor = {
 # category pickers).
 
 atd_enh_favor_culture_leaders = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = culture_leaders }
 	while = {
 		count = 10
 		limit = {
@@ -201,14 +246,14 @@ atd_enh_favor_culture_leaders = {
 			order_by = { value = 0 }
 			max = 1
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = culture_leaders } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_neighbors = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = neighbors }
 	while = {
 		count = 10
 		limit = {
@@ -219,14 +264,14 @@ atd_enh_favor_neighbors = {
 		random_neighbor_country = {
 			limit = { atd_enh_is_favor_candidate = yes }
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = neighbors } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_subjects = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = subjects }
 	while = {
 		count = 10
 		limit = {
@@ -237,14 +282,14 @@ atd_enh_favor_subjects = {
 		random_subject = {
 			limit = { atd_enh_is_favor_candidate = yes }
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = subjects } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_outraged = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = outraged }
 	while = {
 		count = 10
 		limit = {
@@ -260,14 +305,14 @@ atd_enh_favor_outraged = {
 			order_by = this_antagonism_towards_prev
 			max = 1
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = outraged } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_allies = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = allies }
 	while = {
 		count = 10
 		limit = {
@@ -291,14 +336,14 @@ atd_enh_favor_allies = {
 			order_by = { value = 0 }
 			max = 1
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = allies } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_threatening = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = threatening }
 	while = {
 		count = 10
 		limit = {
@@ -314,14 +359,14 @@ atd_enh_favor_threatening = {
 			order_by = "threat_level_to(scope:actor_scope)"
 			max = 1
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = threatening } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_market_owners = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = market_owners }
 	while = {
 		count = 10
 		limit = {
@@ -337,14 +382,14 @@ atd_enh_favor_market_owners = {
 			order_by = { value = 0 }
 			max = 1
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = market_owners } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_kingdoms = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = kingdoms }
 	while = {
 		count = 10
 		limit = {
@@ -363,14 +408,14 @@ atd_enh_favor_kingdoms = {
 			order_by = { value = 0 }
 			max = 1
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = kingdoms } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
 }
 
 atd_enh_favor_largest = {
-	set_variable = { name = atd_enh_cat_done value = 0 }
+	atd_enh_count_active_curries = { type = largest }
 	while = {
 		count = 10
 		limit = {
@@ -383,7 +428,7 @@ atd_enh_favor_largest = {
 			order_by = num_locations
 			max = 1
 			save_scope_as = target_country
-			scope:actor_scope = { atd_enh_try_build_favor = yes }
+			scope:actor_scope = { atd_enh_try_build_favor = { type = largest } }
 		}
 	}
 	remove_variable = atd_enh_cat_done
