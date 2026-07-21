@@ -437,29 +437,78 @@ atd_enh_culture_improve = {
 }
 
 # ----- Gift-availability notify alert -------------------------------------
-# Raises/clears the atd_enh_alert_giftable_leaders CMF alert when a culture
-# leader is in the gift "top-up window": it owes us at least the curry cap but
-# less than the gift cap, so gifts push it toward what Culture Improve spends.
-# Hooked to the monthly pulse, independent of the automation toggles.
-# Scope: player country (root).
+# Names the dominant countries of a primary culture the player can gift right
+# now (off the 10-year gift cooldown, still owing less than the gift cap) and
+# raises the alert variant matching how many were found, so the tooltip can list
+# them by name. Hooked to the monthly pulse, independent of the automation
+# toggles. Scope: player country (root).
 atd_enh_update_gift_notify = {
+	# Rebuild the named slots every pulse so the tooltip never shows stale
+	# countries. Up to three are named; beyond that the tooltip says "and more".
+	remove_variable = atd_enh_gift_t1
+	remove_variable = atd_enh_gift_t2
+	remove_variable = atd_enh_gift_t3
+	set_variable = { name = atd_enh_gift_n value = 0 }
+
 	if = {
 		limit = {
 			has_variable = atd_enh_gift_notify_enabled
 			gold >= 25
-			any_country_in_diplomatic_range = {
-				NOT = { this = root }
-				is_discovered_by = root
-				is_dominant_country_of = culture
-				NOT = { is_subject_of = root }
-				NOT = { is_at_war_with = root }
-				prev_favors_with_this >= root.var:atd_enh_curry_favor_cap
-				prev_favors_with_this < root.var:atd_enh_gift_favor_cap
+		}
+		every_country_in_diplomatic_range = {
+			limit = { atd_enh_is_giftable_now = yes }
+			root = {
+				change_variable = { name = atd_enh_gift_n add = 1 }
+				if = {
+					limit = { NOT = { has_variable = atd_enh_gift_t1 } }
+					set_variable = { name = atd_enh_gift_t1 value = prev }
+				}
+				else_if = {
+					limit = { NOT = { has_variable = atd_enh_gift_t2 } }
+					set_variable = { name = atd_enh_gift_t2 value = prev }
+				}
+				else_if = {
+					limit = { NOT = { has_variable = atd_enh_gift_t3 } }
+					set_variable = { name = atd_enh_gift_t3 value = prev }
+				}
 			}
 		}
-		cmf_show_alert = { alert = atd_enh_alert_giftable_leaders }
+	}
+
+	# Pick the alert variant that matches how many were found, and clear the
+	# others so a stale one cannot sit on the bar reading empty slots.
+	if = {
+		limit = { var:atd_enh_gift_n >= 4 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_1 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_2 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_3 }
+		cmf_show_alert = { alert = atd_enh_alert_giftable_more }
+	}
+	else_if = {
+		limit = { var:atd_enh_gift_n = 3 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_1 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_2 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_more }
+		cmf_show_alert = { alert = atd_enh_alert_giftable_3 }
+	}
+	else_if = {
+		limit = { var:atd_enh_gift_n = 2 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_1 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_3 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_more }
+		cmf_show_alert = { alert = atd_enh_alert_giftable_2 }
+	}
+	else_if = {
+		limit = { var:atd_enh_gift_n = 1 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_2 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_3 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_more }
+		cmf_show_alert = { alert = atd_enh_alert_giftable_1 }
 	}
 	else = {
-		cmf_remove_alert = { alert = atd_enh_alert_giftable_leaders }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_1 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_2 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_3 }
+		cmf_remove_alert = { alert = atd_enh_alert_giftable_more }
 	}
 }

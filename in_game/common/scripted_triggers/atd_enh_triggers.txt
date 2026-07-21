@@ -72,6 +72,24 @@ atd_enh_can_gift_target = {
 	}
 }
 
+# A country the player could send a gift to right now, for the notify alert.
+# Evaluated in the candidate's scope from root (the player), so prev = player.
+# Deliberately wider than the automation's own gift check: any dominant country
+# of a primary culture that is off its gift cooldown and still owes less than
+# the gift cap, since gifts can build favors from zero, not just top up.
+atd_enh_is_giftable_now = {
+	NOT = { this = root }
+	is_discovered_by = root
+	is_dominant_country_of = culture
+	NOT = { is_subject_of = root }
+	NOT = { is_at_war_with = root }
+	NOT = { has_variable = atd_improve_blocked }
+	prev_favors_with_this < root.var:atd_enh_gift_favor_cap
+	root = {
+		NOT = { has_gifted_gold_to = prev }
+	}
+}
+
 # An improve_cultural_view target: a culture leader whose culture does not
 # already view ours as kindred, not improved this tick.
 atd_enh_is_culture_target = {
