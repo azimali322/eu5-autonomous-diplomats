@@ -52,6 +52,8 @@ atd_enh_on_gift_sent = {
 
 atd_enh_on_monthly = {
 	effect = {
+		# Runs first so freshly granted diplomats are spendable this month.
+		atd_enh_ask_nobility_for_diplomats = yes
 		if = {
 			limit = { NOT = { has_variable = atd_enabled } }
 			atd_enh_favor_economy = yes

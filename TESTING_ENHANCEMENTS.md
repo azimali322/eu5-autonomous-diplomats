@@ -31,11 +31,18 @@ are your only automated favor source. Early-game Granada will not curry.
 **⚠️ Send Gift has a 10-year PER-TARGET cooldown** (`SEND_GIFT_COOLDOWN = 120`
 months). Confirmed in the game defines and cross-checked against the Cooldown
 Notifier mod, which watches this same cooldown. Consequences:
-- A nation can only be gifted **once per decade**, so gifts **spread across many
-  targets** rather than topping one up from 25→50 favors. The "gift top-up"
-  framing only works over a long horizon or across many nations.
+- A nation can only be gifted **once per decade**. Gifts still work **on their
+  own** (no favors → the gift cap) as well as topping up what curry started —
+  they're just paced, so the engine moves on to other targets in between.
 - The engine now skips targets whose gift cooldown is running
   (`has_gifted_gold_to`) instead of burning its monthly attempts on blocked ones.
+
+**NEW: Auto Ask Nobility for Diplomats** (Settings → Estate, **default OFF**).
++5 diplomats for −0.15 Nobles satisfaction on the vanilla 5-year cooldown; runs
+before the favor engine so the diplomats are spendable the same month.
+- [ ] Toggle ON with a Nobles estate → log shows "Asked the Nobility for
+  diplomats", diplomats +5, nobles satisfaction dips, and it does **not** repeat
+  until 5 years pass. OFF → never fires. No Nobles estate → never fires.
 - **Gift log entries are now authoritative:** logging moved to the game's own
   `on_gift_sent` hook, so "Sent a gift to X" appears **only if a gift really
   went out**. That makes §3a a clean yes/no — no entries means `send_gift`

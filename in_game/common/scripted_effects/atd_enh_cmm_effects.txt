@@ -270,6 +270,22 @@ atd_enh_register = {
 		alias = atd_enh_gift_notify_enabled
 	}
 
+	# ----- Settings (settings) Tab - estate automation -------------------
+	## Estate (estate) Group
+	# OFF by default: it spends nobles estate satisfaction, which the player may
+	# not want burned automatically every 5 years.
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_ask_nobility_enabled
+		tab_id = settings
+		group_id = estate
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_ask_nobility_enabled
+		alias = atd_enh_ask_nobility_enabled
+	}
+
 	# ----- Settings (settings) Tab - automation priority -----------------
 	# Order in which the three automations claim diplomats each month:
 	# Subjects / Favors / Improve Relations (default in that order).
@@ -398,6 +414,13 @@ atd_enh_handle_cmf_callback = {
 			}
 			# Reflect the toggle on the alert straight away.
 			atd_enh_update_gift_notify = yes
+		}
+		# Settings tab - Estate
+		flag:atd__enh_ask_nobility_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_ask_nobility_enabled
+				alias = atd_enh_ask_nobility_enabled
+			}
 		}
 		# Subjects tab - Options
 		flag:atd__enh_enforce_culture_skip_leaders = {
