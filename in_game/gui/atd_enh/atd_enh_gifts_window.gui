@@ -5,90 +5,93 @@
 # the CMF action-bar button / the alert, and cleared by the close button.
 #
 # Lists every dominant country of a primary culture currently giftable (off the
-# 10-year per-target gift cooldown, still owing less than the Send Gifts Up To
-# cap). The datamodel is the tracking list itself (atd_enh_giftable_list), whose
-# entries are country scopes, so rows render Scope.Country directly. Clicking a
-# row opens that country's diplomacy view via OpenDiplomacy.
+# 10-year per-target gift cooldown, still owing less than the gift cap). The
+# datamodel is the tracking list itself (atd_enh_giftable_list), whose entries
+# are country scopes, so rows render Scope.Country directly. Clicking a row
+# opens that country's diplomacy view via OpenDiplomacy.
 #
-# The scrollarea MUST carry both a fixed size and maximumsize - with only
-# layoutpolicy_vertical = expanding it grows to fit every row and runs off the
-# bottom of the screen instead of scrolling. The explicit scrollbar_vertical is
-# required for the bar to appear.
-#
-# The close button uses blockoverride "close_on_action" (not onclick), and lives
-# in a widget that is a DIRECT child of the window: parentanchor is not allowed
-# on children of an hbox/vbox, which auto-arrange.
+# LAYOUT NOTE (learned the hard way): the scrollarea must NOT live inside the
+# header vbox. A vbox auto-arranges its children, and a scrollarea carrying
+# percentage sizing + autoresizescrollarea/autoresizeviewport fights that - the
+# result was a blank window whose title rendered outside its own frame. Each
+# block is therefore its own absolutely-positioned widget, a direct child of the
+# window, with explicit pixel sizes. parentanchor/position are only legal on
+# direct children for the same reason.
 window = {
 	name = "atd_enh_gifts_window"
 	movable = yes
 	resizable = no
 	parentanchor = center
 	widgetanchor = center
-	size = { 440 520 }
+	size = { 460 580 }
 	using = bg_window_default_alt
 	visible = "[Player.MakeScope.GetVariable('atd_enh_gifts_window_open').IsSet]"
 
-	vbox = {
-		using = window_margin_alt
-		spacing = 6
-		layoutpolicy_horizontal = expanding
+	# Header: title + explanation.
+	widget = {
+		position = { 20 16 }
+		size = { 420 150 }
 
-		text_single = {
-			fontsize = 18
-			text = "atd_enh_gifts_window_title"
+		vbox = {
+			layoutpolicy_horizontal = expanding
+			spacing = 6
+
+			text_single = {
+				fontsize = 18
+				text = "atd_enh_gifts_window_title"
+			}
+
+			text_multi = {
+				layoutpolicy_horizontal = expanding
+				autoresize = yes
+				max_width = 410
+				text = "atd_enh_gifts_window_help"
+			}
 		}
+	}
+
+	# Empty state, shown in place of the list.
+	widget = {
+		visible = "[Not(DataModelHasItems(Player.MakeScope.GetList('atd_enh_giftable_list')))]"
+		position = { 20 180 }
+		size = { 420 120 }
 
 		text_multi = {
 			layoutpolicy_horizontal = expanding
 			autoresize = yes
-			max_width = 390
-			text = "atd_enh_gifts_window_help"
-		}
-
-		# Empty state.
-		text_multi = {
-			visible = "[Not(DataModelHasItems(Player.MakeScope.GetList('atd_enh_giftable_list')))]"
-			layoutpolicy_horizontal = expanding
-			autoresize = yes
-			max_width = 390
+			max_width = 410
 			text = "atd_enh_gifts_window_empty"
 		}
+	}
 
-		# Scrolling list of clickable countries.
+	# Scrolling list of clickable countries. Fixed viewport: content taller than
+	# this scrolls rather than overflowing the window.
+	widget = {
+		visible = "[DataModelHasItems(Player.MakeScope.GetList('atd_enh_giftable_list'))]"
+		position = { 20 180 }
+		size = { 420 380 }
+
 		scrollarea = {
-			size = { 100% 360 }
-			maximumsize = { -1 360 }
-			autoresizescrollarea = yes
-			autoresizeviewport = yes
-			alwaystransparent = yes
+			size = { 420 380 }
+			maximumsize = { 420 380 }
 			scrollbarpolicy_horizontal = always_off
 
 			scrollwidget = {
 				vbox = {
 					layoutpolicy_horizontal = expanding
 					spacing = 2
+
 					datamodel = "[Player.MakeScope.GetList('atd_enh_giftable_list')]"
 
 					item = {
 						button_regular = {
-							layoutpolicy_horizontal = expanding
-							minimumsize = { 0 30 }
+							size = { 390 30 }
 							# Opens this country's diplomacy view. The Economy
 							# filter still has to be picked there - OpenDiplomacy
 							# takes only a country, with no category argument.
 							onclick = "[OpenDiplomacy(Scope.Country.Self)]"
 							tooltip = "atd_enh_gifts_window_row_tt"
-
-							hbox = {
-								layoutpolicy_horizontal = expanding
-								margin = { 8 2 }
-								spacing = 6
-
-								text_single = {
-									text = "[Scope.Country.GetName]"
-								}
-								expand = {}
-							}
+							text = "[Scope.Country.GetName]"
 						}
 					}
 				}
