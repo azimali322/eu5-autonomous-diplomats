@@ -89,7 +89,10 @@ window = {
 							# Opens this country's diplomacy view. The Economy
 							# filter still has to be picked there - OpenDiplomacy
 							# takes only a country, with no category argument.
-							onclick = "[OpenDiplomacy(Scope.Country.Self)]"
+							# Scope.Country already yields the country object, so no
+								# .Self - adding it logged "No function for call
+								# 'Country.Self'" and the row click did nothing.
+								onclick = "[OpenDiplomacy(Scope.Country)]"
 							tooltip = "atd_enh_gifts_window_row_tt"
 							text = "[Scope.Country.GetName]"
 						}
