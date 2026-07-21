@@ -224,19 +224,7 @@ atd_enh_register = {
 		alias = atd_enh_ft_largest_count
 	}
 
-	## Gifts (gifts) Group - configuration for the gift method
-	cmm_register_bool_setting = {
-		mod_id = atd
-		setting_id = enh_gift_culture_leaders_only
-		tab_id = favors
-		group_id = gifts
-		default_value = 1
-	}
-	cmm_sync_bool_alias = {
-		setting = atd__enh_gift_culture_leaders_only
-		alias = atd_enh_gift_culture_leaders_only
-	}
-
+	## Gifts (gifts) Group
 	cmm_register_bool_setting = {
 		mod_id = atd
 		setting_id = enh_gift_notify_enabled
@@ -377,12 +365,6 @@ atd_enh_handle_cmf_callback = {
 			}
 		}
 		# Favors tab - Gifts
-		flag:atd__enh_gift_culture_leaders_only = {
-			cmm_sync_bool_alias = {
-				setting = atd__enh_gift_culture_leaders_only
-				alias = atd_enh_gift_culture_leaders_only
-			}
-		}
 		flag:atd__enh_gift_notify_enabled = {
 			cmm_sync_bool_alias = {
 				setting = atd__enh_gift_notify_enabled

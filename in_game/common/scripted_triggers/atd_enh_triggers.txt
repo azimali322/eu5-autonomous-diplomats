@@ -46,18 +46,16 @@ atd_enh_can_curry_target = {
 	}
 }
 
-# A country the player could send a gift to right now, for the notify alert.
-# Evaluated in the candidate's scope from root (the player), so prev = player.
-# Deliberately wider than the automation's own gift check: any dominant country
-# of a primary culture that is off its gift cooldown and still owes less than
-# the gift cap, since gifts can build favors from zero, not just top up.
+# A country the player could send a gift to right now, for the alert and the
+# Giftable Countries window. Evaluated in the candidate's scope from root (the
+# player), so prev = player. Only ever dominant countries of a primary culture:
+# they are the only targets Culture Improve can ever spend the favors on, so
+# gifting anyone else does not serve the pipeline. Must be discovered by the
+# player, and the callers iterate countries in diplomatic range only.
 atd_enh_is_giftable_now = {
 	NOT = { this = root }
 	is_discovered_by = root
-	trigger_if = {
-		limit = { root = { has_variable = atd_enh_gift_culture_leaders_only } }
-		is_dominant_country_of = culture
-	}
+	is_dominant_country_of = culture
 	NOT = { is_subject_of = root }
 	NOT = { is_at_war_with = root }
 	NOT = { has_variable = atd_improve_blocked }
