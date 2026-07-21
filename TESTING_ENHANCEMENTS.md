@@ -10,13 +10,14 @@ read like "Curried favors with France" / "Sent a gift to Fez" / "Improved
 cultural view with Tunis". That's the fastest way to confirm what fired each
 month. Cross-check favors on a target's diplomacy panel and your treasury.
 
-**⚠️ Diplomat-wipe note from the first playtest:** the base mod's
-**Settings → Enabled** toggle also activates the *game's own* "Diplomacy
-Interactions" automation (that's base-mod behavior — its tooltip says so). With
-a large bank of diplomats, the vanilla automation will happily spend them all
-improving relations, which looks like an instant wipe. While testing the
-enhancements, keep **Settings → Enabled OFF** (the Favors engine no longer
-depends on it — it has its own master toggle) or set a high diplomat reserve.
+**⚠️ Settings → Enabled is now the mod-wide master switch.** Nothing this mod
+adds runs while it is off — favors, subject cultural view, ask-nobility, and the
+gift alert all require it. So testing the enhancements now means **Enabled ON**.
+Note it also activates the *game's own* "Diplomacy Interactions" automation
+(base-mod behavior, per its tooltip), which will spend a large diplomat bank on
+its own — set a diplomat reserve if that bothers you.
+
+**⚠️ Tab order changed:** Improve Relations → Subjects → **Favors** → Settings.
 
 **Setup reminders:** Workshop CMF first, then this fork; don't enable the
 Workshop Autonomous Diplomats at the same time. Check

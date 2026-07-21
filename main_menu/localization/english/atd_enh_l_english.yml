@@ -8,13 +8,13 @@
  ## Automation (automation) Group
  atd__favors__automation_name: "Automation"
  atd__enh_favors_enabled_name: "Improve Favors"
- atd__enh_favors_enabled_desc: "Master switch for the favor automation below. Each month, favors are built with the target categories in priority order (using Curry Favors and/or Send Gifts), and Culture Improve can spend them. Respects your diplomat reserve."
+ atd__enh_favors_enabled_desc: "Master switch for the favor automation below. Each month, favors are built with the target categories in priority order (using Curry Favors and/or Send Gifts), and Culture Improve can spend them. Respects your diplomat reserve, and only runs while Enabled is on in the Settings tab."
  atd__enh_curry_enabled_name: "Curry Favors"
  atd__enh_curry_enabled_desc: "Build favors with the Curry Favors diplomatic action: an ongoing action that ties up a diplomat and adds about +0.75 favors owed to you each month (while you accrue +0.25 owed to them). The game requires at least 10 relations with the target and caps coexisting favors at 25, which is why the limit below cannot go higher. The automation starts it once per target and leaves it running; it will not re-issue it while it is already going."
  atd__enh_gifts_enabled_name: "Send Gifts"
  atd__enh_gifts_enabled_desc: "Build favors by sending gold gifts. The automation only decides WHO to gift and WHEN - the game's own Send Gift window then opens and YOU choose the amount on its slider (max it out for the most favors) or cancel. If several nations qualify in the same month you are prompted for each in turn.\n\nWorks on its own - gifts can carry a nation from no favors all the way to the Send Gifts Up To cap - and also tops up nations Curry Favors has taken as far as it can. Often your only option: currying needs the Diplomatic Hegemon hegemony, cannot target great powers, and some nations will not accept it.\n\nThe game enforces a 10-year cooldown per target, so a given nation can only be gifted once a decade. Use the per-category Actions sliders to limit how many gifts you are offered per month, and simply turn this off in the early game when you cannot afford to gift."
  atd__enh_culture_improve_enabled_name: "Culture Improve Non-Subjects"
- atd__enh_culture_improve_enabled_desc: "Spend 50 favors to improve a non-subject dominant country of a primary culture's view toward your culture. Only works while you are the dominant country of your own culture, and only when the target owes you enough favors. (Subjects are handled by the Improve Cultural View subject action on the Subjects tab.)"
+ atd__enh_culture_improve_enabled_desc: "Spend 50 favors to improve a non-subject dominant country of a primary culture's view toward your culture. Only targets nations that already owe you the full 50 favors, and only while you are the dominant country of your own culture. (Subjects are handled by the Improve Cultural View subject action on the Subjects tab.)"
  atd__enh_culture_improve_count_name: "Culture Improves Per Month"
  atd__enh_culture_improve_count_desc: "The most Culture Improve actions performed in a single month."
  atd__enh_culture_improve_count_format: "[CMMV('atd__enh_culture_improve_count')|0]"
@@ -115,6 +115,7 @@
  atd_enh_log_culture: "Improved cultural view with"
  atd_enh_log_subject_cv: "Improved subject cultural view with"
  atd_enh_log_ask_nobility: "Asked the Nobility for diplomats"
+ atd_enh_log_gift_failed: "Could not send a gift - the game did not accept the action from automation"
 
  # Self-referencing flag keys to suppress engine warnings
  atd__favors: "atd__favors"

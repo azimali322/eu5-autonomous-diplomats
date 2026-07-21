@@ -57,8 +57,18 @@ atd_enh_priority_each_item = {
 # Entry point. Scope: player country.
 atd_enh_favor_economy = {
 	if = {
-		limit = { has_variable = atd_enh_favors_enabled }
+		limit = {
+			# Settings > Enabled is the mod-wide master switch: nothing this mod
+			# adds may act while it is off.
+			has_variable = atd_enabled
+			has_variable = atd_enh_favors_enabled
+		}
 		save_scope_as = actor_scope
+		# Cleared each month so a month that failed can retry next month.
+		if = {
+			limit = { has_variable = atd_enh_gift_unavailable }
+			remove_variable = atd_enh_gift_unavailable
+		}
 
 		# Respect the base mod's diplomat reserve: threshold = reserve + 1.
 		set_variable = { name = atd_enh_action_threshold value = { value = var:atd_min_diplomats add = 1 } }
@@ -185,9 +195,15 @@ atd_enh_try_build_favor = {
 			actor = scope:actor_scope
 			recipient = scope:target_country
 		}
+		# on_gift_sent clears the marker when a gift really goes out. If it is
+		# still set, the action did nothing - send_gift is hardcoded around its
+		# own window and may not be performable from script. Record that once and
+		# stop trying for the rest of the month so we stop burning diplomats on it.
 		if = {
 			limit = { has_variable = atd_enh_gift_pending }
 			remove_variable = atd_enh_gift_pending
+			set_variable = { name = atd_enh_gift_unavailable value = 1 }
+			cmf_log = { action = atd_enh_log_gift_failed }
 		}
 		add_to_variable_list = {
 			name = atd_enh_favor_done_this_tick
@@ -488,6 +504,8 @@ atd_enh_update_gift_notify = {
 
 	if = {
 		limit = {
+			# Settings > Enabled is the mod-wide master switch.
+			has_variable = atd_enabled
 			has_variable = atd_enh_gift_notify_enabled
 			gold >= 25
 		}

@@ -229,6 +229,11 @@ atd_register_cmf_mod = {
 		alias = atd_enforce_culture_enabled
 	}
 
+	# [ATD-ENH] Registers the enhancement settings. Placed here, after the
+	# Subjects tab and before Settings, so the Favors tab lands between them;
+	# CMM orders tabs by first registration. Remove this line to detach.
+	atd_enh_register = yes
+
 	# Settings (settings) Tab
 	## Automation (automation) Group
 	cmm_register_bool_setting = {
@@ -284,10 +289,6 @@ atd_register_cmf_mod = {
 		alias = atd_min_diplomat_gain
 	}
 
-	# [ATD-ENH] Register the favor-economy / subject cultural-view additions.
-	# Everything lives in atd_enh_* files; remove this line (and the two marked
-	# item_count bumps above) to detach them from registration.
-	atd_enh_register = yes
 }
 
 # Callback handler for cmf_on_callback.

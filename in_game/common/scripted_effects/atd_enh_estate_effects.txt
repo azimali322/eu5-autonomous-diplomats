@@ -16,6 +16,8 @@
 atd_enh_ask_nobility_for_diplomats = {
 	if = {
 		limit = {
+			# Settings > Enabled is the mod-wide master switch.
+			has_variable = atd_enabled
 			has_variable = atd_enh_ask_nobility_enabled
 			country_has_estate = estate_type:nobles_estate
 			NOT = { has_cooldown = ask_nobility_for_diplomats_cooldown }

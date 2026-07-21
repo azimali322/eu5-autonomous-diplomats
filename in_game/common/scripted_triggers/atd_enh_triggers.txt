@@ -78,6 +78,8 @@ atd_enh_can_gift_target = {
 		gold >= 25
 		# 10-year per-target gift cooldown still running.
 		NOT = { has_gifted_gold_to = prev }
+		# Set when a gift attempt did nothing; stops us retrying all month.
+		NOT = { has_variable = atd_enh_gift_unavailable }
 	}
 }
 
@@ -108,6 +110,11 @@ atd_enh_is_culture_target = {
 	NOT = { is_subject_of = scope:actor_scope }
 	NOT = { is_at_war_with = scope:actor_scope }
 	NOT = { has_variable = atd_improve_blocked }
+	# improve_cultural_view_cost = { favors = 50 }. We must check this ourselves:
+	# attempting it without the favors still consumes a diplomat and then does
+	# nothing, which looked like a phantom diplomat drain in testing.
+	# prev = the player here, so this is "favors the target owes us".
+	prev_favors_with_this >= 50
 	NOT = {
 		culture = {
 			cultural_view = {

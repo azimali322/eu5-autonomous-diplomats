@@ -50,14 +50,25 @@ atd_enh_on_gift_sent = {
 	}
 }
 
+# Everything here is gated on Settings > Enabled (atd_enabled), the mod-wide
+# master switch. The favor engine itself is NOT run here: it runs inside the
+# base mod's monthly pass via atd_enh_run_prioritized_pass, so the Automation
+# Priority order applies and it cannot run twice.
 atd_enh_on_monthly = {
 	effect = {
-		# Runs first so freshly granted diplomats are spendable this month.
-		atd_enh_ask_nobility_for_diplomats = yes
 		if = {
-			limit = { NOT = { has_variable = atd_enabled } }
-			atd_enh_favor_economy = yes
+			limit = { has_variable = atd_enabled }
+			# Runs before the base pass so freshly granted diplomats are
+			# spendable the same month.
+			atd_enh_ask_nobility_for_diplomats = yes
+			atd_enh_update_gift_notify = yes
 		}
-		atd_enh_update_gift_notify = yes
+		else = {
+			# Master off: clear anything we might have raised.
+			cmf_remove_alert = { alert = atd_enh_alert_giftable_1 }
+			cmf_remove_alert = { alert = atd_enh_alert_giftable_2 }
+			cmf_remove_alert = { alert = atd_enh_alert_giftable_3 }
+			cmf_remove_alert = { alert = atd_enh_alert_giftable_more }
+		}
 	}
 }
