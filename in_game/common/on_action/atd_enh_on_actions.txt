@@ -32,24 +32,6 @@ cmf_monthly_human_country_pulse = {
 	}
 }
 
-# Code-fired when any country sends a gold gift (root = sender,
-# scope:recipient = target). Used to log our own gifts authoritatively - an
-# entry only appears if a gift genuinely went out.
-on_gift_sent = {
-	on_actions = {
-		atd_enh_on_gift_sent
-	}
-}
-
-atd_enh_on_gift_sent = {
-	trigger = {
-		is_ai = no
-	}
-	effect = {
-		atd_enh_on_gift_sent_log = yes
-	}
-}
-
 # Everything here is gated on Settings > Enabled (atd_enabled), the mod-wide
 # master switch. The favor engine itself is NOT run here: it runs inside the
 # base mod's monthly pass via atd_enh_run_prioritized_pass, so the Automation

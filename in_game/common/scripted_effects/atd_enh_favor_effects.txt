@@ -3,19 +3,22 @@
 # External contribution (azimali322). See atd_enh_cmm_effects.txt for the full
 # list of base-file touch points and removal instructions.
 #
-# Runs once per monthly tick from its own hook (atd_enh_on_actions.txt),
-# independent of the base mod's improve-relations pass. Gated on the Favors
-# tab's "Improve Favors" master toggle.
+# Runs from the base mod's monthly pass via atd_enh_run_prioritized_pass, so
+# the Automation Priority order applies. Gated on Settings > Enabled (mod-wide
+# master) and the Favors tab's "Improve Favors" toggle.
 #
 # Flow per tick:
 #   1. Iterate the target-category priority list (atd__enh_favor_targets) in
-#      the user's chosen order. For each category with count > 0, pick matching
-#      countries and build favors with them, preferring Curry Favors
-#      (influence_nation, +5 favors, non-great-powers, up to the curry cap)
-#      and falling back to Send Gifts (send_gift, engine-decided amount, up to
-#      the gift cap and the treasury spend cap).
-#   2. If Culture Improve is enabled and we lead our own culture, spend favors
-#      (improve_cultural_view, 50 favors each) on culture leaders.
+#      the user's chosen order. For each category with count > 0, start
+#      Curry Favors (the hardcoded curry_favors action: ongoing, ties up a
+#      diplomat, +0.75 favors/month, needs 10+ relations, caps at 25 favors).
+#   2. If Culture Improve is enabled and we lead our own culture, spend 50
+#      favors via improve_cultural_view on targets that already owe us 50.
+#
+# GIFTS ARE NOT AUTOMATED: perform_diplomatic_action rejects send_gift
+# ("Cannot find send_gift in country_interactions database or list of hardcoded
+# diplo actions"), since it is built around its own amount-slider window. The
+# mod instead names giftable countries in an alert for the player to act on.
 #
 # Diplomat budget: every action is gated on num_of_diplomats >= the base mod's
 # reserve (atd_min_diplomats + 1) and its minimum monthly gain, sharing the
@@ -64,11 +67,6 @@ atd_enh_favor_economy = {
 			has_variable = atd_enh_favors_enabled
 		}
 		save_scope_as = actor_scope
-		# Cleared each month so a month that failed can retry next month.
-		if = {
-			limit = { has_variable = atd_enh_gift_unavailable }
-			remove_variable = atd_enh_gift_unavailable
-		}
 
 		# Respect the base mod's diplomat reserve: threshold = reserve + 1.
 		set_variable = { name = atd_enh_action_threshold value = { value = var:atd_min_diplomats add = 1 } }
@@ -151,8 +149,8 @@ atd_enh_favor_each_item = {
 	cmf_suppress = { v = $setting$ }
 }
 
-# Attempts one favor-building action against scope:target_country, preferring
-# curry over gift, and records it to the Mod Action Log.
+# Starts Curry Favors against scope:target_country and records it to the Mod
+# Action Log.
 # Scope: player country (actor_scope). Increments atd_enh_cat_done on success.
 atd_enh_try_build_favor = {
 	if = {
@@ -178,55 +176,6 @@ atd_enh_try_build_favor = {
 			target = scope:target_country
 		}
 		change_variable = { name = atd_enh_cat_done add = 1 }
-	}
-	else_if = {
-		limit = {
-			has_variable = atd_enh_gifts_enabled
-			scope:target_country = { atd_enh_can_gift_target = yes }
-		}
-		# Logging is done from the game's own on_gift_sent hook rather than
-		# optimistically here, so a log entry proves a gift actually happened.
-		# The marker tells the hook this gift was ours (not a manual one); the
-		# hook fires synchronously inside perform_diplomatic_action, so clearing
-		# it straight after also cleans up when the action silently did nothing.
-		set_variable = { name = atd_enh_gift_pending value = 1 }
-		perform_diplomatic_action = {
-			type = send_gift
-			actor = scope:actor_scope
-			recipient = scope:target_country
-		}
-		# on_gift_sent clears the marker when a gift really goes out. If it is
-		# still set, the action did nothing - send_gift is hardcoded around its
-		# own window and may not be performable from script. Record that once and
-		# stop trying for the rest of the month so we stop burning diplomats on it.
-		if = {
-			limit = { has_variable = atd_enh_gift_pending }
-			remove_variable = atd_enh_gift_pending
-			set_variable = { name = atd_enh_gift_unavailable value = 1 }
-			cmf_log = { action = atd_enh_log_gift_failed }
-		}
-		add_to_variable_list = {
-			name = atd_enh_favor_done_this_tick
-			target = scope:target_country
-		}
-		change_variable = { name = atd_enh_cat_done add = 1 }
-	}
-}
-
-# Called from the game's on_gift_sent hook (root = sender, scope:recipient =
-# target). Only logs gifts this mod initiated - a manual gift leaves
-# atd_enh_gift_pending unset and is ignored.
-atd_enh_on_gift_sent_log = {
-	if = {
-		limit = { has_variable = atd_enh_gift_pending }
-		remove_variable = atd_enh_gift_pending
-		# scope:target is the gift's GOLD AMOUNT here (not a country). The engine
-		# picks the amount for script-performed gifts - there is no way to set the
-		# slider from script - so record what it actually chose. Readable in the
-		# console with: variable atd_enh_last_gift_amount
-		set_variable = { name = atd_enh_last_gift_amount value = scope:target }
-		scope:recipient = { save_scope_as = cmf_log_arg2 }
-		cmf_log_with_scope_arg = { action = atd_enh_log_gift }
 	}
 }
 

@@ -23,16 +23,8 @@ atd_enh_is_favor_candidate = {
 			NOT = { is_target_in_variable_list = { name = atd_enh_favor_done_this_tick target = prev } }
 		}
 	}
-	OR = {
-		AND = {
-			scope:actor_scope = { has_variable = atd_enh_curry_enabled }
-			atd_enh_can_curry_target = yes
-		}
-		AND = {
-			scope:actor_scope = { has_variable = atd_enh_gifts_enabled }
-			atd_enh_can_gift_target = yes
-		}
-	}
+	scope:actor_scope = { has_variable = atd_enh_curry_enabled }
+	atd_enh_can_curry_target = yes
 }
 
 # Curry Favors eligibility. curry_favors is a hardcoded diplomatic action driven
@@ -54,35 +46,6 @@ atd_enh_can_curry_target = {
 	}
 }
 
-# Gift (send_gift) eligibility: owes fewer favors than the gift cap, enough gold
-# to cover the minimum gift, and (optionally) a culture leader only. There is no
-# spend budget here by design - the game's own Send Gift window asks the player
-# for the amount (or lets them cancel), so the player sets the spend per gift.
-# The per-category Actions sliders cap how many gifts are offered each month.
-#
-# Send Gift is hardcoded with a PER-TARGET cooldown of
-# define:NDiplomacy|SEND_GIFT_COOLDOWN (120 months / 10 years). It has no
-# cooldown = {} block and no has_cooldown token - the only way to read it is the
-# pairwise trigger has_gifted_gold_to, checked from the SENDER's scope. Without
-# this the engine burns its monthly attempts re-gifting a target the game is
-# still blocking. (Mechanic confirmed against the Cooldown Notifier mod, which
-# watches this same cooldown.)
-atd_enh_can_gift_target = {
-	prev_favors_with_this < scope:actor_scope.var:atd_enh_gift_favor_cap
-	trigger_if = {
-		limit = { scope:actor_scope = { has_variable = atd_enh_gift_culture_leaders_only } }
-		is_dominant_country_of = culture
-	}
-	scope:actor_scope = {
-		# The minimum possible gift (prices/00_hardcoded.txt min_scale = 25).
-		gold >= 25
-		# 10-year per-target gift cooldown still running.
-		NOT = { has_gifted_gold_to = prev }
-		# Set when a gift attempt did nothing; stops us retrying all month.
-		NOT = { has_variable = atd_enh_gift_unavailable }
-	}
-}
-
 # A country the player could send a gift to right now, for the notify alert.
 # Evaluated in the candidate's scope from root (the player), so prev = player.
 # Deliberately wider than the automation's own gift check: any dominant country
@@ -91,7 +54,10 @@ atd_enh_can_gift_target = {
 atd_enh_is_giftable_now = {
 	NOT = { this = root }
 	is_discovered_by = root
-	is_dominant_country_of = culture
+	trigger_if = {
+		limit = { root = { has_variable = atd_enh_gift_culture_leaders_only } }
+		is_dominant_country_of = culture
+	}
 	NOT = { is_subject_of = root }
 	NOT = { is_at_war_with = root }
 	NOT = { has_variable = atd_improve_blocked }

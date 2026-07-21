@@ -12,11 +12,14 @@
 #                             2 skip-leaders guards in enforce culture
 #
 # The Favors tab is entirely enhancement-owned: an Automation group (master
-# toggle + methods + Culture Improve), a Limits group (favor caps), a
+# toggle + Curry Favors + Culture Improve), a Limits group (favor caps), a
 # priority-ordered target-category list mirroring the Improve Relations
-# categories, and the Gifts configuration group. The favor engine runs from
-# its own monthly on_action hook (atd_enh_on_actions.txt), not from the base
-# mod's improve-relations pass.
+# categories, and a Gifts group that drives the gift REMINDER only.
+# NOTE: gifts cannot be automated. perform_diplomatic_action rejects send_gift
+# ("Cannot find send_gift in country_interactions database or list of hardcoded
+# diplo actions", country_effects.cpp:4422), because it is built around its own
+# amount-slider window. The mod therefore names giftable countries in an alert
+# and the player sends the gift manually, choosing the amount.
 # ==========================================================================
 
 # Registers the enhancement settings. Called from the end of
@@ -46,18 +49,6 @@ atd_enh_register = {
 	cmm_sync_bool_alias = {
 		setting = atd__enh_curry_enabled
 		alias = atd_enh_curry_enabled
-	}
-
-	cmm_register_bool_setting = {
-		mod_id = atd
-		setting_id = enh_gifts_enabled
-		tab_id = favors
-		group_id = automation
-		default_value = 0
-	}
-	cmm_sync_bool_alias = {
-		setting = atd__enh_gifts_enabled
-		alias = atd_enh_gifts_enabled
 	}
 
 	cmm_register_bool_setting = {
@@ -346,12 +337,6 @@ atd_enh_handle_cmf_callback = {
 			cmm_sync_bool_alias = {
 				setting = atd__enh_curry_enabled
 				alias = atd_enh_curry_enabled
-			}
-		}
-		flag:atd__enh_gifts_enabled = {
-			cmm_sync_bool_alias = {
-				setting = atd__enh_gifts_enabled
-				alias = atd_enh_gifts_enabled
 			}
 		}
 		flag:atd__enh_culture_improve_enabled = {
