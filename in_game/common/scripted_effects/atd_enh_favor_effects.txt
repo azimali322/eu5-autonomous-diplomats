@@ -235,6 +235,31 @@ atd_enh_count_active_curries = {
 	}
 }
 
+# Diagnostic: when a category ends a tick with fewer curries running than its
+# configured count, record WHY in the Mod Action Log. From in-game the two causes
+# look identical - the slider just fails to fill - so this separates "the
+# diplomat budget stopped us" from "no country passed the eligibility filters"
+# (dominant-of-culture / discovered / in diplomatic range / opinion >= 10 /
+# owing less than the resume threshold).
+# Scope: player country. Args: countvar (the category's count variable).
+atd_enh_report_category_short = {
+	if = {
+		limit = { var:atd_enh_cat_done < var:$countvar$ }
+		if = {
+			limit = {
+				OR = {
+					NOT = { num_of_diplomats >= var:atd_enh_action_threshold }
+					NOT = { modifier:monthly_diplomats >= var:atd_min_diplomat_gain }
+				}
+			}
+			cmf_log = { action = atd_enh_log_short_diplomats }
+		}
+		else = {
+			cmf_log = { action = atd_enh_log_short_no_target }
+		}
+	}
+}
+
 # ----- Per-category builders ----------------------------------------------
 # Each: loop up to the category's count while the diplomat budget holds,
 # picking one matching candidate per iteration (mirrors the base mod's
@@ -260,6 +285,7 @@ atd_enh_favor_culture_leaders = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = culture_leaders } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_culture_leaders_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -278,6 +304,7 @@ atd_enh_favor_neighbors = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = neighbors } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_neighbors_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -296,6 +323,7 @@ atd_enh_favor_subjects = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = subjects } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_subjects_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -319,6 +347,7 @@ atd_enh_favor_outraged = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = outraged } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_outraged_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -350,6 +379,7 @@ atd_enh_favor_allies = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = allies } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_allies_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -373,6 +403,7 @@ atd_enh_favor_threatening = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = threatening } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_threatening_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -396,6 +427,7 @@ atd_enh_favor_market_owners = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = market_owners } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_market_owners_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -422,6 +454,7 @@ atd_enh_favor_kingdoms = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = kingdoms } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_kingdoms_count }
 	remove_variable = atd_enh_cat_done
 }
 
@@ -442,6 +475,7 @@ atd_enh_favor_largest = {
 			scope:actor_scope = { atd_enh_try_build_favor = { type = largest } }
 		}
 	}
+	atd_enh_report_category_short = { countvar = atd_enh_ft_largest_count }
 	remove_variable = atd_enh_cat_done
 }
 

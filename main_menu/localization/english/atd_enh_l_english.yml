@@ -123,6 +123,8 @@
  atd_enh_log_culture: "Improved cultural view with"
  atd_enh_log_subject_cv: "Improved subject cultural view with"
  atd_enh_log_ask_nobility: "Asked the Nobility for diplomats"
+ atd_enh_log_short_diplomats: "Favor category stopped short of its count: diplomat budget exhausted"
+ atd_enh_log_short_no_target: "Favor category stopped short of its count: no eligible country (needs dominant-of-culture, discovered, in range, opinion 10+, favors under the resume threshold)"
 
  # Self-referencing flag keys to suppress engine warnings
  atd__favors: "atd__favors"
