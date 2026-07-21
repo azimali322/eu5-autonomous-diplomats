@@ -184,6 +184,11 @@ atd_enh_on_gift_sent_log = {
 	if = {
 		limit = { has_variable = atd_enh_gift_pending }
 		remove_variable = atd_enh_gift_pending
+		# scope:target is the gift's GOLD AMOUNT here (not a country). The engine
+		# picks the amount for script-performed gifts - there is no way to set the
+		# slider from script - so record what it actually chose. Readable in the
+		# console with: variable atd_enh_last_gift_amount
+		set_variable = { name = atd_enh_last_gift_amount value = scope:target }
 		scope:recipient = { save_scope_as = cmf_log_arg2 }
 		cmf_log_with_scope_arg = { action = atd_enh_log_gift }
 	}

@@ -56,6 +56,21 @@ atd__enh_favor_targets_on_changed = {
 	}
 }
 
+# Favors tab - Curry Favors toggle: shown only while Influence Nation is
+# unlocked (the Diplomatic Hegemon grants allow_diplomacy_influence_nation).
+# is_shown is display-only in this engine, so this hides the row without
+# blocking anything; the setting keeps its stored value while hidden, so losing
+# and regaining the hegemony restores the player's choice untouched.
+atd__enh_curry_enabled_on_changed = {
+	scope = country
+
+	is_shown = {
+		modifier:allow_diplomacy_influence_nation = yes
+	}
+
+	effect = { }
+}
+
 # Settings tab - automation priority list (no per-item fields to sync).
 atd__enh_priority_on_changed = {
 	scope = country

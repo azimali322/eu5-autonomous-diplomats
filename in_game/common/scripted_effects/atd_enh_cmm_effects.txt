@@ -47,6 +47,14 @@ atd_enh_register = {
 		setting = atd__enh_curry_enabled
 		alias = atd_enh_curry_enabled
 	}
+	# Only shown while Influence Nation is actually unlocked (Diplomatic
+	# Hegemon). Probed via the is_shown trigger in
+	# atd__enh_curry_enabled_on_changed; CMM re-runs registration every time the
+	# menu is opened, so the row appears/disappears with the hegemony.
+	cmm_add_scripted_gui = {
+		mod_id = atd
+		setting_id = enh_curry_enabled
+	}
 
 	cmm_register_bool_setting = {
 		mod_id = atd
