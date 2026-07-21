@@ -360,6 +360,22 @@ atd_enh_handle_cmf_callback = {
 				setting = atd__enh_favors_enabled
 				alias = atd_enh_favors_enabled
 			}
+			# Switching the automation off forgets which curries we believe are
+			# running. curry_favors is hardcoded with no trigger to ask whether one
+			# is still active, so the tracking can only be inferred; if it ever
+			# drifts out of step with the game, a category counts slots as occupied
+			# that are not. Toggling off and on is the way to clear it by hand.
+			if = {
+				limit = { NOT = { has_variable = atd_enh_favors_enabled } }
+				if = {
+					limit = { has_variable_list = atd_enh_currying_with }
+					clear_variable_list = atd_enh_currying_with
+				}
+				if = {
+					limit = { has_variable_map = atd_enh_curry_type }
+					clear_variable_map = atd_enh_curry_type
+				}
+			}
 		}
 		flag:atd__enh_curry_enabled = {
 			cmm_sync_bool_alias = {
