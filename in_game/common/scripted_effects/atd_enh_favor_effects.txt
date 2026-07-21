@@ -76,17 +76,28 @@ atd_enh_favor_economy = {
 			clear_variable_list = atd_enh_favor_done_this_tick
 		}
 
-		# Forget curries that have finished (target reached the favor cap, or the
-		# country is gone) so they can be re-issued if favors ever fall back.
+		# Release curries that are no longer running so their category slot frees up.
+		# atd_enh_currying_with is what makes a category's count behave as a cap on
+		# concurrent diplomats, so a stale entry silently consumes a slot forever -
+		# the category looks full while only a fraction of it is really currying.
+		# An entry is dropped when the target reached the favor cap (done), the
+		# country is gone, we went to war with it, or its opinion fell under the
+		# game's CURRY_FAVORS_RELATION_REQUIRED floor of 10 - the last two cancel a
+		# running curry engine-side, and nothing else would ever clear them.
 		if = {
 			limit = { has_variable_list = atd_enh_currying_with }
 			every_in_list = {
 				variable = atd_enh_currying_with
 				limit = {
-					NOR = {
+					OR = {
+						NOT = { exists = this }
 						AND = {
 							exists = this
-							prev_favors_with_this < prev.var:atd_enh_curry_favor_cap
+							OR = {
+								NOT = { prev_favors_with_this < prev.var:atd_enh_curry_favor_cap }
+								is_at_war_with = prev
+								NOT = { opinion = { target = prev value >= 10 } }
+							}
 						}
 					}
 				}
