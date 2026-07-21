@@ -154,18 +154,38 @@ atd_enh_try_build_favor = {
 			has_variable = atd_enh_gifts_enabled
 			scope:target_country = { atd_enh_can_gift_target = yes }
 		}
+		# Logging is done from the game's own on_gift_sent hook rather than
+		# optimistically here, so a log entry proves a gift actually happened.
+		# The marker tells the hook this gift was ours (not a manual one); the
+		# hook fires synchronously inside perform_diplomatic_action, so clearing
+		# it straight after also cleans up when the action silently did nothing.
+		set_variable = { name = atd_enh_gift_pending value = 1 }
 		perform_diplomatic_action = {
 			type = send_gift
 			actor = scope:actor_scope
 			recipient = scope:target_country
 		}
-		scope:target_country = { save_scope_as = cmf_log_arg2 }
-		cmf_log_with_scope_arg = { action = atd_enh_log_gift }
+		if = {
+			limit = { has_variable = atd_enh_gift_pending }
+			remove_variable = atd_enh_gift_pending
+		}
 		add_to_variable_list = {
 			name = atd_enh_favor_done_this_tick
 			target = scope:target_country
 		}
 		change_variable = { name = atd_enh_cat_done add = 1 }
+	}
+}
+
+# Called from the game's on_gift_sent hook (root = sender, scope:recipient =
+# target). Only logs gifts this mod initiated - a manual gift leaves
+# atd_enh_gift_pending unset and is ignored.
+atd_enh_on_gift_sent_log = {
+	if = {
+		limit = { has_variable = atd_enh_gift_pending }
+		remove_variable = atd_enh_gift_pending
+		scope:recipient = { save_scope_as = cmf_log_arg2 }
+		cmf_log_with_scope_arg = { action = atd_enh_log_gift }
 	}
 }
 

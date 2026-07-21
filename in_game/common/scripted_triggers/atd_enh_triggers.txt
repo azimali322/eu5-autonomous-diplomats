@@ -47,6 +47,14 @@ atd_enh_can_curry_target = {
 
 # Gift (send_gift) eligibility: owes fewer favors than the gift cap, treasury
 # above the per-tick spend floor, and (optionally) a culture leader only.
+#
+# Send Gift is hardcoded with a PER-TARGET cooldown of
+# define:NDiplomacy|SEND_GIFT_COOLDOWN (120 months / 10 years). It has no
+# cooldown = {} block and no has_cooldown token - the only way to read it is the
+# pairwise trigger has_gifted_gold_to, checked from the SENDER's scope. Without
+# this the engine burns its monthly attempts re-gifting a target the game is
+# still blocking. (Mechanic confirmed against the Cooldown Notifier mod, which
+# watches this same cooldown.)
 atd_enh_can_gift_target = {
 	prev_favors_with_this < scope:actor_scope.var:atd_enh_gift_favor_cap
 	trigger_if = {
@@ -56,6 +64,8 @@ atd_enh_can_gift_target = {
 	scope:actor_scope = {
 		gold >= 25
 		gold > var:atd_enh_gift_floor
+		# 10-year per-target gift cooldown still running.
+		NOT = { has_gifted_gold_to = prev }
 	}
 }
 

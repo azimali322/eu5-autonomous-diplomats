@@ -28,6 +28,19 @@ modifier). The mod checks this, so until you hold that hegemony **Curry Favors
 will silently never fire — that is correct behavior, not a bug** — and gifts
 are your only automated favor source. Early-game Granada will not curry.
 
+**⚠️ Send Gift has a 10-year PER-TARGET cooldown** (`SEND_GIFT_COOLDOWN = 120`
+months). Confirmed in the game defines and cross-checked against the Cooldown
+Notifier mod, which watches this same cooldown. Consequences:
+- A nation can only be gifted **once per decade**, so gifts **spread across many
+  targets** rather than topping one up from 25→50 favors. The "gift top-up"
+  framing only works over a long horizon or across many nations.
+- The engine now skips targets whose gift cooldown is running
+  (`has_gifted_gold_to`) instead of burning its monthly attempts on blocked ones.
+- **Gift log entries are now authoritative:** logging moved to the game's own
+  `on_gift_sent` hook, so "Sent a gift to X" appears **only if a gift really
+  went out**. That makes §3a a clean yes/no — no entries means `send_gift`
+  isn't script-triggerable. (Your manual gifts are not logged.)
+
 **Round-2 changes to verify (fixes from your first UI pass):**
 - Favor Targets list rows should now **render** (missing `_on_changed`
   scripted GUI added) and the section header should read **"Favor Targets"**
