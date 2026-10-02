@@ -1,0 +1,33 @@
+﻿# ==========================================================================
+# [ATD-ENH] Triggers for the enhancement layer. See atd_enh_cmm_effects.txt.
+# ==========================================================================
+
+# A country you can send a gift to right now, for the gift alert and the
+# Giftable Countries window. Evaluated in the candidate's scope with the player
+# as root (and prev), so prev_favors_with_this is the favors the candidate owes
+# the player. Callers only iterate countries in diplomatic range.
+# Only dominant countries of a primary culture are listed. Like the base mod's
+# Auto-Gifting, gifting is separate from auto-improving relations, so its Block
+# Auto-Improve flag does not hide a country here.
+atd_enh_is_giftable_now = {
+	NOT = { this = root }
+	is_discovered_by = root
+	is_dominant_country_of = culture
+	NOT = { is_subject_of = root }
+	NOT = { is_at_war_with = root }
+	prev_favors_with_this < root.var:atd_enh_gift_favor_cap
+	root = {
+		# Off the gift cooldown (define SEND_GIFT_COOLDOWN = 120 months).
+		NOT = { has_gifted_gold_to = prev }
+		# Not queued for the base mod's Auto-Gifting, which gifts it already.
+		OR = {
+			NOT = { has_variable_list = atd_queue_members }
+			NOT = {
+				is_target_in_variable_list = {
+					name = atd_queue_members
+					target = prev
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,45 @@
+﻿# ==========================================================================
+# [ATD-ENH] On-action hooks for the enhancement layer.
+# See atd_enh_cmm_effects.txt for the overview.
+#
+# These run alongside the base mod's hooks on the same CMF on_actions (on_action
+# lists merge), so deleting this file detaches the layer without touching base
+# files.
+# ==========================================================================
+
+# Setting changes, alert clicks and the action-bar button.
+cmf_on_callback = {
+	on_actions = {
+		atd_enh_on_cmf_callback
+	}
+}
+
+atd_enh_on_cmf_callback = {
+	effect = {
+		atd_enh_handle_cmf_callback = yes
+	}
+}
+
+# Monthly: refresh the gift reminder. Settings > Enabled is the mod-wide master
+# switch, so with it off the alerts are cleared and the window is closed.
+cmf_monthly_human_country_pulse = {
+	on_actions = {
+		atd_enh_on_monthly
+	}
+}
+
+atd_enh_on_monthly = {
+	effect = {
+		if = {
+			limit = { has_variable = atd_enabled }
+			atd_enh_update_gift_notify = yes
+		}
+		else = {
+			atd_enh_clear_gift_alerts = yes
+			if = {
+				limit = { has_variable = atd_enh_gifts_window_open }
+				remove_variable = atd_enh_gifts_window_open
+			}
+		}
+	}
+}

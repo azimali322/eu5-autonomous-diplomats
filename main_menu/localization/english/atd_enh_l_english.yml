@@ -1,0 +1,52 @@
+﻿l_english:
+ # [ATD-ENH] Autonomous Diplomats Enhanced - enhancement layer by azimali322.
+ # Deleting this file with the other atd_enh_* files removes every string.
+
+ # Auto Interactions (interactions) Tab - Gift Reminders group
+ atd__interactions__enh_gift_reminders_name: "Gift Reminders"
+ atd__enh_gift_notify_enabled_name: "Notify When Giftable"
+ atd__enh_gift_notify_enabled_desc: "Show an alert naming the dominant countries of a primary culture you can send a gift to right now: off their 10-year gift cooldown, and owing you fewer favors than Stop Listing Gifts At. Up to three are named in the alert; left-click it to open the full list. Countries queued for Auto-Gifting are left off, since they are gifted automatically. Only works while Enabled is on in the Settings tab."
+ atd__enh_gift_favor_cap_name: "Stop Listing Gifts At"
+ atd__enh_gift_favor_cap_desc: "A country stops being listed once it owes you this many favors. Improving a culture's view of yours costs 50 favors, so 50 covers one use."
+ atd__enh_gift_favor_cap_format: "[CMMV('atd__enh_gift_favor_cap')|0]"
+
+ # Gift alerts - one variant per count, so the tooltip can name them.
+ atd_enh_alert_giftable_1: "atd_enh_alert_giftable_1"
+ atd_enh_alert_giftable_1_color: "yellow"
+ atd_enh_alert_giftable_1_icon: "@favors!"
+ atd_enh_alert_giftable_1_name: "Gift Available"
+ atd_enh_alert_giftable_1_tooltip: "You can send a gift to [Player.MakeScope.GetVariable('atd_enh_gift_t1').Country.GetName]. Left-click to open the full list; right-click to dismiss."
+ atd_enh_alert_giftable_2: "atd_enh_alert_giftable_2"
+ atd_enh_alert_giftable_2_color: "yellow"
+ atd_enh_alert_giftable_2_icon: "@favors!"
+ atd_enh_alert_giftable_2_name: "Gifts Available"
+ atd_enh_alert_giftable_2_tooltip: "You can send gifts to [Player.MakeScope.GetVariable('atd_enh_gift_t1').Country.GetName] and [Player.MakeScope.GetVariable('atd_enh_gift_t2').Country.GetName]. Left-click to open the full list; right-click to dismiss."
+ atd_enh_alert_giftable_3: "atd_enh_alert_giftable_3"
+ atd_enh_alert_giftable_3_color: "yellow"
+ atd_enh_alert_giftable_3_icon: "@favors!"
+ atd_enh_alert_giftable_3_name: "Gifts Available"
+ atd_enh_alert_giftable_3_tooltip: "You can send gifts to [Player.MakeScope.GetVariable('atd_enh_gift_t1').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_gift_t2').Country.GetName] and [Player.MakeScope.GetVariable('atd_enh_gift_t3').Country.GetName]. Left-click to open the full list; right-click to dismiss."
+ atd_enh_alert_giftable_more: "atd_enh_alert_giftable_more"
+ atd_enh_alert_giftable_more_color: "yellow"
+ atd_enh_alert_giftable_more_icon: "@favors!"
+ atd_enh_alert_giftable_more_name: "Gifts Available"
+ atd_enh_alert_giftable_more_tooltip: "You can send gifts to [Player.MakeScope.GetVariable('atd_enh_gift_t1').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_gift_t2').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_gift_t3').Country.GetName] and more. Left-click to open the full list; right-click to dismiss."
+
+ # Giftable Countries window and its action-bar button
+ atd_enh_open_gifts_name: "Giftable Countries"
+ atd_enh_open_gifts_tooltip: "Open the list of countries you can send a gift to right now."
+ atd_enh_open_gifts_icon: "@favors!"
+ atd_enh_open_gifts_color: "gold"
+ atd_enh_gifts_window_title: "Countries You Can Gift"
+ atd_enh_gifts_window_help: "Click a country to open its diplomacy screen, then pick the Economy filter and Send Gift. A bigger gift earns more favors (5 by default, up to 10). To have a country gifted automatically instead, use Start Auto-Gifting on it; queued countries leave this list."
+ atd_enh_gifts_window_empty: "No country is giftable right now. Every eligible country is on its 10-year gift cooldown, already owes you at least the Stop Listing Gifts At amount, or is queued for Auto-Gifting."
+ atd_enh_gifts_window_row_tt: "Open this country's diplomacy screen to send it a gift."
+
+ # Self-referencing flag keys (silence the engine's unused-flag warnings)
+ atd__interactions__enh_gift_reminders: "atd__interactions__enh_gift_reminders"
+ atd__enh_gift_notify_enabled: "atd__enh_gift_notify_enabled"
+ atd__enh_gift_favor_cap: "atd__enh_gift_favor_cap"
+ atd_enh_gift_t1: "atd_enh_gift_t1"
+ atd_enh_gift_t2: "atd_enh_gift_t2"
+ atd_enh_gift_t3: "atd_enh_gift_t3"
+ atd_enh_gift_n: "atd_enh_gift_n"

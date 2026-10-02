@@ -333,6 +333,10 @@ atd_register_cmf_mod = {
 		setting = atd__min_diplomat_gain
 		alias = atd_min_diplomat_gain
 	}
+
+	# [ATD-ENH] Registers the Autonomous Diplomats Enhanced settings
+	# (atd_enh_cmm_effects.txt). Remove this line to detach the enhancements.
+	atd_enh_register = yes
 }
 
 # Callback handler for cmf_on_callback.

@@ -1,0 +1,98 @@
+﻿# ==========================================================================
+# [ATD-ENH] Autonomous Diplomats Enhanced - settings and callbacks.
+# Enhancement layer by azimali322 on top of Conner Olsen's Autonomous Diplomats.
+# Everything lives in the atd_enh_* files. The only edits inside the base mod
+# are tagged [ATD-ENH] (grep for the tag); delete the atd_enh_* files and revert
+# those lines to remove the layer completely:
+#   atd_cmm_effects.txt - one call to atd_enh_register (end of
+#                         atd_register_cmf_mod)
+#
+# Gift Reminders (Auto Interactions tab): an alert, an action-bar button and a
+# clickable window listing the dominant countries of a primary culture you can
+# send a gift to right now. Sending the gift stays manual so you choose the
+# amount. Countries queued for the base mod's Auto-Gifting are left off the
+# list, since it already gifts them.
+# ==========================================================================
+
+# Registers the enhancement settings. Called from the end of
+# atd_register_cmf_mod. Root scope: country.
+atd_enh_register = {
+	# Action-bar button that opens the Giftable Countries window (idempotent).
+	cmf_add_action_bar_element = { element = atd_enh_open_gifts }
+
+	# ----- Auto Interactions (interactions) Tab -----------------------------
+	## Gift Reminders (enh_gift_reminders) Group
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_gift_notify_enabled
+		tab_id = interactions
+		group_id = enh_gift_reminders
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_gift_notify_enabled
+		alias = atd_enh_gift_notify_enabled
+	}
+
+	cmm_register_slider_setting = {
+		mod_id = atd
+		setting_id = enh_gift_favor_cap
+		tab_id = interactions
+		group_id = enh_gift_reminders
+		default_value = 50
+		min_value = 0
+		max_value = 100
+		step_value = 5
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_gift_favor_cap
+		alias = atd_enh_gift_favor_cap
+	}
+}
+
+# Callback handler for our settings, alerts and action-bar button. Hooked to
+# cmf_on_callback in atd_enh_on_actions.txt; it runs alongside the base mod's
+# handler, and each handler ignores flags it does not know.
+# Scope: country
+atd_enh_handle_cmf_callback = {
+	switch = {
+		trigger = var:cmf_callback
+		# Action-bar button: open or close the Giftable Countries window.
+		flag:atd_enh_open_gifts = {
+			atd_enh_toggle_gifts_window = yes
+		}
+		# Left-clicking an alert opens the window. CMF clears an alert on
+		# left-click, so raise it again - it is a standing reminder.
+		flag:atd_enh_alert_giftable_1 = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd_enh_alert_giftable_2 = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd_enh_alert_giftable_3 = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd_enh_alert_giftable_more = {
+			atd_enh_toggle_gifts_window = yes
+			atd_enh_update_gift_notify = yes
+		}
+		## Auto Interactions tab - Gift Reminders group
+		flag:atd__enh_gift_notify_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_gift_notify_enabled
+				alias = atd_enh_gift_notify_enabled
+			}
+			# Show or clear the alert straight away.
+			atd_enh_update_gift_notify = yes
+		}
+		flag:atd__enh_gift_favor_cap = {
+			cmm_sync_setting_alias = {
+				setting = atd__enh_gift_favor_cap
+				alias = atd_enh_gift_favor_cap
+			}
+		}
+	}
+}
