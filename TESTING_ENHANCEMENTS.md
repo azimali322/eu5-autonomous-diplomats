@@ -1,4 +1,4 @@
-# Test Checklist — Autonomous Diplomats Enhanced on the EU5 1.4 beta
+# Test Checklist — Autonomous Diplomats Enhanced on EU5 1.4 Río Salado (open beta)
 
 > **TEMPORARY** — delete this file before opening any pull request to Conner.
 
@@ -18,6 +18,15 @@ Auto Ask Nobility.
 **one use every 50 years for your whole country**. In July it could fire on
 every eligible subject. See check 3c.
 
+**Updated for 1.4:** the Community Mod Toolkit's GUI Update Tool merged 1.4's
+changes into the game screens Conner's mod overrides:
+- the outliner, including its new **expedition** and **trade order** entries;
+- the diplomatic-action confirmation popup;
+- the automation card;
+- the Create Playset button.
+
+Section 1 checks them.
+
 **How to report:** tick boxes and write notes under any item, like you did in
 July. Then tell me you're done. I read `error.log`, `game.log` and the Mod
 Action Log myself, so you only need screenshots for visual problems.
@@ -29,21 +38,44 @@ Action Log myself, so you only need screenshots for visual problems.
 
 ## 0. Setup (once)
 
-- [ ] Close EU5 and tell Claude, who switches your mod folder to this build
-  (`update/1.4-open-beta`).
-- [ ] Playset: **Community Mod Framework** + **Autonomous Diplomats Enhanced**.
-  Turn **off** the Workshop "Autonomous Diplomats" (they conflict) and
-  Cooldown Notifier (it adds noise).
+- [ ] Your mod folder is on this build, branch `update/1.4-rio-salado`.
+- [ ] Playset, in this order:
+  1. **Community Mod Framework - 1.4 Río Salado Dev**. This is the CMF dev
+     branch, a local mod in your mod folder.
+  2. **Autonomous Diplomats Enhanced**.
+- [ ] Turn **off**:
+  - the Workshop "Community Mod Framework - 1.3 Pavia" (two copies of CMF
+    conflict);
+  - the Workshop "Autonomous Diplomats" (it conflicts with this build);
+  - Cooldown Notifier (it adds noise).
+- [ ] The launcher shows no missing-dependency or outdated warning for
+  Autonomous Diplomats Enhanced.
 - [ ] Start a **new game**. 1.3 saves aren't guaranteed to work in 1.4. Tunis
   is fine.
 - [ ] Optional, but it lets Claude check every identifier against 1.4's
   official list: open the console and run `debug_mode`, then `script_docs`,
   then `dump_data_types`.
 
-## 1. Conner's v1.5 on the 1.4 beta (baseline)
+## 1. Conner's v1.5 on 1.4 (baseline + the 1.4 screen updates)
 
-This is the first time v1.5 has run on 1.4. Problems here are Conner's to fix;
-Claude will write them up for him.
+This is the first time v1.5 has run on 1.4. Claude merged 1.4's screen changes
+into Conner's overrides, so report anything odd here.
+
+- [ ] **1a. Outliner** (the right-hand panel):
+  - its sections (armies, constructions, cabinet, diplomacy, markets…) look
+    normal and open their windows;
+  - start an **expedition** or create a **trade order** — it gets an outliner
+    entry. Before this fix, Conner's outliner had no entries for these 1.4
+    features.
+- [ ] **1b. Diplomatic confirmation popups.** Manual diplomatic actions still
+  ask for confirmation as usual, and the accept icon's tooltip appears.
+- [ ] **1c. Automation card** (Diplomacy Interactions):
+  - its Improve Opinion checkbox turns this mod's Improve Relations on and off;
+  - **new in 1.4:** the checkbox is greyed out while the Diplomacy Interactions
+    automation itself is switched off.
+- [ ] **1d. Main menu → Mods/playsets.** **Create Playset** now opens a name box
+  on the first click (1.4 behaviour), and creating a playset still works. No
+  "missing Community Mod Framework" popup appears.
 
 - [ ] The mod menu opens with these tabs: **Improve Relations, Auto
   Interactions, Subjects, Settings**.
@@ -126,8 +158,12 @@ It only works when all of these are true:
 
 ---
 
-**Checks that decide code changes:** 2c (window renders), 2j (favor
-direction) and 3c (cooldown scope). Please report on those even if
-everything else is fine.
+**Checks that decide code changes:**
+- **1a** — the merged outliner;
+- **2c** — the gift window shows its list;
+- **2j** — favor direction;
+- **3c** — cooldown scope.
+
+Please report on those even if everything else is fine.
 
 > Remember: delete this file before opening a pull request to Conner.
