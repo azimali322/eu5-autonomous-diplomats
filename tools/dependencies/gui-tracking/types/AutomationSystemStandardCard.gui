@@ -179,6 +179,8 @@
 		}
 
 		blockoverride "header_button" {
+			# ATD MOD: vanilla's two enable/disable action_tooltips split into four,
+			# so the diplomacy pair can also set the mod's atd__enabled setting.
 			action_tooltip = {
 				click_type = left
 				title = "[AutomatedSystemsItem.GetActionTooltipName]"
@@ -382,6 +384,8 @@
 				visible = "[AutomatedSystemsItem.IsName('navybuilder')]"
 				on_action = "[OpenLateralViewWithParams('unit_overview', 'subtab = navy')]"
 			}
+			# ATD MOD: right-click on the diplomacy card opens the mod's settings
+			# instead of the diplomacy lateral view.
 			action_tooltip = {
 				click_type = right
 				title = "atd_automation_open_settings"
@@ -734,6 +738,8 @@
 						visible = "[AutomatedSystemsItem.IsName('navybuilder')]"
 						on_action = "[OpenLateralViewWithParams('unit_overview', 'subtab = navy')]"
 					}
+					# ATD MOD: the diplomacy card's go-to button opens the mod's settings
+					# instead of the diplomacy lateral view.
 					action_tooltip = {
 						title = "atd_automation_open_settings"
 						visible = "[AutomatedSystemsItem.IsName('diplomacy')]"
@@ -823,6 +829,7 @@
 						layoutpolicy_horizontal = expanding
 						using = Font_Type_Headers
 						text = "AUTOMATE_DIPLO_DIPLOMAT_RESERVE_LABEL"
+						# ATD MOD: vanilla AUTOMATE_DIPLO_DIPLOMAT_RESERVE_TOOLTIP.
 						tooltip = "atd_automation_diplomat_reserve_tooltip"
 					}
 
@@ -833,10 +840,10 @@
 							min = 0
 							max = 1
 							value = "[AutomatedSystemsItem.GetDiplomatReserveSlider]"
-							# Pinned to the settings value while a push is pending; the forced
-							# value commits through the callbacks below.
-							mincap = "[Select_CFixedPoint(And(GetPlayer.MakeScope.GetVariable('atd_reserve_from_cmm').IsSet, Not(EqualTo_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, GuiScope.AddScope('country', GetPlayer.MakeScope).ScriptValue('atd_min_diplomats_value')))), GuiScope.AddScope('country', GetPlayer.MakeScope).ScriptValue('atd_reserve_push_target'), '(CFixedPoint)0')]"
-							maxcap = "[Select_CFixedPoint(And(GetPlayer.MakeScope.GetVariable('atd_reserve_from_cmm').IsSet, Not(EqualTo_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, GuiScope.AddScope('country', GetPlayer.MakeScope).ScriptValue('atd_min_diplomats_value')))), GuiScope.AddScope('country', GetPlayer.MakeScope).ScriptValue('atd_reserve_push_target'), '(CFixedPoint)1')]"
+							# ATD MOD: mincap/maxcap added. Pinned to the settings value while a
+							# push is pending; the forced value commits through the callbacks below.
+							mincap = "[Select_CFixedPoint(And(GetPlayer.MakeScope.GetVariable('atd_reserve_from_cmm').IsSet, Not(EqualTo_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, GuiScope.AddScope('atd_country', GetPlayer.MakeScope).ScriptValue('atd_min_diplomats_value')))), GuiScope.AddScope('atd_country', GetPlayer.MakeScope).ScriptValue('atd_reserve_push_target'), '(CFixedPoint)0')]"
+							maxcap = "[Select_CFixedPoint(And(GetPlayer.MakeScope.GetVariable('atd_reserve_from_cmm').IsSet, Not(EqualTo_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, GuiScope.AddScope('atd_country', GetPlayer.MakeScope).ScriptValue('atd_min_diplomats_value')))), GuiScope.AddScope('atd_country', GetPlayer.MakeScope).ScriptValue('atd_reserve_push_target'), '(CFixedPoint)1')]"
 							onvaluechanged = "[AutomatedSystemsItem.OnChangedDiplomatReserveSlider]"
 							onchangefinish = "[AutomatedSystemsItem.PostDiplomatReserveSlider]"
 							blockoverride "economy_slider_inc_button_config"{
@@ -853,7 +860,7 @@
 						}
 					}
 
-					# Arms a push on every card creation: the settings value wins the open.
+					# ATD MOD: arms a push on every card creation: the settings value wins the open.
 					widget = {
 						size = { 0 0 }
 						visible_at_creation = no
@@ -864,7 +871,7 @@
 						}
 					}
 
-					# Pull: samples the slider into the reserve setting on a loop. A
+					# ATD MOD: pull: samples the slider into the reserve setting on a loop. A
 					# visibility-gated transition goes sticky after a few changes, so the
 					# state retriggers itself and the effect skips the no-op ticks.
 					widget = {
@@ -873,28 +880,28 @@
 							name = atd_reserve_poll
 							trigger_on_create = yes
 							duration = 0.25
-							on_finish = "[GetScriptedGui('atd_automation_reserve_changed').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('reserve', MakeScopeValue(AutomatedSystemsItem.GetDiplomatReserveSliderScaled)).End)]"
+							on_finish = "[GetScriptedGui('atd_automation_reserve_changed').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('atd_reserve', MakeScopeValue(AutomatedSystemsItem.GetDiplomatReserveSliderScaled)).End)]"
 							on_finish = "[PdxGuiWidget.TriggerAnimation('atd_reserve_poll')]"
 						}
 					}
 
-					# Slider scale cache: scaled divided by normalized while the slider is above zero.
+					# ATD MOD: slider scale cache: scaled divided by normalized while the slider is above zero.
 					widget = {
 						size = { 0 0 }
 						visible_at_creation = no
-						visible = "[And(GreaterThan_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSlider, '(CFixedPoint)0'), Not(EqualTo_CFixedPoint(Divide_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, AutomatedSystemsItem.GetDiplomatReserveSlider), GuiScope.AddScope('country', GetPlayer.MakeScope).ScriptValue('atd_reserve_max_value'))))]"
+						visible = "[And(GreaterThan_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSlider, '(CFixedPoint)0'), Not(EqualTo_CFixedPoint(Divide_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, AutomatedSystemsItem.GetDiplomatReserveSlider), GuiScope.AddScope('atd_country', GetPlayer.MakeScope).ScriptValue('atd_reserve_max_value'))))]"
 						state = {
 							name = _show
-							on_start = "[GetScriptedGui('atd_automation_reserve_max_changed').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('max', MakeScopeValue(Divide_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, AutomatedSystemsItem.GetDiplomatReserveSlider))).End)]"
+							on_start = "[GetScriptedGui('atd_automation_reserve_max_changed').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('atd_max', MakeScopeValue(Divide_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, AutomatedSystemsItem.GetDiplomatReserveSlider))).End)]"
 						}
 					}
 
-					# Push finalize: commits after the caps settle, then clears the pending flag.
+					# ATD MOD: push finalize: commits after the caps settle, then clears the pending flag.
 					# The equality branch clears a flag that has nothing to push.
 					widget = {
 						size = { 0 0 }
 						visible_at_creation = no
-						visible = "[And(GetPlayer.MakeScope.GetVariable('atd_reserve_from_cmm').IsSet, Or(GreaterThan_CFixedPoint(GuiScope.AddScope('country', GetPlayer.MakeScope).ScriptValue('atd_reserve_max_value'), '(CFixedPoint)0'), EqualTo_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, GuiScope.AddScope('country', GetPlayer.MakeScope).ScriptValue('atd_min_diplomats_value'))))]"
+						visible = "[And(GetPlayer.MakeScope.GetVariable('atd_reserve_from_cmm').IsSet, Or(GreaterThan_CFixedPoint(GuiScope.AddScope('atd_country', GetPlayer.MakeScope).ScriptValue('atd_reserve_max_value'), '(CFixedPoint)0'), EqualTo_CFixedPoint(AutomatedSystemsItem.GetDiplomatReserveSliderScaled, GuiScope.AddScope('atd_country', GetPlayer.MakeScope).ScriptValue('atd_min_diplomats_value'))))]"
 						state = {
 							name = _show
 							duration = 0.3
@@ -914,6 +921,8 @@
 						layoutpolicy_horizontal = expanding
 						spacing = 8
 						checkbox_square_alt = {
+							# ATD MOD: the checkbox toggles the mod's atd__improve_relations_enabled
+							# setting instead of the engine's ToggleImproveOpinion sub-flag.
 							action_tooltip = {
 								title = "AUTOMATE_DIPLO_IMPROVE_OPINION"
 								visible = "[Not(GetPlayer.MakeScope.GetVariable('atd_improve_relations_enabled').IsSet)]"
@@ -929,6 +938,7 @@
 								BasicFunctionalTooltip = {
 									blockoverride "tooltip_content" {
 										TooltipTextBlock = {
+											# ATD MOD: vanilla AUTOMATE_DIPLO_IMPROVE_OPINION_TOOLTIP.
 											textcontext = "atd_automation_improve_opinion_tooltip"
 										}
 									}
@@ -942,15 +952,15 @@
 						}
 					}
 
-					# Clears the engine improve-opinion flag.
+					# ATD MOD: clears the engine improve-opinion flag.
 					widget = {
 						size = { 0 0 }
 						visible_at_creation = no
-						visible = "[And(AutomatedSystemsItem.IsImproveOpinionEnabled, Not(GetVariableSystem.Exists('atd_engine_improve_opinion_cleared')))]"
+						visible = "[And(AutomatedSystemsItem.IsImproveOpinionEnabled, Not(GetPlayer.MakeScope.GetVariable('atd_engine_improve_opinion_cleared').IsSet))]"
 						state = {
 							name = _show
 							on_start = "[AutomatedSystemsItem.ToggleImproveOpinion]"
-							on_start = "[GetVariableSystem.Set('atd_engine_improve_opinion_cleared', 'true')]"
+							on_start = "[GetScriptedGui('atd_automation_engine_improve_cleared').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
 						}
 					}
 					hbox = {

@@ -231,6 +231,19 @@
       "tracking_path": "tools/dependencies/gui-tracking/widgets/estate_construction_entry.gui",
       "vanilla_file": "in_game/gui/outliner_entries.gui"
     },
+    "widget:expedition_entry": {
+      "base_widget": null,
+      "insert_after": [
+        "widget",
+        "privateer_entry"
+      ],
+      "insert_index": 72,
+      "mod_file": "in_game/gui/outliner_entries.gui",
+      "namespace": "OutlinerEntryBase",
+      "pending_insert": true,
+      "tracking_path": "tools/dependencies/gui-tracking/widgets/expedition_entry.gui",
+      "vanilla_file": "in_game/gui/outliner_entries.gui"
+    },
     "widget:expel_people_cabinet_entry": {
       "base_widget": null,
       "mod_file": "in_game/gui/outliner_entries.gui",
@@ -299,6 +312,19 @@
       "mod_file": "in_game/gui/outliner_entries.gui",
       "namespace": "OutlinerEntryBase",
       "tracking_path": "tools/dependencies/gui-tracking/widgets/fav_seazone_entry.gui",
+      "vanilla_file": "in_game/gui/outliner_entries.gui"
+    },
+    "widget:fav_trade_order_entry": {
+      "base_widget": null,
+      "insert_after": [
+        "widget",
+        "goods_category_entry"
+      ],
+      "insert_index": 16,
+      "mod_file": "in_game/gui/outliner_entries.gui",
+      "namespace": "OutlinerEntryBase",
+      "pending_insert": true,
+      "tracking_path": "tools/dependencies/gui-tracking/widgets/fav_trade_order_entry.gui",
       "vanilla_file": "in_game/gui/outliner_entries.gui"
     },
     "widget:form_new_culture_cabinet_entry": {
@@ -628,6 +654,19 @@
       "mod_file": "in_game/gui/outliner_entries.gui",
       "namespace": "OutlinerEntryBase",
       "tracking_path": "tools/dependencies/gui-tracking/widgets/study_institutions_cabinet_entry.gui",
+      "vanilla_file": "in_game/gui/outliner_entries.gui"
+    },
+    "widget:trade_order_category_entry": {
+      "base_widget": null,
+      "insert_after": [
+        "widget",
+        "fav_market_category_entry"
+      ],
+      "insert_index": 82,
+      "mod_file": "in_game/gui/outliner_entries.gui",
+      "namespace": "OutlinerEntryBase",
+      "pending_insert": true,
+      "tracking_path": "tools/dependencies/gui-tracking/widgets/trade_order_category_entry.gui",
       "vanilla_file": "in_game/gui/outliner_entries.gui"
     },
     "widget:unit_army_category_entry": {

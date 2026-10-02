@@ -14,6 +14,7 @@ OutlinerEntryBase = {
 
 	blockoverride "icon_content" {
 		using = diplomacy_icon_content
+		# ATD MOD: widget types defined in in_game/gui/atd_outliner_widgets.gui.
 		atd_outliner_auto_cancel_widget = {}
 		atd_outliner_sync_widget = {}
 	}
