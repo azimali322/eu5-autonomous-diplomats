@@ -233,14 +233,8 @@
     },
     "widget:expedition_entry": {
       "base_widget": null,
-      "insert_after": [
-        "widget",
-        "privateer_entry"
-      ],
-      "insert_index": 72,
       "mod_file": "in_game/gui/outliner_entries.gui",
       "namespace": "OutlinerEntryBase",
-      "pending_insert": true,
       "tracking_path": "tools/dependencies/gui-tracking/widgets/expedition_entry.gui",
       "vanilla_file": "in_game/gui/outliner_entries.gui"
     },
@@ -316,14 +310,8 @@
     },
     "widget:fav_trade_order_entry": {
       "base_widget": null,
-      "insert_after": [
-        "widget",
-        "goods_category_entry"
-      ],
-      "insert_index": 16,
       "mod_file": "in_game/gui/outliner_entries.gui",
       "namespace": "OutlinerEntryBase",
-      "pending_insert": true,
       "tracking_path": "tools/dependencies/gui-tracking/widgets/fav_trade_order_entry.gui",
       "vanilla_file": "in_game/gui/outliner_entries.gui"
     },
@@ -658,14 +646,8 @@
     },
     "widget:trade_order_category_entry": {
       "base_widget": null,
-      "insert_after": [
-        "widget",
-        "fav_market_category_entry"
-      ],
-      "insert_index": 82,
       "mod_file": "in_game/gui/outliner_entries.gui",
       "namespace": "OutlinerEntryBase",
-      "pending_insert": true,
       "tracking_path": "tools/dependencies/gui-tracking/widgets/trade_order_category_entry.gui",
       "vanilla_file": "in_game/gui/outliner_entries.gui"
     },
