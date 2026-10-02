@@ -42,7 +42,19 @@
  atd_enh_gifts_window_empty: "No country is giftable right now. Every eligible country is on its 10-year gift cooldown, already owes you at least the Stop Listing Gifts At amount, or is queued for Auto-Gifting."
  atd_enh_gifts_window_row_tt: "Open this country's diplomacy screen to send it a gift."
 
+ # Subjects (subjects) Tab - Subject Actions row 3 and the Options group
+ atd__enforce_i3_name: "Improve Cultural View"
+ atd__enforce_i3_desc: "Automatically ask a subject that leads its own culture to improve that culture's view of yours (the Improve Cultural View subject action). The game allows it once every 50 years for your whole country, and only while you lead your own culture. The subject needs at least 50 loyalty and under 50 liberty desire, and its culture must not already see yours as kindred. Uses one diplomat and adds a little liberty desire."
+ atd__subjects__enh_options_name: "Options"
+ atd__enh_enforce_culture_skip_leaders_name: "Enforce Culture: Skip Subject Culture Leaders"
+ atd__enh_enforce_culture_skip_leaders_desc: "When on, Enforce Culture leaves alone any subject that is the dominant country of its culture, so you can use Improve Cultural View on it instead of converting its culture."
+
+ # Mod Action Log entry ([action] [subject name])
+ atd_enh_log_subject_cv: "Improved the cultural view of"
+
  # Self-referencing flag keys (silence the engine's unused-flag warnings)
+ atd__subjects__enh_options: "atd__subjects__enh_options"
+ atd__enh_enforce_culture_skip_leaders: "atd__enh_enforce_culture_skip_leaders"
  atd__interactions__enh_gift_reminders: "atd__interactions__enh_gift_reminders"
  atd__enh_gift_notify_enabled: "atd__enh_gift_notify_enabled"
  atd__enh_gift_favor_cap: "atd__enh_gift_favor_cap"

@@ -1,0 +1,59 @@
+﻿# ==========================================================================
+# [ATD-ENH] Improve Cultural View - row 3 of the Subject Actions list.
+# See atd_enh_cmm_effects.txt for the overview.
+#
+# Replicates the vanilla improve_cultural_view_subject interaction
+# (in_game/common/country_interactions/improve_cultural_view_subject.txt):
+#   potential - we are the dominant country of our own culture
+#   target    - a subject that is the dominant country of its culture, whose
+#               culture does not already see ours as kindred, with loyalty at
+#               least MIN_SUBJECT_LOYALTY_FOR_ACTION and liberty desire under
+#               MAX_SUBJECT_LIBERTY_DESIRE_FOR_ACTION (both 50 in
+#               script_values/define_values.txt)
+#   effect    - +1 to that culture's view of ours, mild liberty desire
+#   cooldown  - improve_cultural_view_subject, 50 years, on US: one use every
+#               50 years for the whole country. Vanilla limits the AI to one use
+#               per check "because it has the cooldown", and the base mod's
+#               Enforce Culture/Religion keep their cooldowns on the actor too.
+# It is replicated rather than performed, the way the base mod runs Enforce
+# Culture/Religion, and costs one diplomat like those actions.
+#
+# Called from atd_enforce_each_item inside the base atd_enforce_on_subjects
+# pass, which saves scope:atd_actor_scope (us) and sets atd_enforce_threshold
+# (the diplomat reserve + 1). Scope: player country.
+# ==========================================================================
+
+atd_enh_improve_subject_cultural_view = {
+	# The base list's on-change GUI only re-syncs rows 1 and 2, so read this
+	# row's checkbox here; otherwise a change waits until the menu reopens.
+	cmm_sync_bool_alias = {
+		setting = atd__enforce_i3_f1
+		alias = atd_enh_subject_cv_enabled
+	}
+	if = {
+		limit = {
+			has_variable = atd_enh_subject_cv_enabled
+			is_dominant_country_of = culture
+			NOT = { has_cooldown = improve_cultural_view_subject }
+			num_of_diplomats >= var:atd_enforce_threshold
+			any_subject = { atd_enh_is_subject_cv_target = yes }
+		}
+		random_subject = {
+			limit = { atd_enh_is_subject_cv_target = yes }
+			culture = {
+				change_cultural_view = {
+					target = scope:atd_actor_scope.culture
+					change = 1
+				}
+			}
+			add_liberty_desire = liberty_desire_mild_plus
+			save_scope_as = cmf_log_arg2
+		}
+		add_diplomats = -1
+		add_cooldown = {
+			type = improve_cultural_view_subject
+			years = 50
+		}
+		cmf_log_with_scope_arg = { action = atd_enh_log_subject_cv }
+	}
+}

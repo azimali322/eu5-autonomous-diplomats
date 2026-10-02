@@ -244,7 +244,7 @@ atd_register_cmf_mod = {
 		mod_id = atd
 		setting_id = enforce
 		tab_id = subjects
-		item_count = 2
+		item_count = 3 # [ATD-ENH] was 2; row 3 is Improve Cultural View (atd_enh_cmm_effects.txt)
 		is_ordered = 1
 	}
 

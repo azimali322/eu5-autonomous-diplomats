@@ -4,14 +4,23 @@
 # Everything lives in the atd_enh_* files. The only edits inside the base mod
 # are tagged [ATD-ENH] (grep for the tag); delete the atd_enh_* files and revert
 # those lines to remove the layer completely:
-#   atd_cmm_effects.txt - one call to atd_enh_register (end of
-#                         atd_register_cmf_mod)
+#   atd_cmm_effects.txt     - one call to atd_enh_register (end of
+#                             atd_register_cmf_mod), and the Subject Actions
+#                             list's item_count raised from 2 to 3
+#   atd_enforce_effects.txt - one switch case (enh_improve_cultural_view) and
+#                             two Skip Subject Culture Leaders guards in
+#                             atd_enforce_culture_on_subjects
 #
 # Gift Reminders (Auto Interactions tab): an alert, an action-bar button and a
 # clickable window listing the dominant countries of a primary culture you can
 # send a gift to right now. Sending the gift stays manual so you choose the
 # amount. Countries queued for the base mod's Auto-Gifting are left off the
 # list, since it already gifts them.
+#
+# Improve Cultural View (Subjects tab, row 3 of Subject Actions): replicates
+# the vanilla improve_cultural_view_subject action (atd_enh_subject_effects.txt).
+# Enforce Culture: Skip Subject Culture Leaders (Subjects tab, Options): leaves
+# subjects that lead their own culture to Improve Cultural View instead.
 # ==========================================================================
 
 # Registers the enhancement settings. Called from the end of
@@ -47,6 +56,33 @@ atd_enh_register = {
 	cmm_sync_setting_alias = {
 		setting = atd__enh_gift_favor_cap
 		alias = atd_enh_gift_favor_cap
+	}
+
+	# ----- Subjects (subjects) Tab ------------------------------------------
+	# Subject Actions list, row 3 (the base list's item_count is raised to 3).
+	# Its checkbox is re-read each month in atd_enh_improve_subject_cultural_view.
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enforce
+		item = 3
+		value = flag:enh_improve_cultural_view
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enforce_i3_f1
+		alias = atd_enh_subject_cv_enabled
+	}
+
+	## Options (enh_options) Group
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_enforce_culture_skip_leaders
+		tab_id = subjects
+		group_id = enh_options
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_enforce_culture_skip_leaders
+		alias = atd_enh_enforce_culture_skip_leaders
 	}
 }
 
@@ -92,6 +128,13 @@ atd_enh_handle_cmf_callback = {
 			cmm_sync_setting_alias = {
 				setting = atd__enh_gift_favor_cap
 				alias = atd_enh_gift_favor_cap
+			}
+		}
+		## Subjects tab - Options group
+		flag:atd__enh_enforce_culture_skip_leaders = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_enforce_culture_skip_leaders
+				alias = atd_enh_enforce_culture_skip_leaders
 			}
 		}
 	}

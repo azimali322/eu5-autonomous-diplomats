@@ -27,6 +27,11 @@ atd_enforce_each_item = {
 				atd_enforce_culture_on_subjects = yes
 			}
 		}
+		# [ATD-ENH] Improve Cultural View (row 3). Its on/off check and logic live
+		# in atd_enh_subject_effects.txt. Remove this case to detach.
+		flag:enh_improve_cultural_view = {
+			atd_enh_improve_subject_cultural_view = yes
+		}
 	}
 
 	cmf_suppress = { v = $i$ }
@@ -103,6 +108,7 @@ atd_enforce_culture_on_subjects = {
 				NOT = { culture = scope:atd_actor_scope.culture }
 				subject_loyalty >= 50
 				liberty_desire < 50
+				atd_enh_enforce_culture_allowed = yes # [ATD-ENH] Skip Subject Culture Leaders option
 			}
 		}
 		count = 10
@@ -111,6 +117,7 @@ atd_enforce_culture_on_subjects = {
 				NOT = { culture = scope:atd_actor_scope.culture }
 				subject_loyalty >= 50
 				liberty_desire < 50
+				atd_enh_enforce_culture_allowed = yes # [ATD-ENH] Skip Subject Culture Leaders option
 			}
 			save_scope_as = atd_target_subject
 			enforce_culture_effect = {

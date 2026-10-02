@@ -31,3 +31,32 @@ atd_enh_is_giftable_now = {
 		}
 	}
 }
+
+# A subject Improve Cultural View can target. Mirrors the select_trigger of the
+# vanilla improve_cultural_view_subject interaction, using the same named
+# values for the loyalty and liberty gates so a game update that changes them
+# carries over. Scope: the subject. Reads scope:atd_actor_scope (us).
+atd_enh_is_subject_cv_target = {
+	is_dominant_country_of = culture
+	NOT = {
+		culture = {
+			cultural_view = {
+				target = scope:atd_actor_scope.culture
+				value = kindred
+			}
+		}
+	}
+	subject_loyalty >= MIN_SUBJECT_LOYALTY_FOR_ACTION
+	liberty_desire < MAX_SUBJECT_LIBERTY_DESIRE_FOR_ACTION
+}
+
+# Skip Subject Culture Leaders: while the option is on, Enforce Culture leaves
+# subjects that are the dominant country of their culture alone, so Improve
+# Cultural View can work on them instead. Used by the two tagged guards in the
+# base atd_enforce_culture_on_subjects. Scope: the subject.
+atd_enh_enforce_culture_allowed = {
+	trigger_if = {
+		limit = { scope:atd_actor_scope = { has_variable = atd_enh_enforce_culture_skip_leaders } }
+		NOT = { is_dominant_country_of = culture }
+	}
+}
