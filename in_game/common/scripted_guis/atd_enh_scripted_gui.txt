@@ -3,14 +3,14 @@
 # See atd_enh_cmm_effects.txt for the overview.
 # ==========================================================================
 
-# Close button on the Giftable Countries window.
-atd_enh_close_gifts_window = {
+# Close button on the Cultural Views window.
+atd_enh_close_culture_view_window = {
 	scope = country
 
 	effect = {
 		if = {
-			limit = { has_variable = atd_enh_gifts_window_open }
-			remove_variable = atd_enh_gifts_window_open
+			limit = { has_variable = atd_enh_culture_view_window_open }
+			remove_variable = atd_enh_culture_view_window_open
 		}
 	}
 }

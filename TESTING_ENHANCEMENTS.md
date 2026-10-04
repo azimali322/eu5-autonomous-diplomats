@@ -5,14 +5,16 @@
 This build is **Conner's Autonomous Diplomats v1.5** plus the features you chose
 to keep:
 
-- **Gift Reminders**: the giftable-countries alert and window.
+- **Cultural View Reminders**: an alert and window listing the countries whose
+  culture's view of yours you can improve right now.
 - **Improve Cultural View** for subjects.
 - **Enforce Culture: Skip Subject Culture Leaders**.
 
 In the launcher it's called **Autonomous Diplomats Enhanced**.
 
-**Gone:** Curry Favors, Culture Improve, the Favors tab, Automation Priority and
-Auto Ask Nobility.
+**Gone:** Curry Favors, Culture Improve, the Favors tab, Automation Priority,
+Auto Ask Nobility, and Gift Reminders. Conner's Auto-Gifting now sends the
+gifts, so Cultural View Reminders took Gift Reminders' place.
 
 **Changed since July:** Improve Cultural View now follows the game's rule of
 **one use every 50 years for your whole country**. In July it could fire on
@@ -89,39 +91,47 @@ into Conner's overrides, so report anything odd here.
      its favors rise.
 - [ ] Enforce Religion / Enforce Culture on subjects still work.
 
-## 2. Gift Reminders (Auto Interactions tab → Gift Reminders)
+## 2. Cultural View Reminders (Auto Interactions tab → Cultural View Reminders)
 
-- [ ] **2a.** The group has **Notify When Giftable** (off by default) and
-  **Stop Listing Gifts At** (50), both with tooltips.
-- [ ] **2b.** Turn Notify on. A yellow **Gift(s) Available** alert appears
-  (right away or at the next month) and names up to 3 countries. They should
-  only be:
-  - dominant countries of a primary culture;
-  - in diplomatic range;
-  - not gifted by you in the last 10 years.
-- [ ] **2c.** Left-click the alert. The **Countries You Can Gift** window
-  opens with a title, help text and the list. *In July it came up blank, so
-  this is the most important check here.*
-- [ ] **2d.** A long list scrolls inside the window, and the window doesn't
-  run off the screen.
-- [ ] **2e.** Clicking a country opens its diplomacy screen. From there,
-  choose the Economy filter, then Send Gift.
-- [ ] **2f.** The **X** button closes the window. The **Giftable Countries**
-  action-bar button (favors icon) also opens and closes it.
-- [ ] **2g.** The alert stays after a left-click. A right-click dismisses it
+A country is listed when **all** of these are true. They are the game's own
+rules for its **Improve Cultural View** diplomatic action:
+- you lead your own culture;
+- the country leads *its* culture and isn't your subject (subjects use Subject
+  Actions row 3 instead);
+- its culture doesn't already see yours as **kindred**;
+- you have **at least 50 favors** with it, which is what the action costs.
+
+**Getting 50 favors fast for testing.** Auto-Gifting builds them, but slowly.
+In the console you can try
+`effect c:FRA = { add_favors = { target = c:TUN value = 50 } }`, replacing FRA
+with a country that leads its culture and TUN with your own tag. This syntax
+is unverified: if the console rejects it, tell Claude.
+
+- [ ] **2a.** The group has **Notify When a Cultural View Can Be Improved** (on
+  by default) with a tooltip.
+- [ ] **2b.** With nobody qualifying there's no alert. The **Cultural Views**
+  action-bar button (culture icon) opens the window with its "No country
+  qualifies right now" text.
+- [ ] **2c.** Once a country qualifies, a **green "Cultural View Ready"** alert
+  names it at the next month. To see it immediately, turn the setting off and
+  on again.
+- [ ] **2d.** Left-click the alert. The **Cultural Views You Can Improve**
+  window opens with a title, help text and the list. *This window has never
+  rendered correctly in-game yet, so this is the most important check here.*
+- [ ] **2e. Favor direction.** Click a listed country to open its diplomacy
+  screen. Under **Friendly Actions**, **Improve Cultural View** should be
+  usable, not greyed out for a lack of favors. If it's greyed out, tell
+  Claude.
+- [ ] **2f.** Use it. That spends 50 favors, and its culture's view of yours
+  goes up one step. The country leaves the list, unless you still have 50+
+  favors with it.
+- [ ] **2g.** A long list scrolls inside the window. The **X** button closes
+  it, and the action-bar button opens and closes it too.
+- [ ] **2h.** The alert stays after a left-click. A right-click dismisses it
   until next month.
-- [ ] **2h.** Send a gift to a listed country. It leaves the list (reopen the
-  window, or wait a month).
-- [ ] **2i.** Queue a listed country with **Start Auto-Gifting**. It leaves the
-  list, because Conner's Auto-Gifting now handles it.
-- [ ] **2j. Favor direction (never verified before).** Pick a listed country
-  and note how many favors it owes you (say 12).
-  - With **Stop Listing Gifts At** below that (e.g. 10), it should disappear.
-  - With the slider above it (e.g. 15), it should be listed.
-  - If it behaves the other way round, tell Claude: the favor direction would
-    be inverted.
-- [ ] **2k.** Turn Settings → **Enabled** off. At the next month the alert
-  disappears and the window closes.
+- [ ] **2i.** Turning the setting off clears the alert straight away. Turning
+  Settings → **Enabled** off clears it at the next month and closes the
+  window.
 
 ## 3. Improve Cultural View (Subjects tab → Subject Actions, row 3)
 
@@ -160,8 +170,8 @@ It only works when all of these are true:
 
 **Checks that decide code changes:**
 - **1a** — the merged outliner;
-- **2c** — the gift window shows its list;
-- **2j** — favor direction;
+- **2d** — the Cultural Views window shows its list;
+- **2e** — favor direction;
 - **3c** — cooldown scope.
 
 Please report on those even if everything else is fine.

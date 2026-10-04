@@ -1,28 +1,29 @@
-﻿# [ATD-ENH] Giftable Countries window. See atd_enh_cmm_effects.txt.
+﻿# [ATD-ENH] Cultural Views window. See atd_enh_cmm_effects.txt.
 # Registered in gui/scripted_widgets/atd_enh_scripted_widgets.txt so it exists.
-# Shown while the country variable atd_enh_gifts_window_open is set: the
-# action-bar button and the gift alert toggle it, the close button clears it.
+# Shown while the country variable atd_enh_culture_view_window_open is set: the
+# action-bar button and the Cultural View alert toggle it, the close button
+# clears it.
 #
-# Lists every dominant country of a primary culture you can gift right now (see
-# atd_enh_is_giftable_now). The datamodel is the list itself
-# (atd_enh_giftable_list), whose entries are country scopes, so each row reads
-# Scope.Country. Clicking a row opens that country's diplomacy screen.
+# Lists every country you can use Improve Cultural View on right now (see
+# atd_enh_can_improve_cultural_view). The datamodel is the list itself
+# (atd_enh_culture_view_list), whose entries are country scopes, so each row
+# reads Scope.Country. Clicking a row opens that country's diplomacy screen.
 #
 # LAYOUT NOTE: the scrollarea must not sit inside a vbox. A vbox arranges its
 # children by measuring them, and a self-sizing scrollarea inside one produced a
 # blank window whose title rendered outside its frame. Each block is therefore
 # its own positioned widget, a direct child of the window, with pixel sizes.
 window = {
-	name = "atd_enh_gifts_window"
+	name = "atd_enh_culture_view_window"
 	movable = yes
 	resizable = no
 	parentanchor = center
 	widgetanchor = center
 	size = { 460 580 }
 	using = bg_window_default_alt
-	visible = "[Player.MakeScope.GetVariable('atd_enh_gifts_window_open').IsSet]"
+	visible = "[Player.MakeScope.GetVariable('atd_enh_culture_view_window_open').IsSet]"
 
-	# Header: title and how to send a gift.
+	# Header: title and how to use the action.
 	widget = {
 		position = { 20 16 }
 		size = { 420 150 }
@@ -33,36 +34,36 @@ window = {
 
 			text_single = {
 				fontsize = 18
-				text = "atd_enh_gifts_window_title"
+				text = "atd_enh_culture_view_window_title"
 			}
 
 			text_multi = {
 				layoutpolicy_horizontal = expanding
 				autoresize = yes
 				max_width = 410
-				text = "atd_enh_gifts_window_help"
+				text = "atd_enh_culture_view_window_help"
 			}
 		}
 	}
 
 	# Empty state, shown in place of the list.
 	widget = {
-		visible = "[Not(DataModelHasItems(Player.MakeScope.GetList('atd_enh_giftable_list')))]"
+		visible = "[Not(DataModelHasItems(Player.MakeScope.GetList('atd_enh_culture_view_list')))]"
 		position = { 20 180 }
-		size = { 420 120 }
+		size = { 420 160 }
 
 		text_multi = {
 			layoutpolicy_horizontal = expanding
 			autoresize = yes
 			max_width = 410
-			text = "atd_enh_gifts_window_empty"
+			text = "atd_enh_culture_view_window_empty"
 		}
 	}
 
 	# Scrolling list of clickable countries. Fixed viewport: a longer list
 	# scrolls instead of overflowing the window.
 	widget = {
-		visible = "[DataModelHasItems(Player.MakeScope.GetList('atd_enh_giftable_list'))]"
+		visible = "[DataModelHasItems(Player.MakeScope.GetList('atd_enh_culture_view_list'))]"
 		position = { 20 180 }
 		size = { 420 380 }
 
@@ -76,18 +77,18 @@ window = {
 					layoutpolicy_horizontal = expanding
 					spacing = 2
 
-					datamodel = "[Player.MakeScope.GetList('atd_enh_giftable_list')]"
+					datamodel = "[Player.MakeScope.GetList('atd_enh_culture_view_list')]"
 
 					item = {
 						button_regular = {
 							size = { 390 30 }
-							# Opens the country's diplomacy screen. OpenDiplomacy
-							# takes only a country, so the Economy filter (where
-							# Send Gift lives) is picked there by the player.
-							# Scope.Country is already the country object; adding
-							# .Self logged "No function for call 'Country.Self'".
+							# Opens the country's diplomacy screen, where Improve
+							# Cultural View is under Friendly Actions. OpenDiplomacy
+							# takes only a country. Scope.Country is already the
+							# country object; adding .Self logged "No function for
+							# call 'Country.Self'".
 							onclick = "[OpenDiplomacy(Scope.Country)]"
-							tooltip = "atd_enh_gifts_window_row_tt"
+							tooltip = "atd_enh_culture_view_window_row_tt"
 							text = "[Scope.Country.GetName]"
 						}
 					}
@@ -107,7 +108,7 @@ window = {
 
 		button_close_alt = {
 			blockoverride "close_on_action" {
-				on_action = "[GetScriptedGui('atd_enh_close_gifts_window').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+				on_action = "[GetScriptedGui('atd_enh_close_culture_view_window').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
 			}
 		}
 	}

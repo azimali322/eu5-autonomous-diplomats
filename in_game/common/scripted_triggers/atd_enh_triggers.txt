@@ -2,34 +2,33 @@
 # [ATD-ENH] Triggers for the enhancement layer. See atd_enh_cmm_effects.txt.
 # ==========================================================================
 
-# A country you can send a gift to right now, for the gift alert and the
-# Giftable Countries window. Evaluated in the candidate's scope with the player
-# as root (and prev), so prev_favors_with_this is the favors the candidate owes
-# the player. Callers only iterate countries in diplomatic range.
-# Only dominant countries of a primary culture are listed. Like the base mod's
-# Auto-Gifting, gifting is separate from auto-improving relations, so its Block
-# Auto-Improve flag does not hide a country here.
-atd_enh_is_giftable_now = {
+# A country whose culture's view of yours you can improve right now with the
+# game's Improve Cultural View diplomatic action
+# (in_game/common/country_interactions/improve_cultural_view.txt):
+#   visible - it is the dominant country of its culture and not our subject
+#             (subjects have their own action: Subject Actions row 3)
+#   enabled - its culture does not already see ours as kindred
+#   cost    - diplomatic_cost improve_cultural_view_cost = { favors = 50 }
+# Evaluated in the candidate's scope with the player as root (and prev).
+# prev_favors_with_this is PREV's favors with THIS (the game's trigger text
+# reads "[TARGET]'s favors with [COUNTRY]"), so here it is the player's favors
+# with the candidate: the balance the action spends. Callers only iterate
+# countries in diplomatic range, and only while the player leads its culture.
+atd_enh_can_improve_cultural_view = {
 	NOT = { this = root }
 	is_discovered_by = root
 	is_dominant_country_of = culture
 	NOT = { is_subject_of = root }
 	NOT = { is_at_war_with = root }
-	prev_favors_with_this < root.var:atd_enh_gift_favor_cap
-	root = {
-		# Off the gift cooldown (define SEND_GIFT_COOLDOWN = 120 months).
-		NOT = { has_gifted_gold_to = prev }
-		# Not queued for the base mod's Auto-Gifting, which gifts it already.
-		OR = {
-			NOT = { has_variable_list = atd_queue_members }
-			NOT = {
-				is_target_in_variable_list = {
-					name = atd_queue_members
-					target = prev
-				}
+	NOT = {
+		culture = {
+			cultural_view = {
+				target = root.culture
+				value = kindred
 			}
 		}
 	}
+	prev_favors_with_this >= 50
 }
 
 # A subject Improve Cultural View can target. Mirrors the select_trigger of the

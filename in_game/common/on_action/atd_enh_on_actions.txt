@@ -20,7 +20,7 @@ atd_enh_on_cmf_callback = {
 	}
 }
 
-# Monthly: refresh the gift reminder. Settings > Enabled is the mod-wide master
+# Monthly: refresh the Cultural View reminder. Settings > Enabled is the mod-wide master
 # switch, so with it off the alerts are cleared and the window is closed.
 cmf_monthly_human_country_pulse = {
 	on_actions = {
@@ -32,13 +32,13 @@ atd_enh_on_monthly = {
 	effect = {
 		if = {
 			limit = { has_variable = atd_enabled }
-			atd_enh_update_gift_notify = yes
+			atd_enh_update_culture_view_notify = yes
 		}
 		else = {
-			atd_enh_clear_gift_alerts = yes
+			atd_enh_clear_culture_view_alerts = yes
 			if = {
-				limit = { has_variable = atd_enh_gifts_window_open }
-				remove_variable = atd_enh_gifts_window_open
+				limit = { has_variable = atd_enh_culture_view_window_open }
+				remove_variable = atd_enh_culture_view_window_open
 			}
 		}
 	}

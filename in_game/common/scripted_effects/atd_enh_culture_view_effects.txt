@@ -1,0 +1,128 @@
+﻿# ==========================================================================
+# [ATD-ENH] Cultural View Reminders. See atd_enh_cmm_effects.txt for the overview.
+#
+# Finds the countries whose culture's view of yours you can improve right now
+# with the game's Improve Cultural View diplomatic action, and surfaces them in
+# an alert and in the Cultural Views window
+# (gui/atd_enh/atd_enh_culture_view_window.gui). The player uses the action
+# from the country's diplomacy screen.
+# Every effect here runs in the player country's scope (root).
+# ==========================================================================
+
+# Rebuilds atd_enh_culture_view_list: every country you can use Improve
+# Cultural View on right now. The window binds its list straight to it.
+# Rebuilt monthly and whenever the window opens, so it is current on screen.
+atd_enh_rebuild_culture_view_list = {
+	if = {
+		limit = { has_variable_list = atd_enh_culture_view_list }
+		clear_variable_list = atd_enh_culture_view_list
+	}
+	# The action is only available while you lead your own culture (its
+	# potential block), so there is nothing to list otherwise.
+	if = {
+		limit = { is_dominant_country_of = culture }
+		every_country_in_diplomatic_range = {
+			limit = { atd_enh_can_improve_cultural_view = yes }
+			root = {
+				add_to_variable_list = {
+					name = atd_enh_culture_view_list
+					target = prev
+				}
+			}
+		}
+	}
+}
+
+# Opens or closes the Cultural Views window (it is shown while
+# atd_enh_culture_view_window_open is set).
+atd_enh_toggle_culture_view_window = {
+	if = {
+		limit = { has_variable = atd_enh_culture_view_window_open }
+		remove_variable = atd_enh_culture_view_window_open
+	}
+	else = {
+		atd_enh_rebuild_culture_view_list = yes
+		set_variable = { name = atd_enh_culture_view_window_open value = 1 }
+	}
+}
+
+# Refreshes the list, then raises the alert variant matching how many
+# countries qualify, so its tooltip can name up to three of them. Only raises
+# an alert while Settings > Enabled (the mod-wide master switch) and the
+# reminder setting are both on.
+atd_enh_update_culture_view_notify = {
+	atd_enh_rebuild_culture_view_list = yes
+
+	remove_variable = atd_enh_cv_t1
+	remove_variable = atd_enh_cv_t2
+	remove_variable = atd_enh_cv_t3
+	set_variable = { name = atd_enh_cv_n value = 0 }
+
+	if = {
+		limit = {
+			has_variable = atd_enabled
+			has_variable = atd_enh_culture_view_notify_enabled
+			has_variable_list = atd_enh_culture_view_list
+		}
+		every_in_list = {
+			variable = atd_enh_culture_view_list
+			root = {
+				change_variable = { name = atd_enh_cv_n add = 1 }
+				if = {
+					limit = { NOT = { has_variable = atd_enh_cv_t1 } }
+					set_variable = { name = atd_enh_cv_t1 value = prev }
+				}
+				else_if = {
+					limit = { NOT = { has_variable = atd_enh_cv_t2 } }
+					set_variable = { name = atd_enh_cv_t2 value = prev }
+				}
+				else_if = {
+					limit = { NOT = { has_variable = atd_enh_cv_t3 } }
+					set_variable = { name = atd_enh_cv_t3 value = prev }
+				}
+			}
+		}
+	}
+
+	# Show only the variant that matches the count, and clear the others so a
+	# stale one cannot sit on the bar naming countries that no longer qualify.
+	if = {
+		limit = { var:atd_enh_cv_n >= 4 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_1 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_2 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_3 }
+		cmf_show_alert = { alert = atd_enh_alert_culture_view_more }
+	}
+	else_if = {
+		limit = { var:atd_enh_cv_n = 3 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_1 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_2 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_more }
+		cmf_show_alert = { alert = atd_enh_alert_culture_view_3 }
+	}
+	else_if = {
+		limit = { var:atd_enh_cv_n = 2 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_1 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_3 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_more }
+		cmf_show_alert = { alert = atd_enh_alert_culture_view_2 }
+	}
+	else_if = {
+		limit = { var:atd_enh_cv_n = 1 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_2 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_3 }
+		cmf_remove_alert = { alert = atd_enh_alert_culture_view_more }
+		cmf_show_alert = { alert = atd_enh_alert_culture_view_1 }
+	}
+	else = {
+		atd_enh_clear_culture_view_alerts = yes
+	}
+}
+
+# Removes every Cultural View alert.
+atd_enh_clear_culture_view_alerts = {
+	cmf_remove_alert = { alert = atd_enh_alert_culture_view_1 }
+	cmf_remove_alert = { alert = atd_enh_alert_culture_view_2 }
+	cmf_remove_alert = { alert = atd_enh_alert_culture_view_3 }
+	cmf_remove_alert = { alert = atd_enh_alert_culture_view_more }
+}

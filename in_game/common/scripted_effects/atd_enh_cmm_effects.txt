@@ -11,11 +11,11 @@
 #                             two Skip Subject Culture Leaders guards in
 #                             atd_enforce_culture_on_subjects
 #
-# Gift Reminders (Auto Interactions tab): an alert, an action-bar button and a
-# clickable window listing the dominant countries of a primary culture you can
-# send a gift to right now. Sending the gift stays manual so you choose the
-# amount. Countries queued for the base mod's Auto-Gifting are left off the
-# list, since it already gifts them.
+# Cultural View Reminders (Auto Interactions tab): an alert, an action-bar
+# button and a clickable window listing the countries whose culture's view of
+# yours you can improve right now with Improve Cultural View - you have the 50
+# favors it costs. The action itself stays manual. Pairs with the base mod's
+# Auto-Gifting, which builds the favors.
 #
 # Improve Cultural View (Subjects tab, row 3 of Subject Actions): replicates
 # the vanilla improve_cultural_view_subject action (atd_enh_subject_effects.txt).
@@ -26,36 +26,21 @@
 # Registers the enhancement settings. Called from the end of
 # atd_register_cmf_mod. Root scope: country.
 atd_enh_register = {
-	# Action-bar button that opens the Giftable Countries window (idempotent).
-	cmf_add_action_bar_element = { element = atd_enh_open_gifts }
+	# Action-bar button that opens the Cultural Views window (idempotent).
+	cmf_add_action_bar_element = { element = atd_enh_open_culture_view }
 
 	# ----- Auto Interactions (interactions) Tab -----------------------------
-	## Gift Reminders (enh_gift_reminders) Group
+	## Cultural View Reminders (enh_culture_view) Group
 	cmm_register_bool_setting = {
 		mod_id = atd
-		setting_id = enh_gift_notify_enabled
+		setting_id = enh_culture_view_notify_enabled
 		tab_id = interactions
-		group_id = enh_gift_reminders
-		default_value = 0
+		group_id = enh_culture_view
+		default_value = 1
 	}
 	cmm_sync_bool_alias = {
-		setting = atd__enh_gift_notify_enabled
-		alias = atd_enh_gift_notify_enabled
-	}
-
-	cmm_register_slider_setting = {
-		mod_id = atd
-		setting_id = enh_gift_favor_cap
-		tab_id = interactions
-		group_id = enh_gift_reminders
-		default_value = 50
-		min_value = 0
-		max_value = 100
-		step_value = 5
-	}
-	cmm_sync_setting_alias = {
-		setting = atd__enh_gift_favor_cap
-		alias = atd_enh_gift_favor_cap
+		setting = atd__enh_culture_view_notify_enabled
+		alias = atd_enh_culture_view_notify_enabled
 	}
 
 	# ----- Subjects (subjects) Tab ------------------------------------------
@@ -93,42 +78,36 @@ atd_enh_register = {
 atd_enh_handle_cmf_callback = {
 	switch = {
 		trigger = var:cmf_callback
-		# Action-bar button: open or close the Giftable Countries window.
-		flag:atd_enh_open_gifts = {
-			atd_enh_toggle_gifts_window = yes
+		# Action-bar button: open or close the Cultural Views window.
+		flag:atd_enh_open_culture_view = {
+			atd_enh_toggle_culture_view_window = yes
 		}
 		# Left-clicking an alert opens the window. CMF clears an alert on
 		# left-click, so raise it again - it is a standing reminder.
-		flag:atd_enh_alert_giftable_1 = {
-			atd_enh_toggle_gifts_window = yes
-			atd_enh_update_gift_notify = yes
+		flag:atd_enh_alert_culture_view_1 = {
+			atd_enh_toggle_culture_view_window = yes
+			atd_enh_update_culture_view_notify = yes
 		}
-		flag:atd_enh_alert_giftable_2 = {
-			atd_enh_toggle_gifts_window = yes
-			atd_enh_update_gift_notify = yes
+		flag:atd_enh_alert_culture_view_2 = {
+			atd_enh_toggle_culture_view_window = yes
+			atd_enh_update_culture_view_notify = yes
 		}
-		flag:atd_enh_alert_giftable_3 = {
-			atd_enh_toggle_gifts_window = yes
-			atd_enh_update_gift_notify = yes
+		flag:atd_enh_alert_culture_view_3 = {
+			atd_enh_toggle_culture_view_window = yes
+			atd_enh_update_culture_view_notify = yes
 		}
-		flag:atd_enh_alert_giftable_more = {
-			atd_enh_toggle_gifts_window = yes
-			atd_enh_update_gift_notify = yes
+		flag:atd_enh_alert_culture_view_more = {
+			atd_enh_toggle_culture_view_window = yes
+			atd_enh_update_culture_view_notify = yes
 		}
-		## Auto Interactions tab - Gift Reminders group
-		flag:atd__enh_gift_notify_enabled = {
+		## Auto Interactions tab - Cultural View Reminders group
+		flag:atd__enh_culture_view_notify_enabled = {
 			cmm_sync_bool_alias = {
-				setting = atd__enh_gift_notify_enabled
-				alias = atd_enh_gift_notify_enabled
+				setting = atd__enh_culture_view_notify_enabled
+				alias = atd_enh_culture_view_notify_enabled
 			}
 			# Show or clear the alert straight away.
-			atd_enh_update_gift_notify = yes
-		}
-		flag:atd__enh_gift_favor_cap = {
-			cmm_sync_setting_alias = {
-				setting = atd__enh_gift_favor_cap
-				alias = atd_enh_gift_favor_cap
-			}
+			atd_enh_update_culture_view_notify = yes
 		}
 		## Subjects tab - Options group
 		flag:atd__enh_enforce_culture_skip_leaders = {
