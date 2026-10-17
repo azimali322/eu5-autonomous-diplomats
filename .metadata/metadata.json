@@ -15,7 +15,7 @@
         {
             "rel_type": "dependency",
             "id": "community_mod_framework.dev",
-            "display_name": "Community Mod Framework - 1.4 Río Salado Dev",
+            "display_name": "Community Mod Framework Dev",
             "resource_type": "mod",
             "version": "2.*"
         }
