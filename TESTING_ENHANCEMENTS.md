@@ -12,6 +12,9 @@ This build is **Conner's Autonomous Diplomats v1.5** plus:
   - **Notifications** cover both: you can improve one, or the mod just did.
 - **Improve Cultural View** for subjects.
 - **Enforce Culture: Skip Subject Culture Leaders**.
+- **Automation Priority** (Settings tab): a draggable list that sets which
+  monthly action gets free diplomats first. Auto Improve Cultural View always
+  goes before all of them.
 
 In the launcher it's called **Autonomous Diplomats Enhanced**.
 
@@ -220,6 +223,37 @@ It only works when all of these are true:
 - [ ] **4b.** Turn the option off. Enforce Culture converts that subject as
   normal.
 
+## 5. Automation Priority (Settings tab)
+
+Each month the mod hands out free diplomats in this order. Priority only
+matters when there aren't enough diplomats for everything. It never cancels
+actions already running.
+
+1. **Auto Improve Cultural View**: always first, so it isn't in the list.
+2. The **Automation Priority** list, top to bottom.
+
+- [ ] **5a.** The Settings tab has an **Automation Priority** list with a
+  tooltip. Its four rows can be dragged, and by default they read: **Subject
+  Actions, Auto-Gifting, Curry Favors for Cultural Views, Improve Relations**.
+  The header shows "Automation Priority", not a raw key like
+  `atd__settings__enh_priority_name`.
+- [ ] **5b. The order is followed.** The easiest test is to make diplomats
+  scarce:
+  1. Raise Settings → Minimum Diplomats Reserve until only about one diplomat
+     a month is free.
+  2. Turn on Curry Favors for Cultural Views and an Improve Relations category
+     that has targets.
+  3. With Curry above Improve Relations, the free diplomat starts a curry
+     ("Started currying favors with …" in the Mod Action Log).
+  4. Drag **Improve Relations** above **Curry**. From the next month the free
+     diplomat starts an Improve Relations instead.
+- [ ] **5c.** With a country at 50 favors and Auto Improve on, it gets the
+  free diplomat ahead of every row in the list.
+- [ ] **5d. Nothing runs twice.** Improve Relations never goes over its
+  category limits, and Enforce Culture/Religion fire once per their 10-year
+  cooldown, as before.
+- [ ] **5e.** The order you set survives a save and reload.
+
 ---
 
 **Checks that decide code changes:**
@@ -228,7 +262,8 @@ It only works when all of these are true:
 - **2k** and **2l** — the window shows its list, and the favor direction is
   right;
 - **1a** — the merged outliner (the curry tracker lives in it);
-- **3c** — subject cooldown scope.
+- **3c** — subject cooldown scope;
+- **5b** and **5d** — the priority order is followed, and nothing runs twice.
 
 Please report on those even if everything else is fine.
 
