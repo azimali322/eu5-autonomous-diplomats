@@ -1,20 +1,28 @@
-# Test Checklist — Autonomous Diplomats Enhanced on EU5 1.4 Río Salado (open beta)
+# Test Checklist — Autonomous Diplomats Enhanced on EU5 1.4.1 Río Salado (open beta)
 
 > **TEMPORARY** — delete this file before opening any pull request to Conner.
 
-This build is **Conner's Autonomous Diplomats v1.5** plus the features you chose
-to keep:
+This build is **Conner's Autonomous Diplomats v1.5** plus:
 
-- **Cultural View Reminders**: an alert and window listing the countries whose
-  culture's view of yours you can improve right now.
+- **Cultural Views** (Auto Interactions tab), which is new for 1.4.1:
+  - **Curry Favors for Cultural Views** curries favors with countries that lead
+    their culture until you have 50.
+  - **Auto Improve Cultural View** spends those 50 favors on Improve Cultural
+    View the month they arrive.
+  - **Notifications** cover both: you can improve one, or the mod just did.
 - **Improve Cultural View** for subjects.
 - **Enforce Culture: Skip Subject Culture Leaders**.
 
 In the launcher it's called **Autonomous Diplomats Enhanced**.
 
-**Gone:** Curry Favors, Culture Improve, the Favors tab, Automation Priority,
-Auto Ask Nobility, and Gift Reminders. Conner's Auto-Gifting now sends the
-gifts, so Cultural View Reminders took Gift Reminders' place.
+**Gone:** the July Favors tab and its curry engine, Culture Improve, Automation
+Priority, Auto Ask Nobility, and Gift Reminders (Conner's Auto-Gifting sends
+the gifts now).
+
+**Why 1.4.1 matters here:** the patch raised the curry cap to 50, which is
+exactly what Improve Cultural View costs. It also added favor decay (1% of your
+favors each month), so you lose the 50 within a month of reaching it. And other
+countries can now refuse Improve Cultural View.
 
 **Changed since July:** Improve Cultural View now follows the game's rule of
 **one use every 50 years for your whole country**. In July it could fire on
@@ -42,8 +50,9 @@ Action Log myself, so you only need screenshots for visual problems.
 
 - [ ] Your mod folder is on this build, branch `update/1.4-rio-salado`.
 - [ ] Playset, in this order:
-  1. **Community Mod Framework - 1.4 Río Salado Dev**. This is the CMF dev
-     branch, a local mod in your mod folder.
+  1. **Community Mod Framework Dev** (v2.5.0). This is the CMF dev branch, a
+     local mod in your mod folder; it was called "Community Mod Framework -
+     1.4 Río Salado Dev" before this update.
   2. **Autonomous Diplomats Enhanced**.
 - [ ] Turn **off**:
   - the Workshop "Community Mod Framework - 1.3 Pavia" (two copies of CMF
@@ -91,47 +100,92 @@ into Conner's overrides, so report anything odd here.
      its favors rise.
 - [ ] Enforce Religion / Enforce Culture on subjects still work.
 
-## 2. Cultural View Reminders (Auto Interactions tab → Cultural View Reminders)
+## 2. Cultural Views (Auto Interactions tab → Cultural Views)
 
-A country is listed when **all** of these are true. They are the game's own
-rules for its **Improve Cultural View** diplomatic action:
-- you lead your own culture;
+**Who qualifies.** The mod only works with countries where the whole plan can
+succeed. These are the game's own 1.4.1 rules, plus your "no rivals" rule:
+- you lead your own culture (Improve Cultural View needs it);
 - the country leads *its* culture and isn't your subject (subjects use Subject
   Actions row 3 instead);
 - its culture doesn't already see yours as **kindred**;
-- you have **at least 50 favors** with it, which is what the action costs.
+- **their opinion of you is above 50.** Since 1.4.1 they can refuse: they
+  accept only when −10 + 0.2 × opinion is positive. A refusal costs you trust
+  and reputation;
+- **neither of you is the other's rival**;
+- for currying only:
+  - they trust you **at least 50**, because favors can only be curried up to
+    their trust in you;
+  - they aren't anyone's subject (the game won't curry those).
 
-**Getting 50 favors fast for testing.** Auto-Gifting builds them, but slowly.
-In the console you can try
-`effect c:FRA = { add_favors = { target = c:TUN value = 50 } }`, replacing FRA
-with a country that leads its culture and TUN with your own tag. This syntax
-is unverified: if the console rejects it, tell Claude.
+**Where to look:**
+- the outliner's Diplomacy section shows each "Currying Favors" in progress;
+- the Mod Action Log shows "Started currying favors with X" and "Spent 50
+  favors to improve the cultural view of X".
 
-- [ ] **2a.** The group has **Notify When a Cultural View Can Be Improved** (on
-  by default) with a tooltip.
-- [ ] **2b.** With nobody qualifying there's no alert. The **Cultural Views**
-  action-bar button (culture icon) opens the window with its "No country
-  qualifies right now" text.
-- [ ] **2c.** Once a country qualifies, a **green "Cultural View Ready"** alert
-  names it at the next month. To see it immediately, turn the setting off and
-  on again.
-- [ ] **2d.** Left-click the alert. The **Cultural Views You Can Improve**
+**Speeding it up.** A curry takes years to reach 50. The console may accept
+`effect c:FRA = { add_favors = { target = c:TUN value = 49 } }` (FRA = a
+country that leads its culture, TUN = your tag). This syntax is unverified: if
+it's rejected, tell Claude.
+
+### 2A. The settings
+- [ ] **2a.** The **Cultural Views** group has four settings, each with a
+  tooltip:
+  - **Curry Favors for Cultural Views** (off by default);
+  - **Countries to Curry at Once** (2);
+  - **Auto Improve Cultural View** (off);
+  - **Notify When a Cultural View Can Be Improved** (on).
+
+### 2B. Curry Favors for Cultural Views
+- [ ] **2b.** Turn it on. At the next month the Mod Action Log shows "Started
+  currying favors with …" for up to 2 countries, and the outliner shows them
+  as Currying Favors. Check each one against the rules above: opinion above
+  50, trust 50+, not a rival, not a subject, leads its culture. Countries whose
+  culture lives in your own provinces should be picked first.
+- [ ] **2c. Exactly 2 at once (the July bug).** Let several months pass. There
+  are always 2 curries running (or fewer, if fewer countries qualify), with no
+  new "Started currying" entries for countries already being curried.
+- [ ] **2d.** Cancel one curry yourself (right-click it in the outliner). At
+  the next month the mod starts a curry with a *different* country to fill the
+  slot. It waits 6 months before retrying the one you cancelled.
+- [ ] **2e.** Raise **Countries to Curry at Once** to 3, and a third curry
+  starts next month. Set your diplomat reserve higher than your diplomats, and
+  no new curries start.
+- [ ] **2f. Trust cap.** If a curried country stops gaining favors below 50,
+  note its trust in you. Tell Claude: the trust rule then works differently
+  than the game text suggests.
+
+### 2C. Auto Improve Cultural View
+- [ ] **2g.** Turn it on. In the month a curried country reaches **50 favors**
+  (or the month after you give it 50 in the console):
+  - the Mod Action Log shows "Spent 50 favors to improve the cultural view of
+    …";
+  - a green **"Cultural View Improved"** alert names it;
+  - your favors with it drop by 50, and its culture's view of yours goes up one
+    step;
+  - you have one diplomat fewer.
+
+  **This is the most important check.** If the favors don't drop, or the view
+  doesn't change, tell Claude straight away.
+- [ ] **2h.** No refusal appears. The game's own notification, if one shows,
+  says it was accepted.
+- [ ] **2i.** Next month the mod starts currying that country again, and the
+  cycle repeats until its culture sees yours as kindred.
+
+### 2D. Notifications and the window
+- [ ] **2j.** With **Auto Improve off**, when a country reaches 50 a green
+  **"Cultural View Ready"** alert names it. The mod then leaves that country
+  uncurried until its favors decay below 45, so it doesn't spend diplomats
+  topping it back up while you decide.
+- [ ] **2k.** Left-click that alert. The **Cultural Views You Can Improve**
   window opens with a title, help text and the list. *This window has never
-  rendered correctly in-game yet, so this is the most important check here.*
-- [ ] **2e. Favor direction.** Click a listed country to open its diplomacy
-  screen. Under **Friendly Actions**, **Improve Cultural View** should be
-  usable, not greyed out for a lack of favors. If it's greyed out, tell
-  Claude.
-- [ ] **2f.** Use it. That spends 50 favors, and its culture's view of yours
-  goes up one step. The country leaves the list, unless you still have 50+
-  favors with it.
-- [ ] **2g.** A long list scrolls inside the window. The **X** button closes
-  it, and the action-bar button opens and closes it too.
-- [ ] **2h.** The alert stays after a left-click. A right-click dismisses it
-  until next month.
-- [ ] **2i.** Turning the setting off clears the alert straight away. Turning
-  Settings → **Enabled** off clears it at the next month and closes the
-  window.
+  rendered correctly in-game yet.*
+- [ ] **2l.** Click a listed country to open its diplomacy screen. **Improve
+  Cultural View** under Friendly Actions is usable. If it's greyed out for a
+  lack of favors, tell Claude, because the favor direction would be wrong.
+- [ ] **2m.** The X button and the **Cultural Views** action-bar button
+  (culture icon) both close the window. A right-click dismisses an alert.
+  Turning Notify off clears both alerts, and turning Settings → **Enabled** off
+  stops everything.
 
 ## 3. Improve Cultural View (Subjects tab → Subject Actions, row 3)
 
@@ -169,10 +223,12 @@ It only works when all of these are true:
 ---
 
 **Checks that decide code changes:**
-- **1a** — the merged outliner;
-- **2d** — the Cultural Views window shows its list;
-- **2e** — favor direction;
-- **3c** — cooldown scope.
+- **2c** — exactly the set number of curries at once (the July bug);
+- **2g** — Auto Improve really spends the 50 favors and raises the view;
+- **2k** and **2l** — the window shows its list, and the favor direction is
+  right;
+- **1a** — the merged outliner (the curry tracker lives in it);
+- **3c** — subject cooldown scope.
 
 Please report on those even if everything else is fine.
 
