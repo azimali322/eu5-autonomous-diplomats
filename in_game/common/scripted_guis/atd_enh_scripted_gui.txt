@@ -3,6 +3,35 @@
 # See atd_enh_cmm_effects.txt for the overview.
 # ==========================================================================
 
+# Fired once per monthly cycle for each ongoing curry_favors outliner entry
+# (atd_enh_outliner_widgets.gui). Adds the country to atd_enh_currying_seen, the
+# list of countries you are really currying with this month - cleared by
+# atd_enh_on_monthly before the cycle opens, read by atd_enh_cultural_view_build.
+# Mirrors the base mod's atd_gui_sync_track.
+# Root: player country. Saved scopes: atd_enh_country (the curried country).
+atd_enh_curry_sync_track = {
+	saved_scopes = { atd_enh_country }
+	effect = {
+		if = {
+			limit = {
+				OR = {
+					NOT = { has_variable_list = atd_enh_currying_seen }
+					NOT = {
+						is_target_in_variable_list = {
+							name = atd_enh_currying_seen
+							target = scope:atd_enh_country
+						}
+					}
+				}
+			}
+			add_to_variable_list = {
+				name = atd_enh_currying_seen
+				target = scope:atd_enh_country
+			}
+		}
+	}
+}
+
 # Close button on the Cultural Views window.
 atd_enh_close_culture_view_window = {
 	scope = country

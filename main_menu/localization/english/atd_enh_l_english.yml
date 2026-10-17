@@ -2,10 +2,17 @@
  # [ATD-ENH] Autonomous Diplomats Enhanced - enhancement layer by azimali322.
  # Deleting this file with the other atd_enh_* files removes every string.
 
- # Auto Interactions (interactions) Tab - Cultural View Reminders group
- atd__interactions__enh_culture_view_name: "Cultural View Reminders"
+ # Auto Interactions (interactions) Tab - Cultural Views group
+ atd__interactions__enh_culture_view_name: "Cultural Views"
+ atd__enh_curry_cv_enabled_name: "Curry Favors for Cultural Views"
+ atd__enh_curry_cv_enabled_desc: "Automatically curry favors with countries that lead their own culture, until you have the 50 favors Improve Cultural View costs - the curry stops by itself at 50. Only countries that would accept the improvement are curried: their opinion of you is above 50, neither of you is the other's rival, and their culture doesn't already see yours as kindred. They must also trust you at least 50, because favors can only be curried up to their trust in you, and must not be anyone's subject. Cultures that are part of your own population are curried first. Each curry ties up a diplomat until it ends; new curries respect your diplomat reserve and minimum monthly diplomat gain. Only while you lead your own culture."
+ atd__enh_curry_cv_count_name: "Countries to Curry at Once"
+ atd__enh_curry_cv_count_desc: "How many of these curries to keep running at the same time. Each one ties up a diplomat. Curries you started yourself with such countries count too."
+ atd__enh_curry_cv_count_format: "[CMMV('atd__enh_curry_cv_count')|0]"
+ atd__enh_auto_improve_cv_enabled_name: "Auto Improve Cultural View"
+ atd__enh_auto_improve_cv_enabled_desc: "Automatically use Improve Cultural View the month you have 50 favors with a country that would accept it - before the game's 1% monthly favor decay takes them away. Spends the 50 favors and one diplomat, and moves that culture's view of yours one step closer to kindred. Runs before the mod's other actions so it gets a diplomat first. When off, the notification tells you instead, and a country that reached 50 is not curried again until its favors fall below 45."
  atd__enh_culture_view_notify_enabled_name: "Notify When a Cultural View Can Be Improved"
- atd__enh_culture_view_notify_enabled_desc: "Show an alert whenever you can use Improve Cultural View on a country: it leads its own culture, isn't your subject, its culture doesn't already see yours as kindred, and you have the 50 favors with it that the action costs. Up to three are named; left-click the alert to open the full list. Only while you lead your own culture and Enabled is on in the Settings tab. Auto-Gifting is one way to build the favors."
+ atd__enh_culture_view_notify_enabled_desc: "Show an alert whenever you can use Improve Cultural View on a country yourself: it leads its own culture, isn't your subject, would accept (its opinion of you is above 50 and neither of you is the other's rival), its culture doesn't already see yours as kindred, and you have the 50 favors the action costs. Up to three are named; left-click the alert to open the full list. With Auto Improve on, it only shows countries the automation could not handle, such as when no diplomat was free. Also shows a 'Cultural View Improved' alert when Auto Improve uses the action. Only while you lead your own culture and Enabled is on in the Settings tab."
 
  # Cultural View alerts - one variant per count, so the tooltip can name them.
  atd_enh_alert_culture_view_1: "atd_enh_alert_culture_view_1"
@@ -29,14 +36,21 @@
  atd_enh_alert_culture_view_more_name: "Cultural Views Ready"
  atd_enh_alert_culture_view_more_tooltip: "You have enough favors to improve how the cultures of [Player.MakeScope.GetVariable('atd_enh_cv_t1').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_cv_t2').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_cv_t3').Country.GetName] and more view yours. Left-click to open the list; right-click to dismiss."
 
+ # Shown when Auto Improve Cultural View used the action.
+ atd_enh_alert_culture_view_improved: "atd_enh_alert_culture_view_improved"
+ atd_enh_alert_culture_view_improved_color: "green"
+ atd_enh_alert_culture_view_improved_icon: "@culture!"
+ atd_enh_alert_culture_view_improved_name: "Cultural View Improved"
+ atd_enh_alert_culture_view_improved_tooltip: "Auto Improve Cultural View spent 50 favors to improve how [Player.MakeScope.GetVariable('atd_enh_cv_improved_last').Country.GetName]'s culture views yours. The Mod Action Log lists every improvement. Click to dismiss."
+
  # Cultural Views window and its action-bar button
  atd_enh_open_culture_view_name: "Cultural Views"
  atd_enh_open_culture_view_tooltip: "Open the list of countries whose culture's view of yours you can improve right now."
  atd_enh_open_culture_view_icon: "@culture!"
  atd_enh_open_culture_view_color: "green"
  atd_enh_culture_view_window_title: "Cultural Views You Can Improve"
- atd_enh_culture_view_window_help: "You have at least 50 favors with each of these countries - enough for Improve Cultural View. Click a country to open its diplomacy screen, then use Improve Cultural View under Friendly Actions. Each use spends 50 favors and moves that culture's view of yours one step closer to kindred."
- atd_enh_culture_view_window_empty: "No country qualifies right now. You need at least 50 favors with a country that leads its own culture, isn't your subject, and whose culture doesn't already see yours as kindred - and you must lead your own culture. Auto-Gifting is one way to build favors."
+ atd_enh_culture_view_window_help: "You have at least 50 favors with each of these countries - enough for Improve Cultural View - and each would accept it. Click a country to open its diplomacy screen, then use Improve Cultural View under Friendly Actions. Each use spends 50 favors and moves that culture's view of yours one step closer to kindred. Favors decay by 1% a month, so don't wait long."
+ atd_enh_culture_view_window_empty: "No country qualifies right now. You need at least 50 favors with a country that leads its own culture, isn't your subject, isn't your rival, has an opinion of you above 50, and whose culture doesn't already see yours as kindred - and you must lead your own culture. Curry Favors for Cultural Views builds the favors."
  atd_enh_culture_view_window_row_tt: "Open this country's diplomacy screen to improve its culture's view of yours."
 
  # Subjects (subjects) Tab - Subject Actions row 3 and the Options group
@@ -46,12 +60,18 @@
  atd__enh_enforce_culture_skip_leaders_name: "Enforce Culture: Skip Subject Culture Leaders"
  atd__enh_enforce_culture_skip_leaders_desc: "When on, Enforce Culture leaves alone any subject that is the dominant country of its culture, so you can use Improve Cultural View on it instead of converting its culture."
 
- # Mod Action Log entry ([action] [subject name])
+ # Mod Action Log entries ([action] [country name])
  atd_enh_log_subject_cv: "Improved the cultural view of"
+ atd_enh_log_cv_improved: "Spent 50 favors to improve the cultural view of"
+ atd_enh_log_curry_started: "Started currying favors with"
 
  # Self-referencing flag keys (silence the engine's unused-flag warnings)
  atd__interactions__enh_culture_view: "atd__interactions__enh_culture_view"
  atd__enh_culture_view_notify_enabled: "atd__enh_culture_view_notify_enabled"
+ atd__enh_curry_cv_enabled: "atd__enh_curry_cv_enabled"
+ atd__enh_curry_cv_count: "atd__enh_curry_cv_count"
+ atd__enh_auto_improve_cv_enabled: "atd__enh_auto_improve_cv_enabled"
+ atd_enh_cv_improved_last: "atd_enh_cv_improved_last"
  atd__subjects__enh_options: "atd__subjects__enh_options"
  atd__enh_enforce_culture_skip_leaders: "atd__enh_enforce_culture_skip_leaders"
  atd_enh_cv_t1: "atd_enh_cv_t1"

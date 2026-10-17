@@ -2,24 +2,42 @@
 # [ATD-ENH] Triggers for the enhancement layer. See atd_enh_cmm_effects.txt.
 # ==========================================================================
 
-# A country whose culture's view of yours you can improve right now with the
-# game's Improve Cultural View diplomatic action
-# (in_game/common/country_interactions/improve_cultural_view.txt):
-#   visible - it is the dominant country of its culture and not our subject
-#             (subjects have their own action: Subject Actions row 3)
+# ----- Cultural Views -------------------------------------------------------
+# All of these are evaluated in a candidate country's scope with the player as
+# root (and as prev: callers reach the candidate from the player through an
+# in-diplomatic-range iterator or the player's own lists). Callers only run
+# them while the player leads its own culture, which Improve Cultural View
+# requires (its potential block).
+#
+# prev_favors_with_this is PREV's favors with THIS - the game's trigger text
+# reads "[TARGET]'s favors with [COUNTRY]" - so here it is the player's favors
+# with the candidate: what Curry Favors builds and Improve Cultural View spends.
+#
+# The fixed numbers mirror 1.4.1 game rules; local/tests/validate_mod.py check
+# 11 re-reads the game files and fails if a patch changes any of them:
+#   50 favors - improve_cultural_view_cost (diplomatic_costs/01_from_script.txt)
+#   opinion   - improve_cultural_view's diplo_chance: base -10, +0.2 per point
+#               of their opinion of us, so they only accept above 50
+#   rivals    - its accept block: -100 when they count us as a rival
+#   trust 50  - favors can only be curried up to their trust in us
+#               (CURRY_FAVORS_LOW_TRUST), and the curry cap
+#               CURRY_FAVORS_MAX_FAVORS is 50
+
+# A country whose culture's view of yours Improve Cultural View can raise, and
+# who would accept it (improve_cultural_view.txt):
+#   visible - it leads its culture and is not our subject (subjects have their
+#             own action: Subject Actions row 3)
 #   enabled - its culture does not already see ours as kindred
-#   cost    - diplomatic_cost improve_cultural_view_cost = { favors = 50 }
-# Evaluated in the candidate's scope with the player as root (and prev).
-# prev_favors_with_this is PREV's favors with THIS (the game's trigger text
-# reads "[TARGET]'s favors with [COUNTRY]"), so here it is the player's favors
-# with the candidate: the balance the action spends. Callers only iterate
-# countries in diplomatic range, and only while the player leads its culture.
-atd_enh_can_improve_cultural_view = {
+#   accept  - their opinion of us is above 50 and neither side counts the other
+#             as a rival (the game checks their side; we skip ours too)
+atd_enh_cultural_view_target = {
 	NOT = { this = root }
 	is_discovered_by = root
 	is_dominant_country_of = culture
 	NOT = { is_subject_of = root }
 	NOT = { is_at_war_with = root }
+	NOT = { is_rival_of = root }
+	root = { NOT = { is_rival_of = prev } }
 	NOT = {
 		culture = {
 			cultural_view = {
@@ -28,7 +46,84 @@ atd_enh_can_improve_cultural_view = {
 			}
 		}
 	}
+	opinion = { target = root value > 50 }
+}
+
+# A country you can use Improve Cultural View on right now: you also have the
+# 50 favors it costs. Used by the reminder and by Auto Improve Cultural View.
+atd_enh_can_improve_cultural_view = {
+	atd_enh_cultural_view_target = yes
 	prev_favors_with_this >= 50
+}
+
+# Auto Improve Cultural View's pick: as above, and not already improved earlier
+# in this pass. Favors drop by 50 when it works, so this only matters if an
+# attempt somehow did not spend them - it stops the loop from retrying the same
+# country (and spending a diplomat each time) until the next month.
+atd_enh_can_auto_improve_now = {
+	atd_enh_can_improve_cultural_view = yes
+	root = {
+		OR = {
+			NOT = { has_variable_list = atd_enh_cv_improved_this_tick }
+			NOT = {
+				is_target_in_variable_list = {
+					name = atd_enh_cv_improved_this_tick
+					target = prev
+				}
+			}
+		}
+	}
+}
+
+# A country Curry Favors for Cultural Views should start currying now. On top
+# of being a cultural view target, the game's own curry rules
+# (CURRY_FAVORS_* in loc/defines): not anyone's subject, their opinion of us at
+# least CURRY_FAVORS_RELATION_REQUIRED (10, covered by the 50 above), and
+# favors below both the curry cap and their trust in us - so trust must be at
+# least 50 for the curry to reach the 50 the improvement costs.
+atd_enh_can_start_curry = {
+	atd_enh_cultural_view_target = yes
+	is_subject = no
+	trust = { target = root value >= 50 }
+	# With Auto Improve on, a country is curried whenever it is below 50, since
+	# the 50 is spent the month it is reached. With it off, a country that
+	# reached 50 is left alone until its favors decay below 45, so diplomats are
+	# not spent topping it back up while the player decides.
+	trigger_if = {
+		limit = { root = { has_variable = atd_enh_auto_improve_cv_enabled } }
+		prev_favors_with_this < 50
+	}
+	trigger_else = {
+		prev_favors_with_this < 45
+	}
+	# Not already being curried: reported by a curry tracker this month, or
+	# started earlier in this pass.
+	root = {
+		OR = {
+			NOT = { has_variable_list = atd_enh_currying_seen }
+			NOT = {
+				is_target_in_variable_list = {
+					name = atd_enh_currying_seen
+					target = prev
+				}
+			}
+		}
+	}
+	# Safety net: not started in the last 6 months (cleared early when Auto
+	# Improve spends the favors). If the trackers ever failed, nothing would be
+	# "seen" and the mod would otherwise retry the same country every month.
+	NOT = { has_variable = atd_enh_curry_attempt }
+}
+
+# The candidate's culture makes up at least 1% of your own population, so a
+# better view of your culture matters at home. Curry Favors tries these first.
+atd_enh_culture_is_in_our_country = {
+	root = {
+		culture_percentage_in_country = {
+			culture = prev.culture
+			value >= 0.01
+		}
+	}
 }
 
 # A subject Improve Cultural View can target. Mirrors the select_trigger of the

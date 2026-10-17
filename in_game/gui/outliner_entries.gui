@@ -7158,6 +7158,9 @@ OutlinerEntryBase = {
 
 	blockoverride "icon_content" {
 		using = diplomacy_icon_content
+		# [ATD-ENH] Reports each ongoing curry to the Enhanced curry automation
+		# (atd_enh_outliner_widgets.gui). Remove these lines to detach.
+		atd_enh_outliner_curry_sync_widget = {}
 	}
 
 	blockoverride "button_setup" {

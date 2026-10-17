@@ -20,8 +20,14 @@ atd_enh_on_cmf_callback = {
 	}
 }
 
-# Monthly: refresh the Cultural View reminder. Settings > Enabled is the mod-wide master
-# switch, so with it off the alerts are cleared and the window is closed.
+# Monthly. The Cultural Views work itself (auto improve, curry, reminder
+# refresh) runs inside the base mod's monthly pass, which only runs while
+# Settings > Enabled - the mod-wide master switch - is on. Here:
+# - Enabled on: clear atd_enh_currying_seen before the base mod opens its
+#   hidden-window cycle, so the curry trackers refill it with this month's
+#   curries (as the base mod's atd_gui_sync_begin does for its own list), and
+#   rebuild atd_enh_curry_watch, the countries atd_enh_curry_tracker.gui checks.
+# - Enabled off: clear the alerts and close the window.
 cmf_monthly_human_country_pulse = {
 	on_actions = {
 		atd_enh_on_monthly
@@ -32,10 +38,30 @@ atd_enh_on_monthly = {
 	effect = {
 		if = {
 			limit = { has_variable = atd_enabled }
-			atd_enh_update_culture_view_notify = yes
+			if = {
+				limit = { has_variable_list = atd_enh_currying_seen }
+				clear_variable_list = atd_enh_currying_seen
+			}
+			if = {
+				limit = { has_variable_list = atd_enh_curry_watch }
+				clear_variable_list = atd_enh_curry_watch
+			}
+			if = {
+				limit = { has_variable = atd_enh_curry_cv_enabled }
+				every_country_in_diplomatic_range = {
+					limit = { is_dominant_country_of = culture }
+					root = {
+						add_to_variable_list = {
+							name = atd_enh_curry_watch
+							target = prev
+						}
+					}
+				}
+			}
 		}
 		else = {
 			atd_enh_clear_culture_view_alerts = yes
+			cmf_remove_alert = { alert = atd_enh_alert_culture_view_improved }
 			if = {
 				limit = { has_variable = atd_enh_culture_view_window_open }
 				remove_variable = atd_enh_culture_view_window_open

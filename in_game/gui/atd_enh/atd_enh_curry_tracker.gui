@@ -1,0 +1,61 @@
+﻿# [ATD-ENH] Curry tracker for Curry Favors for Cultural Views.
+# Registered in gui/scripted_widgets/atd_enh_scripted_widgets.txt so it exists.
+# See atd_enh_cmm_effects.txt for the overview.
+#
+# Script has no trigger for "we are currying favors with X", only GUI
+# functions. Once per monthly cycle this hidden widget asks the game, for each
+# country in atd_enh_curry_watch (every country in diplomatic range that leads
+# its culture; rebuilt by atd_enh_on_monthly), whether you are currying favors
+# with it, and reports each one to atd_enh_curry_sync_track, which fills
+# atd_enh_currying_seen.
+#
+# It uses the same game data as the Diplomacy screen's country cards
+# (diplomacy_macrobuilder_lateralview.gui): GetQuickTemporaryCountryRelations
+# -> GetTemporaryRelation(country) -> OngoingRelationCountry.IsCurryingFavors.
+# That makes it independent of outliner_entries.gui, which several UI mods
+# replace; the outliner widget (atd_enh_outliner_widgets.gui) is a second,
+# redundant source. Both feed the same list, and adding twice is harmless.
+#
+# Fires on the base mod's atd_should_run gate, like its outliner sync widget,
+# so the list is filled during the hidden window's 0.5s settle before
+# atd_gui_sync_step reads it.
+widget = {
+	name = "atd_enh_curry_tracker"
+	position = { -10000 1 }
+	size = { 0 0 }
+	# Keeps descendant visibility gates re-evaluating each frame (as the base
+	# mod's atd_hidden_window does).
+	visible = "[EqualTo_CFixedPoint('(CFixedPoint)0', '(CFixedPoint)0')]"
+
+	widget = {
+		size = { 0 0 }
+		visible = "[GetPlayer.Exists]"
+		datacontext = "[GetQuickTemporaryCountryRelations(GetPlayer.Self)]"
+
+		vbox = {
+			datamodel = "[GetPlayer.MakeScope.GetList('atd_enh_curry_watch')]"
+
+			item = {
+				widget = {
+					size = { 0 0 }
+					datacontext = "[Scope.Country]"
+					visible = "[QuickTemporaryCountryRelations.HasTemporaryRelation(Country.Self)]"
+
+					widget = {
+						size = { 0 0 }
+						datacontext = "[QuickTemporaryCountryRelations.GetTemporaryRelation(Country.Self)]"
+						# visible_at_creation = no forces an initial false
+						# state, so the gate opening fires _show even for an
+						# item created mid-cycle.
+						visible_at_creation = no
+						visible = "[And(OngoingRelationCountry.IsCurryingFavors, GetScriptedGui('atd_should_run').IsShown(GuiScope.SetRoot(GetPlayer.MakeScope).End))]"
+						state = {
+							name = _show
+							on_start = "[GetScriptedGui('atd_enh_curry_sync_track').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('atd_enh_country', Country.MakeScope).End)]"
+						}
+					}
+				}
+			}
+		}
+	}
+}

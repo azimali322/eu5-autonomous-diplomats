@@ -1,1 +1,2 @@
 ﻿gui/atd_enh/atd_enh_culture_view_window.gui = atd_enh_culture_view_window
+gui/atd_enh/atd_enh_curry_tracker.gui = atd_enh_curry_tracker

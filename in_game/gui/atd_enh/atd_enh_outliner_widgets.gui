@@ -1,0 +1,28 @@
+﻿# [ATD-ENH] Outliner widget for the Cultural Views curry automation.
+# See atd_enh_cmm_effects.txt for the overview.
+#
+# Script cannot see which countries you are currying favors with - there is no
+# trigger for it, only GUI functions. The outliner, though, shows one
+# curry_favors_diplomatic_entry per ongoing curry, so this widget is placed in
+# that entry (one tagged line in outliner_entries.gui) and reports its country
+# once per monthly cycle, populating atd_enh_currying_seen. It mirrors the base
+# mod's atd_outliner_sync_widget, which does the same for improve-opinion
+# entries, and rides the same atd_should_run gate, so the list is filled during
+# the hidden window's 0.5s settle before atd_gui_sync_step reads it.
+#
+# Placed in icon_content because that block renders whenever the entry exists
+# (button_setup only renders while the player hovers or pins the outliner).
+# visible_at_creation = no forces an initial false state, so the gate firing
+# still triggers _show on an entry created mid-cycle.
+types atd_enh_outliner {
+	type atd_enh_outliner_curry_sync_widget = widget {
+		datacontext = "[OutlinerDiplomacyEntry.GetTargetCountry]"
+		size = { 0 0 }
+		visible_at_creation = no
+		visible = "[GetScriptedGui('atd_should_run').IsShown(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+		state = {
+			name = _show
+			on_start = "[GetScriptedGui('atd_enh_curry_sync_track').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('atd_enh_country', Country.MakeScope).End)]"
+		}
+	}
+}

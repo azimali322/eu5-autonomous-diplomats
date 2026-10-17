@@ -10,12 +10,21 @@
 #   atd_enforce_effects.txt - one switch case (enh_improve_cultural_view) and
 #                             two Skip Subject Culture Leaders guards in
 #                             atd_enforce_culture_on_subjects
+#   atd_hidden_window_scripted_gui.txt - two calls in atd_gui_sync_step
+#                             (atd_enh_cultural_view_spend, _build)
+#   outliner_entries.gui    - one widget in curry_favors_diplomatic_entry that
+#                             reports ongoing curries (atd_enh_outliner_widgets.gui)
 #
-# Cultural View Reminders (Auto Interactions tab): an alert, an action-bar
-# button and a clickable window listing the countries whose culture's view of
-# yours you can improve right now with Improve Cultural View - you have the 50
-# favors it costs. The action itself stays manual. Pairs with the base mod's
-# Auto-Gifting, which builds the favors.
+# Cultural Views (Auto Interactions tab, atd_enh_culture_view_effects.txt):
+# - Curry Favors for Cultural Views: keeps curries running with countries that
+#   lead their culture, until you have the 50 favors Improve Cultural View costs.
+# - Auto Improve Cultural View: uses Improve Cultural View the month you reach
+#   50 favors, before the 1%-a-month favor decay takes them away.
+# - Notify: alerts when you can improve a cultural view yourself, and when the
+#   automation did; plus an action-bar button and window listing every country
+#   you can improve right now.
+# Only countries that would accept are targeted: their opinion of you above
+# 50, no rivalry either way, and for currying, their trust in you at least 50.
 #
 # Improve Cultural View (Subjects tab, row 3 of Subject Actions): replicates
 # the vanilla improve_cultural_view_subject action (atd_enh_subject_effects.txt).
@@ -30,7 +39,49 @@ atd_enh_register = {
 	cmf_add_action_bar_element = { element = atd_enh_open_culture_view }
 
 	# ----- Auto Interactions (interactions) Tab -----------------------------
-	## Cultural View Reminders (enh_culture_view) Group
+	## Cultural Views (enh_culture_view) Group
+	# Off by default: currying ties up diplomats for years.
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_curry_cv_enabled
+		tab_id = interactions
+		group_id = enh_culture_view
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_curry_cv_enabled
+		alias = atd_enh_curry_cv_enabled
+	}
+
+	# How many curries to keep running at once (each ties up a diplomat).
+	cmm_register_slider_setting = {
+		mod_id = atd
+		setting_id = enh_curry_cv_count
+		tab_id = interactions
+		group_id = enh_culture_view
+		default_value = 2
+		min_value = 1
+		max_value = 10
+		step_value = 1
+	}
+	cmm_sync_setting_alias = {
+		setting = atd__enh_curry_cv_count
+		alias = atd_enh_curry_cv_count
+	}
+
+	# Off by default: it spends 50 favors and a diplomat without asking.
+	cmm_register_bool_setting = {
+		mod_id = atd
+		setting_id = enh_auto_improve_cv_enabled
+		tab_id = interactions
+		group_id = enh_culture_view
+		default_value = 0
+	}
+	cmm_sync_bool_alias = {
+		setting = atd__enh_auto_improve_cv_enabled
+		alias = atd_enh_auto_improve_cv_enabled
+	}
+
 	cmm_register_bool_setting = {
 		mod_id = atd
 		setting_id = enh_culture_view_notify_enabled
@@ -100,14 +151,36 @@ atd_enh_handle_cmf_callback = {
 			atd_enh_toggle_culture_view_window = yes
 			atd_enh_update_culture_view_notify = yes
 		}
-		## Auto Interactions tab - Cultural View Reminders group
+		## Auto Interactions tab - Cultural Views group
+		flag:atd__enh_curry_cv_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_curry_cv_enabled
+				alias = atd_enh_curry_cv_enabled
+			}
+		}
+		flag:atd__enh_curry_cv_count = {
+			cmm_sync_setting_alias = {
+				setting = atd__enh_curry_cv_count
+				alias = atd_enh_curry_cv_count
+			}
+		}
+		flag:atd__enh_auto_improve_cv_enabled = {
+			cmm_sync_bool_alias = {
+				setting = atd__enh_auto_improve_cv_enabled
+				alias = atd_enh_auto_improve_cv_enabled
+			}
+		}
 		flag:atd__enh_culture_view_notify_enabled = {
 			cmm_sync_bool_alias = {
 				setting = atd__enh_culture_view_notify_enabled
 				alias = atd_enh_culture_view_notify_enabled
 			}
-			# Show or clear the alert straight away.
+			# Show or clear the alerts straight away.
 			atd_enh_update_culture_view_notify = yes
+			if = {
+				limit = { NOT = { has_variable = atd_enh_culture_view_notify_enabled } }
+				cmf_remove_alert = { alert = atd_enh_alert_culture_view_improved }
+			}
 		}
 		## Subjects tab - Options group
 		flag:atd__enh_enforce_culture_skip_leaders = {

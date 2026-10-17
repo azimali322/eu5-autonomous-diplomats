@@ -1,13 +1,202 @@
 ﻿# ==========================================================================
-# [ATD-ENH] Cultural View Reminders. See atd_enh_cmm_effects.txt for the overview.
+# [ATD-ENH] Cultural Views. See atd_enh_cmm_effects.txt for the overview.
 #
-# Finds the countries whose culture's view of yours you can improve right now
-# with the game's Improve Cultural View diplomatic action, and surfaces them in
-# an alert and in the Cultural Views window
-# (gui/atd_enh/atd_enh_culture_view_window.gui). The player uses the action
-# from the country's diplomacy screen.
+# Builds favors with countries that lead their culture (Curry Favors for
+# Cultural Views), spends them on the game's Improve Cultural View diplomatic
+# action the month they reach 50 (Auto Improve Cultural View), and surfaces
+# what is left to do in alerts and the Cultural Views window
+# (gui/atd_enh/atd_enh_culture_view_window.gui).
+#
+# Monthly order, inside the base mod's atd_gui_sync_step (two tagged
+# [ATD-ENH] lines): atd_enh_cultural_view_spend runs first, before the base
+# mod's own actions claim diplomats, because since 1.4.1 favors decay by 1% a
+# month (FAVORS_DECAY): a curry stops at 50, and a month later the 50 is gone.
+# atd_enh_cultural_view_build runs after Auto-Gifting and before Improve
+# Relations, and finishes by refreshing the reminder so it only lists what the
+# automation left for you.
 # Every effect here runs in the player country's scope (root).
 # ==========================================================================
+
+# ----- Auto Improve Cultural View -------------------------------------------
+# Uses Improve Cultural View on every country that qualifies right now (see
+# atd_enh_can_improve_cultural_view: it leads its culture, would accept, and you
+# have the 50 favors it costs). One diplomat per use, above the diplomat
+# reserve; the minimum monthly diplomat gain does not apply, as this is a
+# one-time cost rather than an ongoing drain (the base mod's rule for gifts).
+atd_enh_cultural_view_spend = {
+	if = {
+		limit = {
+			has_variable = atd_enh_auto_improve_cv_enabled
+			is_dominant_country_of = culture
+		}
+		save_scope_as = atd_enh_actor
+		set_variable = { name = atd_enh_action_threshold value = { value = var:atd_min_diplomats add = 1 } }
+		while = {
+			count = 10
+			limit = {
+				num_of_diplomats >= var:atd_enh_action_threshold
+				any_country_in_diplomatic_range = { atd_enh_can_auto_improve_now = yes }
+			}
+			ordered_country_in_diplomatic_range = {
+				limit = { atd_enh_can_auto_improve_now = yes }
+				order_by = num_locations
+				max = 1
+				save_scope_as = atd_enh_cv_target
+				scope:atd_enh_actor = { atd_enh_improve_cultural_view_now = yes }
+			}
+		}
+		# Tell the player, if they want cultural view alerts.
+		if = {
+			limit = {
+				has_variable_list = atd_enh_cv_improved_this_tick
+				has_variable = atd_enh_culture_view_notify_enabled
+			}
+			cmf_show_alert = { alert = atd_enh_alert_culture_view_improved }
+		}
+		if = {
+			limit = { has_variable_list = atd_enh_cv_improved_this_tick }
+			clear_variable_list = atd_enh_cv_improved_this_tick
+		}
+	}
+}
+
+# Performs Improve Cultural View on scope:atd_enh_cv_target and records it.
+# Scope: player country (scope:atd_enh_actor).
+atd_enh_improve_cultural_view_now = {
+	perform_diplomatic_action = {
+		type = improve_cultural_view
+		actor = scope:atd_enh_actor
+		recipient = scope:atd_enh_cv_target
+	}
+	add_to_variable_list = { name = atd_enh_cv_improved_this_tick target = scope:atd_enh_cv_target }
+	# Named by the "Cultural View Improved" alert.
+	set_variable = { name = atd_enh_cv_improved_last value = scope:atd_enh_cv_target }
+	scope:atd_enh_cv_target = {
+		# The curry that built these favors is over; let Curry Favors start the
+		# next one right away instead of waiting out its 6-month safety marker.
+		if = {
+			limit = { has_variable = atd_enh_curry_attempt }
+			remove_variable = atd_enh_curry_attempt
+		}
+		save_scope_as = cmf_log_arg2
+	}
+	cmf_log_with_scope_arg = { action = atd_enh_log_cv_improved }
+}
+
+# ----- Curry Favors for Cultural Views --------------------------------------
+# Keeps up to "Countries to Curry at Once" curries running with countries that
+# lead their culture (see atd_enh_can_start_curry), starting with cultures that
+# are part of your own population, then the largest countries. The curry stops
+# by itself at 50 favors (CURRY_FAVORS_MAX_FAVORS), which is exactly what Improve
+# Cultural View costs.
+# Running curries are counted from atd_enh_currying_seen, which two GUI
+# trackers fill with every curry really in progress this month
+# (atd_enh_curry_tracker.gui, which asks the game directly, and
+# atd_enh_outliner_widgets.gui in the outliner) - so a curry that ended, was
+# cancelled, or was started by hand is counted correctly. A curry this mod
+# started in the last 6 months also counts while unconfirmed, so if both
+# trackers ever failed (say, another mod broke them), it could still never run
+# more curries than the setting allows.
+# Curries are ongoing diplomat drains, so they respect both the diplomat reserve
+# and the minimum monthly diplomat gain, like Improve Relations.
+atd_enh_cultural_view_build = {
+	if = {
+		limit = {
+			has_variable = atd_enh_curry_cv_enabled
+			is_dominant_country_of = culture
+		}
+		save_scope_as = atd_enh_actor
+		set_variable = { name = atd_enh_action_threshold value = { value = var:atd_min_diplomats add = 1 } }
+		# Curries already running with countries that lead their culture...
+		set_variable = { name = atd_enh_curry_n value = 0 }
+		if = {
+			limit = { has_variable_list = atd_enh_currying_seen }
+			every_in_list = {
+				variable = atd_enh_currying_seen
+				limit = { is_dominant_country_of = culture }
+				root = { change_variable = { name = atd_enh_curry_n add = 1 } }
+			}
+		}
+		# ...plus ones this mod started in the last 6 months that no tracker
+		# confirmed (the safety net described above).
+		every_country_in_diplomatic_range = {
+			limit = {
+				has_variable = atd_enh_curry_attempt
+				root = {
+					OR = {
+						NOT = { has_variable_list = atd_enh_currying_seen }
+						NOT = {
+							is_target_in_variable_list = {
+								name = atd_enh_currying_seen
+								target = prev
+							}
+						}
+					}
+				}
+			}
+			root = { change_variable = { name = atd_enh_curry_n add = 1 } }
+		}
+		while = {
+			count = 10
+			limit = {
+				var:atd_enh_curry_n < var:atd_enh_curry_cv_count
+				num_of_diplomats >= var:atd_enh_action_threshold
+				atd_meets_min_diplomat_gain = yes
+				any_country_in_diplomatic_range = { atd_enh_can_start_curry = yes }
+			}
+			# Cultures that are part of your own population first.
+			if = {
+				limit = {
+					any_country_in_diplomatic_range = {
+						atd_enh_can_start_curry = yes
+						atd_enh_culture_is_in_our_country = yes
+					}
+				}
+				ordered_country_in_diplomatic_range = {
+					limit = {
+						atd_enh_can_start_curry = yes
+						atd_enh_culture_is_in_our_country = yes
+					}
+					order_by = num_locations
+					max = 1
+					save_scope_as = atd_enh_curry_target
+					scope:atd_enh_actor = { atd_enh_start_curry = yes }
+				}
+			}
+			else = {
+				ordered_country_in_diplomatic_range = {
+					limit = { atd_enh_can_start_curry = yes }
+					order_by = num_locations
+					max = 1
+					save_scope_as = atd_enh_curry_target
+					scope:atd_enh_actor = { atd_enh_start_curry = yes }
+				}
+			}
+		}
+		remove_variable = atd_enh_curry_n
+	}
+	# Last step of the monthly pass: the reminder lists only what is left.
+	atd_enh_update_culture_view_notify = yes
+}
+
+# Starts Curry Favors with scope:atd_enh_curry_target and records it.
+# Scope: player country (scope:atd_enh_actor).
+atd_enh_start_curry = {
+	perform_diplomatic_action = {
+		type = curry_favors
+		actor = scope:atd_enh_actor
+		recipient = scope:atd_enh_curry_target
+	}
+	# Counts toward the limit straight away and is not picked again this pass;
+	# the outliner reports it from next month on.
+	add_to_variable_list = { name = atd_enh_currying_seen target = scope:atd_enh_curry_target }
+	change_variable = { name = atd_enh_curry_n add = 1 }
+	scope:atd_enh_curry_target = {
+		set_variable = { name = atd_enh_curry_attempt value = yes months = 6 }
+		save_scope_as = cmf_log_arg2
+	}
+	cmf_log_with_scope_arg = { action = atd_enh_log_curry_started }
+}
 
 # Rebuilds atd_enh_culture_view_list: every country you can use Improve
 # Cultural View on right now. The window binds its list straight to it.
