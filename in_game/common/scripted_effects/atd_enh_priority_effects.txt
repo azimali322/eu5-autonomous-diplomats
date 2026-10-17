@@ -1,0 +1,59 @@
+﻿# ==========================================================================
+# [ATD-ENH] Automation Priority. See atd_enh_cmm_effects.txt for the overview.
+#
+# Runs the monthly automations in the order set by the Automation Priority
+# list (Settings tab), so whichever is higher claims free diplomats first. It
+# replaces the base mod's fixed order in atd_gui_sync_step (one tagged
+# [ATD-ENH] call there; the comment beside it shows how to restore the original
+# lines). The default order is the base mod's own, with Curry Favors for
+# Cultural Views slotted in before Improve Relations.
+#
+# Pinned outside the list:
+# - first: Auto Improve Cultural View. Favors decay 1% a month since 1.4.1, so
+#   a country at 50 favors must be improved before anything else takes the
+#   diplomat it needs.
+# - last: the Cultural Views reminder refresh, so the alert reflects what every
+#   step left behind (Auto-Gifting can push a country to 50, for example).
+#
+# Priority only decides who gets the diplomats that are free this month; it
+# never cancels actions already running. Each step keeps its own on/off
+# setting, its diplomat reserve, and its internal order (the Subject Actions,
+# Improve Relations and Auto-Gifting lists).
+# Root and scope: player country (atd_gui_sync_step's root).
+# ==========================================================================
+
+atd_enh_run_prioritized_pass = {
+	atd_enh_cultural_view_spend = yes
+	cmm_for_each_list_item = {
+		setting = atd__enh_priority
+		effect = atd_enh_priority_each_item
+	}
+	atd_enh_update_culture_view_notify = yes
+}
+
+# Per-row dispatch. The switch reads the row's value before running the step,
+# so steps that loop over their own lists (subjects, improve relations,
+# auto-gifting) cannot disturb it: CMF re-saves the current row on each pass.
+atd_enh_priority_each_item = {
+	switch = {
+		trigger = scope:cmm_list_current_item_value
+		flag:enh_prio_subjects = {
+			atd_enforce_on_subjects = yes
+		}
+		flag:enh_prio_gifts = {
+			atd_process_auto_interactions = yes
+		}
+		flag:enh_prio_curry = {
+			atd_enh_cultural_view_build = yes
+		}
+		flag:enh_prio_improve = {
+			if = {
+				limit = { has_variable = atd_improve_relations_enabled }
+				atd_improve_relations = yes
+			}
+		}
+	}
+
+	cmf_suppress = { v = $i$ }
+	cmf_suppress = { v = $setting$ }
+}

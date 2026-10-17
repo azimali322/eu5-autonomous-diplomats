@@ -47,16 +47,14 @@ atd_clear_pending_confirm = {
 atd_gui_sync_step = {
 	effect = {
 		atd_gui_sync_end = yes
-		# [ATD-ENH] Auto Improve Cultural View: spend 50 favors before they decay.
-		atd_enh_cultural_view_spend = yes
-		atd_enforce_on_subjects = yes
-		atd_process_auto_interactions = yes
-		# [ATD-ENH] Curry Favors for Cultural Views, then refresh its reminder.
-		atd_enh_cultural_view_build = yes
-		if = {
-			limit = { has_variable = atd_improve_relations_enabled }
-			atd_improve_relations = yes
-		}
+		# [ATD-ENH] Runs subjects, auto-gifting, Curry Favors for Cultural Views
+		# and improve relations in the Automation Priority order (Settings tab),
+		# after Auto Improve Cultural View (atd_enh_priority_effects.txt).
+		# To detach, replace this call with the original lines:
+		#   atd_enforce_on_subjects = yes
+		#   atd_process_auto_interactions = yes
+		#   if = { limit = { has_variable = atd_improve_relations_enabled } atd_improve_relations = yes }
+		atd_enh_run_prioritized_pass = yes # [ATD-ENH]
 	}
 }
 

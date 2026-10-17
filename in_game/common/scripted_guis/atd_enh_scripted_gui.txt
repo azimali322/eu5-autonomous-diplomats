@@ -32,6 +32,19 @@ atd_enh_curry_sync_track = {
 	}
 }
 
+# Settings tab - Automation Priority list. CMM applies row edits (drag to
+# reorder) through a scripted GUI named <mod_id>__<setting_id>_on_changed; a
+# list does not render without it. No per-row fields to re-sync.
+atd__enh_priority_on_changed = {
+	scope = country
+
+	effect = {
+		cmm_apply_list_change = {
+			setting = atd__enh_priority
+		}
+	}
+}
+
 # Close button on the Cultural Views window.
 atd_enh_close_culture_view_window = {
 	scope = country

@@ -10,8 +10,9 @@
 #   atd_enforce_effects.txt - one switch case (enh_improve_cultural_view) and
 #                             two Skip Subject Culture Leaders guards in
 #                             atd_enforce_culture_on_subjects
-#   atd_hidden_window_scripted_gui.txt - two calls in atd_gui_sync_step
-#                             (atd_enh_cultural_view_spend, _build)
+#   atd_hidden_window_scripted_gui.txt - atd_gui_sync_step's fixed order of
+#                             steps replaced by one call to
+#                             atd_enh_run_prioritized_pass (Automation Priority)
 #   outliner_entries.gui    - one widget in curry_favors_diplomatic_entry that
 #                             reports ongoing curries (atd_enh_outliner_widgets.gui)
 #
@@ -25,6 +26,11 @@
 #   you can improve right now.
 # Only countries that would accept are targeted: their opinion of you above
 # 50, no rivalry either way, and for currying, their trust in you at least 50.
+#
+# Automation Priority (Settings tab, atd_enh_priority_effects.txt): a draggable
+# list ordering the monthly steps - Subject Actions, Auto-Gifting, Curry Favors
+# for Cultural Views, Improve Relations. Auto Improve Cultural View always runs
+# before all of them.
 #
 # Improve Cultural View (Subjects tab, row 3 of Subject Actions): replicates
 # the vanilla improve_cultural_view_subject action (atd_enh_subject_effects.txt).
@@ -119,6 +125,43 @@ atd_enh_register = {
 	cmm_sync_bool_alias = {
 		setting = atd__enh_enforce_culture_skip_leaders
 		alias = atd_enh_enforce_culture_skip_leaders
+	}
+
+	# ----- Settings (settings) Tab ------------------------------------------
+	# Automation Priority: the order the monthly steps claim free diplomats in
+	# (atd_enh_priority_effects.txt). Defaults to the base mod's own order, with
+	# Curry Favors for Cultural Views before Improve Relations. Auto Improve
+	# Cultural View is not in the list: it always runs first.
+	cmm_register_settings_list = {
+		mod_id = atd
+		setting_id = enh_priority
+		tab_id = settings
+		item_count = 4
+		is_ordered = 1
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_priority
+		item = 1
+		value = flag:enh_prio_subjects
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_priority
+		item = 2
+		value = flag:enh_prio_gifts
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_priority
+		item = 3
+		value = flag:enh_prio_curry
+	}
+	cmm_set_list_item_value = {
+		mod_id = atd
+		setting_id = enh_priority
+		item = 4
+		value = flag:enh_prio_improve
 	}
 }
 

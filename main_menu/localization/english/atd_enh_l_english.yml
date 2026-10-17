@@ -10,7 +10,7 @@
  atd__enh_curry_cv_count_desc: "How many of these curries to keep running at the same time. Each one ties up a diplomat. Curries you started yourself with such countries count too."
  atd__enh_curry_cv_count_format: "[CMMV('atd__enh_curry_cv_count')|0]"
  atd__enh_auto_improve_cv_enabled_name: "Auto Improve Cultural View"
- atd__enh_auto_improve_cv_enabled_desc: "Automatically use Improve Cultural View the month you have 50 favors with a country that would accept it - before the game's 1% monthly favor decay takes them away. Spends the 50 favors and one diplomat, and moves that culture's view of yours one step closer to kindred. Runs before the mod's other actions so it gets a diplomat first. When off, the notification tells you instead, and a country that reached 50 is not curried again until its favors fall below 45."
+ atd__enh_auto_improve_cv_enabled_desc: "Automatically use Improve Cultural View the month you have 50 favors with a country that would accept it - before the game's 1% monthly favor decay takes them away. Spends the 50 favors and one diplomat, and moves that culture's view of yours one step closer to kindred. It always runs first, ahead of everything in the Automation Priority list (Settings tab), so it gets a diplomat before any other action. When off, the notification tells you instead, and a country that reached 50 is not curried again until its favors fall below 45."
  atd__enh_culture_view_notify_enabled_name: "Notify When a Cultural View Can Be Improved"
  atd__enh_culture_view_notify_enabled_desc: "Show an alert whenever you can use Improve Cultural View on a country yourself: it leads its own culture, isn't your subject, would accept (its opinion of you is above 50 and neither of you is the other's rival), its culture doesn't already see yours as kindred, and you have the 50 favors the action costs. Up to three are named; left-click the alert to open the full list. With Auto Improve on, it only shows countries the automation could not handle, such as when no diplomat was free. Also shows a 'Cultural View Improved' alert when Auto Improve uses the action. Only while you lead your own culture and Enabled is on in the Settings tab."
 
@@ -65,7 +65,24 @@
  atd_enh_log_cv_improved: "Spent 50 favors to improve the cultural view of"
  atd_enh_log_curry_started: "Started currying favors with"
 
+ # Settings (settings) Tab - Automation Priority list
+ atd__settings__enh_priority_name: "Automation Priority"
+ atd__settings__enh_priority_desc: "The order in which the monthly automations claim your free diplomats."
+ atd__enh_priority_name: "Automation Priority"
+ atd__enh_priority_desc: "Drag to set which automation gets free diplomats first each month (higher = first). Auto Improve Cultural View always runs before all of these, so a cultural view you can improve is never lost to favor decay. Every step still keeps your diplomat reserve and its own on/off setting; this only decides who spends the diplomats above the reserve. It never cancels actions already running."
+ atd__enh_priority_item_column_name: "Automation"
+ atd__enh_priority_i1_name: "Subject Actions"
+ atd__enh_priority_i1_desc: "Enforce Religion, Enforce Culture and Improve Cultural View on your subjects. Their own order is set in the Subject Actions list on the Subjects tab."
+ atd__enh_priority_i2_name: "Auto-Gifting"
+ atd__enh_priority_i2_desc: "Sending gifts to the countries in the Auto-Gifting queue (Auto Interactions tab)."
+ atd__enh_priority_i3_name: "Curry Favors for Cultural Views"
+ atd__enh_priority_i3_desc: "Starting new curries with countries that lead their culture (Auto Interactions tab). Curries already running keep their diplomats either way."
+ atd__enh_priority_i4_name: "Improve Relations"
+ atd__enh_priority_i4_desc: "Starting new Improve Relations with the categories on the Improve Relations tab, in that list's own order."
+
  # Self-referencing flag keys (silence the engine's unused-flag warnings)
+ atd__enh_priority: "atd__enh_priority"
+ atd__settings__enh_priority: "atd__settings__enh_priority"
  atd__interactions__enh_culture_view: "atd__interactions__enh_culture_view"
  atd__enh_culture_view_notify_enabled: "atd__enh_culture_view_notify_enabled"
  atd__enh_curry_cv_enabled: "atd__enh_curry_cv_enabled"
