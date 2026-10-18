@@ -8,7 +8,7 @@ This build is **Conner's Autonomous Diplomats v1.5** plus:
   - **Curry Favors for Cultural Views** curries favors with countries that lead
     their culture until you have 50.
   - **Auto Improve Cultural View** spends those 50 favors on Improve Cultural
-    View the month they arrive.
+    View the day they arrive.
   - **Notifications** cover both: you can improve one, or the mod just did.
 - **Improve Cultural View** for subjects.
 - **Enforce Culture: Skip Subject Culture Leaders**.
@@ -30,6 +30,23 @@ countries can now refuse Improve Cultural View.
 **Changed since July:** Improve Cultural View now follows the game's rule of
 **one use every 50 years for your whole country**. In July it could fire on
 every eligible subject. See check 3c.
+
+**Changed on October 18:**
+- **Auto Improve Cultural View works now.** The mod used to send it as a
+  proposal, and from a script a proposal never goes through. Your 1360.1.1
+  autosave showed 16 tries: 8 on Kanem, 6 on Mali and 2 on Tunis. Each cost a
+  diplomat and spent none of the favors, and every view stayed the same. The
+  mod now pushes the action through the way the game's own scripts do, still
+  only with countries that would accept. It checks right away whether the view
+  moved, and tries each country at most once every two months. See 2g.
+- **Every automated action keeps both Reserve settings** (Settings tab →
+  Reserve), as you asked:
+  - Minimum Diplomats Reserve now applies to Auto Improve too, which ignored it
+    before;
+  - Minimum Diplomat Gain now applies to Auto-Gifting and Subject Actions too,
+    which Conner had exempted.
+
+  See 2i and 5f.
 
 **Updated for 1.4:** the Community Mod Toolkit's GUI Update Tool merged 1.4's
 changes into the game screens Conner's mod overrides:
@@ -123,7 +140,7 @@ succeed. These are the game's own 1.4.1 rules, plus your "no rivals" rule:
 **Where to look:**
 - the outliner's Diplomacy section shows each "Currying Favors" in progress;
 - the Mod Action Log shows "Started currying favors with X" and "Spent 50
-  favors to improve the cultural view of X".
+  favors and improved the cultural view of X".
 
 **Speeding it up.** A curry takes years to reach 50. The console may accept
 `effect c:FRA = { add_favors = { target = c:TUN value = 49 } }` (FRA = a
@@ -158,32 +175,51 @@ it's rejected, tell Claude.
   than the game text suggests.
 
 ### 2C. Auto Improve Cultural View
-Auto Improve now checks **every day** and needs only **one** free diplomat; it
-ignores your reserve. This is the fix for the October 17 report: a curry
-stopped at 50, Auto Improve didn't fire, and the 50 decayed away.
+Auto Improve checks **every day**, which fixed the October 17 report: a curry
+stopped at 50, Auto Improve didn't fire, and the 50 decayed away. Like every
+automated action, it keeps your **Reserve** settings. It acts only when:
+- you have more diplomats than Minimum Diplomats Reserve (4 in your save);
+- your monthly gain is at least Minimum Diplomat Gain (0.1 in your save).
 
-- [ ] **2g. The same day.** Turn it on. **On the day** a curried country
-  reaches **50 favors** (or the day after you give it 50 in the console), not
-  at the next month:
-  - the Mod Action Log shows "Spent 50 favors to improve the cultural view of
-    …";
+**Fixed on October 18:** it used to send a proposal that never went through
+(see the note at the top). Your favors with Kanem and Mali are at about 48.7
+now, so their curries have to top them back up to 50 first. You can also give
+them 50 in the console.
+
+- [ ] **2g. It really works, the same day.** Turn it on. **On the day** a
+  curried country reaches **50 favors**, not at the next month:
+  - the Mod Action Log shows "Spent 50 favors and improved the cultural view
+    of …";
   - a green **"Cultural View Improved"** alert names it;
   - your favors with it drop by 50, and its culture's view of yours goes up one
     step;
-  - you have one diplomat fewer.
+  - you have one diplomat fewer, and only one.
 
-  **This is the most important check.** If the favors don't drop, or the view
-  doesn't change, tell Claude straight away.
+  **This is the most important check.** Tell Claude straight away if the log
+  says either of these instead:
+  - "Used Improve Cultural View, but the view has not changed yet": the action
+    still didn't apply;
+  - "The game did not charge the 50 favors…": the view went up for free.
 - [ ] **2h.** No refusal appears. The game's own notification, if one shows,
   says it was accepted.
-- [ ] **2i.** It works with only **one** free diplomat, even when your reserve
-  is set higher.
+- [ ] **2i. Reserve.** While your diplomats are at or below Minimum Diplomats
+  Reserve, it waits:
+  - the log says "no diplomat free above your Minimum Diplomats Reserve";
+  - your diplomats stop dropping.
+
+  Once you have more diplomats than the reserve, it fires within a day.
 - [ ] **2j. Skips explain themselves.** If you have 50 favors with a country
   and the mod doesn't press it, the Mod Action Log says why within a day:
   - "you are rivals";
   - "they would refuse until their opinion of you is above 50";
-  - "no free diplomat";
+  - "no diplomat free above your Minimum Diplomats Reserve";
+  - "your monthly diplomat gain is below Minimum Diplomat Gain";
   - "favors stuck just under 50 … their trust in you is below 50".
+
+  An attempt that doesn't go through is logged, and that country is not tried
+  again for two months. After the two months, the log says either "Spent 50
+  favors and improved…" or "did not go through". Your diplomats never drain
+  day after day again.
 
   If none of these appears and it still didn't press, tell Claude. Also hover
   **Improve Cultural View** on that country: does the game say they **will
@@ -272,13 +308,25 @@ actions already running.
   category limits, and Enforce Culture/Religion fire once per their 10-year
   cooldown, as before.
 - [ ] **5e.** The order you set survives a save and reload.
+- [ ] **5f. The Reserve settings apply to everything.** Raise Settings →
+  **Minimum Diplomat Gain** above your current monthly diplomat gain. No new
+  action of any kind starts:
+  - Improve Relations;
+  - Curry Favors for Cultural Views;
+  - Auto Improve Cultural View;
+  - Subject Actions;
+  - Auto-Gifting, whose queue shows "Waiting for diplomats".
+
+  Do the same with **Minimum Diplomats Reserve** at or above your banked
+  diplomats: again nothing starts. Lower them again and everything resumes.
 
 ---
 
 **Checks that decide code changes:**
 - **2c** — exactly the set number of curries at once (the July bug);
 - **2g** — Auto Improve fires the same day favors reach 50, spends them, and
-  raises the view;
+  raises the view (the October 18 fix);
+- **2i** and **5f** — the Reserve settings hold for every action;
 - **2j** — every skip is explained in the Mod Action Log;
 - **2m** and **2n** — the window shows its list, and the favor direction is
   right;
