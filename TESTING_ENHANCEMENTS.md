@@ -158,8 +158,13 @@ it's rejected, tell Claude.
   than the game text suggests.
 
 ### 2C. Auto Improve Cultural View
-- [ ] **2g.** Turn it on. In the month a curried country reaches **50 favors**
-  (or the month after you give it 50 in the console):
+Auto Improve now checks **every day** and needs only **one** free diplomat; it
+ignores your reserve. This is the fix for the October 17 report: a curry
+stopped at 50, Auto Improve didn't fire, and the 50 decayed away.
+
+- [ ] **2g. The same day.** Turn it on. **On the day** a curried country
+  reaches **50 favors** (or the day after you give it 50 in the console), not
+  at the next month:
   - the Mod Action Log shows "Spent 50 favors to improve the cultural view of
     …";
   - a green **"Cultural View Improved"** alert names it;
@@ -171,21 +176,35 @@ it's rejected, tell Claude.
   doesn't change, tell Claude straight away.
 - [ ] **2h.** No refusal appears. The game's own notification, if one shows,
   says it was accepted.
-- [ ] **2i.** Next month the mod starts currying that country again, and the
-  cycle repeats until its culture sees yours as kindred.
+- [ ] **2i.** It works with only **one** free diplomat, even when your reserve
+  is set higher.
+- [ ] **2j. Skips explain themselves.** If you have 50 favors with a country
+  and the mod doesn't press it, the Mod Action Log says why within a day:
+  - "you are rivals";
+  - "they would refuse until their opinion of you is above 50";
+  - "no free diplomat";
+  - "favors stuck just under 50 … their trust in you is below 50".
+
+  If none of these appears and it still didn't press, tell Claude. Also hover
+  **Improve Cultural View** on that country: does the game say they **will
+  accept**? Note their opinion of you. That tells Claude whether the
+  "opinion above 50" rule is right.
+- [ ] **2k.** Next month the mod starts currying that country again, and the
+  cycle repeats until its culture sees yours as kindred. After that it moves on
+  to other countries and never curries a kindred one.
 
 ### 2D. Notifications and the window
-- [ ] **2j.** With **Auto Improve off**, when a country reaches 50 a green
+- [ ] **2l.** With **Auto Improve off**, when a country reaches 50 a green
   **"Cultural View Ready"** alert names it. The mod then leaves that country
   uncurried until its favors decay below 45, so it doesn't spend diplomats
   topping it back up while you decide.
-- [ ] **2k.** Left-click that alert. The **Cultural Views You Can Improve**
+- [ ] **2m.** Left-click that alert. The **Cultural Views You Can Improve**
   window opens with a title, help text and the list. *This window has never
   rendered correctly in-game yet.*
-- [ ] **2l.** Click a listed country to open its diplomacy screen. **Improve
+- [ ] **2n.** Click a listed country to open its diplomacy screen. **Improve
   Cultural View** under Friendly Actions is usable. If it's greyed out for a
   lack of favors, tell Claude, because the favor direction would be wrong.
-- [ ] **2m.** The X button and the **Cultural Views** action-bar button
+- [ ] **2o.** The X button and the **Cultural Views** action-bar button
   (culture icon) both close the window. A right-click dismisses an alert.
   Turning Notify off clears both alerts, and turning Settings → **Enabled** off
   stops everything.
@@ -258,8 +277,10 @@ actions already running.
 
 **Checks that decide code changes:**
 - **2c** — exactly the set number of curries at once (the July bug);
-- **2g** — Auto Improve really spends the 50 favors and raises the view;
-- **2k** and **2l** — the window shows its list, and the favor direction is
+- **2g** — Auto Improve fires the same day favors reach 50, spends them, and
+  raises the view;
+- **2j** — every skip is explained in the Mod Action Log;
+- **2m** and **2n** — the window shows its list, and the favor direction is
   right;
 - **1a** — the merged outliner (the curry tracker lives in it);
 - **3c** — subject cooldown scope;
