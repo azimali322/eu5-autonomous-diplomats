@@ -10,7 +10,7 @@
  atd__enh_curry_cv_count_desc: "How many of these curries to keep running at the same time. Each one ties up a diplomat. Curries you started yourself with such countries count too."
  atd__enh_curry_cv_count_format: "[CMMV('atd__enh_curry_cv_count')|0]"
  atd__enh_auto_improve_cv_enabled_name: "Auto Improve Cultural View"
- atd__enh_auto_improve_cv_enabled_desc: "Automatically use Improve Cultural View the month you have 50 favors with a country that would accept it - before the game's 1% monthly favor decay takes them away. Spends the 50 favors and one diplomat, and moves that culture's view of yours one step closer to kindred. It always runs first, ahead of everything in the Automation Priority list (Settings tab), so it gets a diplomat before any other action. When off, the notification tells you instead, and a country that reached 50 is not curried again until its favors fall below 45."
+ atd__enh_auto_improve_cv_enabled_desc: "Automatically use Improve Cultural View the day you have 50 favors with a country that would accept it. The game stops a curry at exactly 50 and favors decay by 1% a month, so the 50 can be gone within the month: this checks every day, not just once a month. It ignores your diplomat reserve and only needs the one free diplomat the action itself uses. Spends the 50 favors and that diplomat, and moves that culture's view of yours one step closer to kindred. If a country you have 50 favors with is skipped, the Mod Action Log says why: a rival, their opinion of you not above 50 (they would refuse), or no free diplomat. When off, the notification tells you instead, and a country that reached 50 is not curried again until its favors fall below 45."
  atd__enh_culture_view_notify_enabled_name: "Notify When a Cultural View Can Be Improved"
  atd__enh_culture_view_notify_enabled_desc: "Show an alert whenever you can use Improve Cultural View on a country yourself: it leads its own culture, isn't your subject, would accept (its opinion of you is above 50 and neither of you is the other's rival), its culture doesn't already see yours as kindred, and you have the 50 favors the action costs. Up to three are named; left-click the alert to open the full list. With Auto Improve on, it only shows countries the automation could not handle, such as when no diplomat was free. Also shows a 'Cultural View Improved' alert when Auto Improve uses the action. Only while you lead your own culture and Enabled is on in the Settings tab."
 
@@ -64,6 +64,10 @@
  atd_enh_log_subject_cv: "Improved the cultural view of"
  atd_enh_log_cv_improved: "Spent 50 favors to improve the cultural view of"
  atd_enh_log_curry_started: "Started currying favors with"
+ atd_enh_log_cv_wait_rival: "Has 50 favors but will not improve the cultural view (you are rivals) of"
+ atd_enh_log_cv_wait_opinion: "Has 50 favors but waits to improve the cultural view (they would refuse until their opinion of you is above 50) of"
+ atd_enh_log_cv_wait_diplomat: "Has 50 favors but waits to improve the cultural view (no free diplomat) of"
+ atd_enh_log_cv_wait_trust: "Favors stuck just under 50 (curries can't pass their trust in you, which is below 50) with"
 
  # Settings (settings) Tab - Automation Priority list
  atd__settings__enh_priority_name: "Automation Priority"
@@ -89,6 +93,7 @@
  atd__enh_curry_cv_count: "atd__enh_curry_cv_count"
  atd__enh_auto_improve_cv_enabled: "atd__enh_auto_improve_cv_enabled"
  atd_enh_cv_improved_last: "atd_enh_cv_improved_last"
+ atd_enh_cv_count_now: "atd_enh_cv_count_now"
  atd__subjects__enh_options: "atd__subjects__enh_options"
  atd__enh_enforce_culture_skip_leaders: "atd__enh_enforce_culture_skip_leaders"
  atd_enh_cv_t1: "atd_enh_cv_t1"
