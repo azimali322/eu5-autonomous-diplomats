@@ -41,10 +41,12 @@ every eligible subject. See check 3c.
   moved, and tries each country at most once every two months. See 2g.
 - **Every automated action keeps both Reserve settings** (Settings tab →
   Reserve), as you asked:
-  - Minimum Diplomats Reserve now applies to Auto Improve too, which ignored it
-    before;
   - Minimum Diplomat Gain now applies to Auto-Gifting and Subject Actions too,
-    which Conner had exempted.
+    which Conner had exempted;
+  - Auto Improve has its **own** diplomat reserve, the new **Improve Cultural
+    View Reserve** in the same group (second October 18 request). It can be
+    lower than Minimum Diplomats Reserve but never higher, so a curry that
+    reaches 50 is spent even while the other automations hold diplomats back.
 
   See 2i and 5f.
 
@@ -176,9 +178,11 @@ it's rejected, tell Claude.
 
 ### 2C. Auto Improve Cultural View
 Auto Improve checks **every day**, which fixed the October 17 report: a curry
-stopped at 50, Auto Improve didn't fire, and the 50 decayed away. Like every
-automated action, it keeps your **Reserve** settings. It acts only when:
-- you have more diplomats than Minimum Diplomats Reserve (4 in your save);
+stopped at 50, Auto Improve didn't fire, and the 50 decayed away. It keeps your
+**Reserve** settings, with a diplomat reserve of its own. It acts only when:
+- you have more diplomats than **Improve Cultural View Reserve** (Settings →
+  Reserve; it starts at 1). If Minimum Diplomats Reserve is lower, that one is
+  used;
 - your monthly gain is at least Minimum Diplomat Gain (0.1 in your save).
 
 **Fixed on October 18:** it used to send a proposal that never went through
@@ -202,17 +206,23 @@ them 50 in the console.
   - "The game did not charge the 50 favors…": the view went up for free.
 - [ ] **2h.** No refusal appears. The game's own notification, if one shows,
   says it was accepted.
-- [ ] **2i. Reserve.** While your diplomats are at or below Minimum Diplomats
-  Reserve, it waits:
-  - the log says "no diplomat free above your Minimum Diplomats Reserve";
-  - your diplomats stop dropping.
-
-  Once you have more diplomats than the reserve, it fires within a day.
+- [ ] **2i. Its own reserve (the Mali case).** On the Settings tab, the
+  Reserve group has a third slider, **Improve Cultural View Reserve**, with a
+  tooltip. Set Minimum Diplomats Reserve to 4 and Improve Cultural View Reserve
+  to 1.
+  - With 2 or more diplomats and a country at 50 favors, Auto Improve fires
+    within a day, even though the other automations wait for more than 4.
+  - With fewer than 2, it waits, and the log says "no diplomat free above your
+    Improve Cultural View Reserve".
+  - Set it to 0 and it fires with a single free diplomat.
+  - Drag it above Minimum Diplomats Reserve: it snaps back to the same value.
+    Lower Minimum Diplomats Reserve below it, and Auto Improve uses the lower
+    one.
 - [ ] **2j. Skips explain themselves.** If you have 50 favors with a country
   and the mod doesn't press it, the Mod Action Log says why within a day:
   - "you are rivals";
   - "they would refuse until their opinion of you is above 50";
-  - "no diplomat free above your Minimum Diplomats Reserve";
+  - "no diplomat free above your Improve Cultural View Reserve";
   - "your monthly diplomat gain is below Minimum Diplomat Gain";
   - "favors stuck just under 50 … their trust in you is below 50".
 
@@ -318,7 +328,8 @@ actions already running.
   - Auto-Gifting, whose queue shows "Waiting for diplomats".
 
   Do the same with **Minimum Diplomats Reserve** at or above your banked
-  diplomats: again nothing starts. Lower them again and everything resumes.
+  diplomats: nothing starts except Auto Improve, which follows its own
+  Improve Cultural View Reserve (2i). Lower them again and everything resumes.
 
 ---
 
