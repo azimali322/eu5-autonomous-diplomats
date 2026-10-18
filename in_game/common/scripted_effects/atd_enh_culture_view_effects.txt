@@ -40,6 +40,7 @@
 # when that wait ends (atd_enh_verify_cultural_view_attempts), so the Mod Action
 # Log always ends with whether the view really improved.
 atd_enh_cultural_view_spend = {
+	atd_enh_forget_game_sent_attempts = yes
 	atd_enh_verify_cultural_view_attempts = yes
 	if = {
 		limit = {
@@ -75,6 +76,33 @@ atd_enh_cultural_view_spend = {
 			}
 		}
 		atd_enh_explain_cultural_view_waits = yes
+	}
+}
+
+# Once per save: drops the waits of attempts made before Auto Improve applied
+# the action itself (2026-10-18). Those went through the game's action, which
+# may never settle (Kanem's had not after a week), and their two-month wait
+# would keep the country from being tried the working way while its 50 favors
+# decay. atd_enh_cv_direct marks the cleanup done. Scope: player country.
+atd_enh_forget_game_sent_attempts = {
+	if = {
+		limit = { NOT = { has_variable = atd_enh_cv_direct } }
+		if = {
+			limit = { has_variable_list = atd_enh_cv_pending }
+			every_in_list = {
+				variable = atd_enh_cv_pending
+				if = {
+					limit = { has_variable = atd_enh_cv_attempt }
+					remove_variable = atd_enh_cv_attempt
+				}
+				if = {
+					limit = { has_variable = atd_enh_cv_view_before }
+					remove_variable = atd_enh_cv_view_before
+				}
+			}
+			clear_variable_list = atd_enh_cv_pending
+		}
+		set_variable = atd_enh_cv_direct
 	}
 }
 
@@ -309,30 +337,41 @@ atd_enh_schedule_daily_checks = {
 	trigger_event_silently = { on_action = atd_enh_daily_check days = 30 }
 }
 
-# Performs Improve Cultural View on scope:atd_enh_cv_target, then checks right
-# away whether its culture's view of yours really moved.
-# mode = accept, as in every perform_diplomatic_action call in the game's own
-# script (peace_treaties/hegemon_demands.txt) and in other mods that automate
-# country interactions. Without a mode the action is only a proposal ("can be
-# rejected": DIPLO_ACTION_IS_PROPOSAL), and from script it never went through:
-# a 1360.1.1 save (reported 2026-10-18) logged 16 attempts on Kanem, Mali and
-# Tunis, each costing a diplomat, with every favor still unspent and no view
-# changed. Their consent still counts: only countries that would accept are
-# picked (atd_enh_cultural_view_target: opinion of you above 50, no rivals).
+# Uses Improve Cultural View on scope:atd_enh_cv_target by applying it directly,
+# the way the base mod runs Enforce Culture/Religion and this layer runs the
+# subject version (atd_enh_subject_effects.txt). It mirrors the vanilla
+# interaction (country_interactions/improve_cultural_view.txt):
+#   effect  - their culture's view of yours one step up (change_cultural_view
+#             change = 1)
+#   cost    - the 50 favors of improve_cultural_view_cost, and the diplomat that
+#             carries it
+#   consent - only countries that would accept are picked
+#             (atd_enh_cultural_view_target: opinion of you above 50, no rivals)
+# Validator check 11 holds these to the game's numbers.
+# Performing the game's action from script could not be relied on (reported
+# 2026-10-18, read from the player's saves):
+#   - without a mode it is only a proposal, which never went through (16 tries);
+#   - with mode = accept the game settled it weeks later, and only if the
+#     favors were still at 50 by then. They decay by 1% a month from the moment
+#     a curry tops out, so Mali failed once and succeeded once, and Kanem sat
+#     unresolved while its favors slid toward 49.
 # Every attempt starts a two-month wait with that country (atd_enh_cv_attempt),
-# so even a failure can never be repeated daily again.
+# so even a failure can never repeat daily.
 # Scope: player country (scope:atd_enh_actor).
 atd_enh_improve_cultural_view_now = {
 	scope:atd_enh_cv_target = {
 		atd_enh_save_cv_view = yes
 		set_variable = { name = atd_enh_cv_attempt value = yes months = 2 }
+		culture = {
+			change_cultural_view = {
+				target = scope:atd_enh_actor.culture
+				change = 1
+			}
+		}
 	}
-	perform_diplomatic_action = {
-		type = improve_cultural_view
-		actor = scope:atd_enh_actor
-		recipient = scope:atd_enh_cv_target
-		mode = accept
-	}
+	# The action's cost: you lose 50 favors with them, and a diplomat.
+	add_favors = { target = scope:atd_enh_cv_target value = -50 }
+	add_diplomats = -1
 	scope:atd_enh_cv_target = {
 		save_scope_as = cmf_log_arg2
 		if = {
@@ -346,9 +385,8 @@ atd_enh_improve_cultural_view_now = {
 			}
 			root = {
 				atd_enh_report_cultural_view_improved = yes
-				# The game's own cost should have taken the 50 favors. Say so if it
-				# did not, so a free improvement shows up in the log (the two-month
-				# wait already stops it from repeating).
+				# Say so if the 50 favors were not taken, so a free improvement shows
+				# up in the log (the two-month wait already stops it from repeating).
 				if = {
 					limit = { scope:cmf_log_arg2 = { prev_favors_with_this >= 50 } }
 					cmf_log_with_scope_arg = { action = atd_enh_log_cv_not_charged }
