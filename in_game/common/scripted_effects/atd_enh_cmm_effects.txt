@@ -19,8 +19,10 @@
 # Cultural Views (Auto Interactions tab, atd_enh_culture_view_effects.txt):
 # - Curry Favors for Cultural Views: keeps curries running with countries that
 #   lead their culture, until you have the 50 favors Improve Cultural View costs.
-# - Auto Improve Cultural View: uses Improve Cultural View the month you reach
-#   50 favors, before the 1%-a-month favor decay takes them away.
+# - Auto Improve Cultural View: uses Improve Cultural View the day you reach
+#   50 favors, before the 1%-a-month favor decay takes them away. It keeps
+#   its own diplomat reserve, Improve Cultural View Reserve (Settings tab,
+#   Reserve group), which is never above Minimum Diplomats Reserve.
 # - Notify: alerts when you can improve a cultural view yourself, and when the
 #   automation did; plus an action-bar button and window listing every country
 #   you can improve right now.
@@ -128,6 +130,24 @@ atd_enh_register = {
 	}
 
 	# ----- Settings (settings) Tab ------------------------------------------
+	## Reserve (reserve) Group - the base mod's group
+	# Improve Cultural View Reserve: Auto Improve Cultural View's own diplomat
+	# reserve, used instead of Minimum Diplomats Reserve and never above it
+	# (atd_enh_cultural_view_spend), so a curry that reaches 50 can be spent
+	# while the other automations are holding diplomats back (the player's
+	# call, 2026-10-18). Same range and step as Minimum Diplomats Reserve.
+	cmm_register_slider_setting = {
+		mod_id = atd
+		setting_id = enh_cv_min_diplomats
+		tab_id = settings
+		group_id = reserve
+		default_value = 1
+		min_value = 0
+		max_value = 10
+		step_value = 0.1
+	}
+	atd_enh_sync_cv_reserve = yes
+
 	# Automation Priority: the order the monthly steps claim free diplomats in
 	# (atd_enh_priority_effects.txt). Defaults to the base mod's own order, with
 	# Curry Favors for Cultural Views before Improve Relations. Auto Improve
@@ -231,6 +251,33 @@ atd_enh_handle_cmf_callback = {
 				setting = atd__enh_enforce_culture_skip_leaders
 				alias = atd_enh_enforce_culture_skip_leaders
 			}
+		}
+		## Settings tab - Reserve group
+		flag:atd__enh_cv_min_diplomats = {
+			atd_enh_sync_cv_reserve = yes
+		}
+	}
+}
+
+# Reads Improve Cultural View Reserve into atd_enh_cv_min_diplomats. A value
+# above Minimum Diplomats Reserve is set back to it, so the menu shows the
+# reserve Auto Improve really keeps; Auto Improve also takes the lower of the
+# two at the time it runs, in case Minimum Diplomats Reserve is lowered later.
+# Scope: country
+atd_enh_sync_cv_reserve = {
+	cmm_sync_setting_alias = {
+		setting = atd__enh_cv_min_diplomats
+		alias = atd_enh_cv_min_diplomats
+	}
+	if = {
+		limit = {
+			has_variable = atd_min_diplomats
+			var:atd_enh_cv_min_diplomats > var:atd_min_diplomats
+		}
+		cmm_set_setting_value = { setting = atd__enh_cv_min_diplomats value = var:atd_min_diplomats }
+		cmm_sync_setting_alias = {
+			setting = atd__enh_cv_min_diplomats
+			alias = atd_enh_cv_min_diplomats
 		}
 	}
 }

@@ -8,7 +8,8 @@
 # (gui/atd_enh/atd_enh_culture_view_window.gui).
 # Like every automated action in the mod, both spend diplomats only while you
 # keep the Reserve settings (Settings tab): more than Minimum Diplomats Reserve
-# banked, and a monthly gain of at least Minimum Diplomat Gain.
+# banked - for Auto Improve, its own Improve Cultural View Reserve, which is
+# never higher - and a monthly gain of at least Minimum Diplomat Gain.
 #
 # Monthly order: atd_enh_run_prioritized_pass (atd_enh_priority_effects.txt)
 # runs atd_enh_cultural_view_spend first, before any other action claims a
@@ -27,10 +28,13 @@
 # day (atd_enh_cultural_view_daily) as well as first in the monthly pass:
 # curries stop exactly at 50 and favors decay 1% a month, so the 50 can last
 # less than a month - a monthly check missed it.
-# It keeps the Reserve settings like every other action (the player's call on
-# 2026-10-18, replacing the earlier one-free-diplomat rule): it needs more
-# diplomats than Minimum Diplomats Reserve and a monthly gain of at least
-# Minimum Diplomat Gain.
+# It keeps the Reserve settings like every other action, with its own diplomat
+# reserve (the player's calls on 2026-10-18): it needs more diplomats than
+# Improve Cultural View Reserve - or Minimum Diplomats Reserve, if that is
+# lower - and a monthly gain of at least Minimum Diplomat Gain. Its reserve can
+# sit below the others' so that a curry reaching 50 is spent while the other
+# automations are holding diplomats back (reported: Mali reached 50 with fewer
+# diplomats than the reserve of 4, and the 50 decayed).
 # Each attempt is checked straight away (atd_enh_improve_cultural_view_now). One
 # that did not go through is not repeated for two months, and is checked again
 # when that wait ends (atd_enh_verify_cultural_view_attempts), so the Mod Action
@@ -43,11 +47,22 @@ atd_enh_cultural_view_spend = {
 			is_dominant_country_of = culture
 		}
 		save_scope_as = atd_enh_actor
-		set_variable = { name = atd_enh_action_threshold value = { value = var:atd_min_diplomats add = 1 } }
+		# The lower of Improve Cultural View Reserve and Minimum Diplomats
+		# Reserve, plus the diplomat the action uses. Until the setting is
+		# registered, Minimum Diplomats Reserve alone.
+		set_variable = { name = atd_enh_cv_threshold value = var:atd_min_diplomats }
+		if = {
+			limit = {
+				has_variable = atd_enh_cv_min_diplomats
+				var:atd_enh_cv_min_diplomats < var:atd_min_diplomats
+			}
+			set_variable = { name = atd_enh_cv_threshold value = var:atd_enh_cv_min_diplomats }
+		}
+		change_variable = { name = atd_enh_cv_threshold add = 1 }
 		while = {
 			count = 10
 			limit = {
-				num_of_diplomats >= var:atd_enh_action_threshold
+				num_of_diplomats >= var:atd_enh_cv_threshold
 				atd_meets_min_diplomat_gain = yes
 				any_country_in_diplomatic_range = { atd_enh_can_auto_improve_now = yes }
 			}
@@ -150,7 +165,7 @@ atd_enh_save_cv_view = {
 # already see your culture as kindred). Runs right after the improvements, so
 # countries just improved are below 50 again, and countries just tried are in
 # their two-month wait (their attempt has its own log entry); neither is
-# reported. Reads atd_enh_action_threshold, set by atd_enh_cultural_view_spend.
+# reported. Reads atd_enh_cv_threshold, set by atd_enh_cultural_view_spend.
 # Scope: player country (root).
 atd_enh_explain_cultural_view_waits = {
 	every_country_in_diplomatic_range = {
@@ -185,7 +200,7 @@ atd_enh_explain_cultural_view_waits = {
 			root = { cmf_log_with_scope_arg = { action = atd_enh_log_cv_wait_opinion } }
 		}
 		else_if = {
-			limit = { root = { NOT = { num_of_diplomats >= var:atd_enh_action_threshold } } }
+			limit = { root = { NOT = { num_of_diplomats >= var:atd_enh_cv_threshold } } }
 			root = { cmf_log_with_scope_arg = { action = atd_enh_log_cv_wait_diplomat } }
 		}
 		else_if = {
