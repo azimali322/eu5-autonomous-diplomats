@@ -3,9 +3,12 @@
 #
 # Builds favors with countries that lead their culture (Curry Favors for
 # Cultural Views), spends them on the game's Improve Cultural View diplomatic
-# action the month they reach 50 (Auto Improve Cultural View), and surfaces
+# action the day they reach 50 (Auto Improve Cultural View), and surfaces
 # what is left to do in alerts and the Cultural Views window
 # (gui/atd_enh/atd_enh_culture_view_window.gui).
+# Like every automated action in the mod, both spend diplomats only while you
+# keep the Reserve settings (Settings tab): more than Minimum Diplomats Reserve
+# banked, and a monthly gain of at least Minimum Diplomat Gain.
 #
 # Monthly order: atd_enh_run_prioritized_pass (atd_enh_priority_effects.txt)
 # runs atd_enh_cultural_view_spend first, before any other action claims a
@@ -19,25 +22,33 @@
 
 # ----- Auto Improve Cultural View -------------------------------------------
 # Uses Improve Cultural View on every country that qualifies right now (see
-# atd_enh_can_improve_cultural_view: it leads its culture, would accept, and you
-# have the 50 favors it costs). Runs every day (atd_enh_cultural_view_daily) as
-# well as first in the monthly pass: curries stop exactly at 50 and favors decay
-# 1% a month, so the 50 can last less than a month - a monthly check missed it.
-# It ignores the diplomat reserve and needs only the one diplomat the action
-# itself uses (the player's call: losing the 50 to decay costs more than
-# dipping into the reserve once). Not the minimum monthly gain either, as this
-# is a one-time cost, not an ongoing drain.
+# atd_enh_can_auto_improve_now: it leads its culture, would accept, you have the
+# 50 favors it costs, and it was not tried in the last two months). Runs every
+# day (atd_enh_cultural_view_daily) as well as first in the monthly pass:
+# curries stop exactly at 50 and favors decay 1% a month, so the 50 can last
+# less than a month - a monthly check missed it.
+# It keeps the Reserve settings like every other action (the player's call on
+# 2026-10-18, replacing the earlier one-free-diplomat rule): it needs more
+# diplomats than Minimum Diplomats Reserve and a monthly gain of at least
+# Minimum Diplomat Gain.
+# Each attempt is checked straight away (atd_enh_improve_cultural_view_now). One
+# that did not go through is not repeated for two months, and is checked again
+# when that wait ends (atd_enh_verify_cultural_view_attempts), so the Mod Action
+# Log always ends with whether the view really improved.
 atd_enh_cultural_view_spend = {
+	atd_enh_verify_cultural_view_attempts = yes
 	if = {
 		limit = {
 			has_variable = atd_enh_auto_improve_cv_enabled
 			is_dominant_country_of = culture
 		}
 		save_scope_as = atd_enh_actor
+		set_variable = { name = atd_enh_action_threshold value = { value = var:atd_min_diplomats add = 1 } }
 		while = {
 			count = 10
 			limit = {
-				num_of_diplomats >= 1
+				num_of_diplomats >= var:atd_enh_action_threshold
+				atd_meets_min_diplomat_gain = yes
 				any_country_in_diplomatic_range = { atd_enh_can_auto_improve_now = yes }
 			}
 			ordered_country_in_diplomatic_range = {
@@ -48,19 +59,87 @@ atd_enh_cultural_view_spend = {
 				scope:atd_enh_actor = { atd_enh_improve_cultural_view_now = yes }
 			}
 		}
-		# Tell the player, if they want cultural view alerts.
-		if = {
-			limit = {
-				has_variable_list = atd_enh_cv_improved_this_tick
-				has_variable = atd_enh_culture_view_notify_enabled
-			}
-			cmf_show_alert = { alert = atd_enh_alert_culture_view_improved }
-		}
-		if = {
-			limit = { has_variable_list = atd_enh_cv_improved_this_tick }
-			clear_variable_list = atd_enh_cv_improved_this_tick
-		}
 		atd_enh_explain_cultural_view_waits = yes
+	}
+}
+
+# Checks every attempt that had not gone through and whose two-month wait is
+# over: did the target's culture's view of yours improve after all? Logs and
+# announces it if so, or logs that it did not go through, then forgets the
+# attempt. Scope: player country (root).
+atd_enh_verify_cultural_view_attempts = {
+	if = {
+		limit = { has_variable_list = atd_enh_cv_pending }
+		every_in_list = {
+			variable = atd_enh_cv_pending
+			limit = { NOT = { has_variable = atd_enh_cv_attempt } }
+			root = { add_to_variable_list = { name = atd_enh_cv_done_tmp target = prev } }
+		}
+	}
+	if = {
+		limit = { has_variable_list = atd_enh_cv_done_tmp }
+		every_in_list = {
+			variable = atd_enh_cv_done_tmp
+			save_scope_as = cmf_log_arg2
+			if = {
+				limit = {
+					has_variable = atd_enh_cv_view_before
+					atd_enh_cv_view_unchanged = yes
+				}
+				root = { cmf_log_with_scope_arg = { action = atd_enh_log_cv_failed } }
+			}
+			else_if = {
+				limit = { has_variable = atd_enh_cv_view_before }
+				if = {
+					limit = { has_variable = atd_enh_curry_attempt }
+					remove_variable = atd_enh_curry_attempt
+				}
+				root = { atd_enh_report_cultural_view_improved = yes }
+			}
+			if = {
+				limit = { has_variable = atd_enh_cv_view_before }
+				remove_variable = atd_enh_cv_view_before
+			}
+			root = { remove_list_variable = { name = atd_enh_cv_pending target = prev } }
+		}
+		clear_variable_list = atd_enh_cv_done_tmp
+	}
+}
+
+# Records a cultural view Auto Improve raised: the Mod Action Log entry, and
+# the "Cultural View Improved" alert if cultural view alerts are on.
+# Scope: player country. Reads scope:cmf_log_arg2 (the country improved).
+atd_enh_report_cultural_view_improved = {
+	cmf_log_with_scope_arg = { action = atd_enh_log_cv_improved }
+	# Named by the alert's tooltip.
+	set_variable = { name = atd_enh_cv_improved_last value = scope:cmf_log_arg2 }
+	if = {
+		limit = { has_variable = atd_enh_culture_view_notify_enabled }
+		cmf_show_alert = { alert = atd_enh_alert_culture_view_improved }
+	}
+}
+
+# Records the level its culture's view of yours is at now, to compare after the
+# attempt. Scope: the target country. Root: the player.
+atd_enh_save_cv_view = {
+	if = {
+		limit = { culture = { cultural_view = { target = root.culture value = enemy } } }
+		set_variable = { name = atd_enh_cv_view_before value = flag:enemy }
+	}
+	else_if = {
+		limit = { culture = { cultural_view = { target = root.culture value = negative } } }
+		set_variable = { name = atd_enh_cv_view_before value = flag:negative }
+	}
+	else_if = {
+		limit = { culture = { cultural_view = { target = root.culture value = neutral } } }
+		set_variable = { name = atd_enh_cv_view_before value = flag:neutral }
+	}
+	else_if = {
+		limit = { culture = { cultural_view = { target = root.culture value = positive } } }
+		set_variable = { name = atd_enh_cv_view_before value = flag:positive }
+	}
+	else = {
+		set_variable = { name = atd_enh_cv_view_before value = flag:kindred }
 	}
 }
 
@@ -69,7 +148,9 @@ atd_enh_cultural_view_spend = {
 # is never silent. Only countries the action could apply to are reported (they
 # lead their culture, aren't your subject, aren't at war with you, and don't
 # already see your culture as kindred). Runs right after the improvements, so
-# countries just improved are below 50 again and not reported.
+# countries just improved are below 50 again, and countries just tried are in
+# their two-month wait (their attempt has its own log entry); neither is
+# reported. Reads atd_enh_action_threshold, set by atd_enh_cultural_view_spend.
 # Scope: player country (root).
 atd_enh_explain_cultural_view_waits = {
 	every_country_in_diplomatic_range = {
@@ -86,6 +167,7 @@ atd_enh_explain_cultural_view_waits = {
 				}
 			}
 			prev_favors_with_this >= 50
+			NOT = { has_variable = atd_enh_cv_attempt }
 			NOT = { has_variable = atd_enh_cv_wait_logged }
 		}
 		save_scope_as = cmf_log_arg2
@@ -103,8 +185,12 @@ atd_enh_explain_cultural_view_waits = {
 			root = { cmf_log_with_scope_arg = { action = atd_enh_log_cv_wait_opinion } }
 		}
 		else_if = {
-			limit = { root = { num_of_diplomats < 1 } }
+			limit = { root = { NOT = { num_of_diplomats >= var:atd_enh_action_threshold } } }
 			root = { cmf_log_with_scope_arg = { action = atd_enh_log_cv_wait_diplomat } }
+		}
+		else_if = {
+			limit = { root = { atd_meets_min_diplomat_gain = no } }
+			root = { cmf_log_with_scope_arg = { action = atd_enh_log_cv_wait_gain } }
 		}
 		set_variable = { name = atd_enh_cv_wait_logged value = yes months = 1 }
 	}
@@ -173,7 +259,8 @@ atd_enh_cultural_view_daily = {
 # Schedules atd_enh_daily_check for each of the next 30 days. Called by the
 # monthly pulse, so with the monthly pass itself every day is covered (a
 # 28-day month just checks a day or two twice, which is harmless: an improved
-# country is below 50 again). Each one fires once, so nothing piles up.
+# country is below 50 again, and one just tried waits two months). Each one
+# fires once, so nothing piles up.
 atd_enh_schedule_daily_checks = {
 	trigger_event_silently = { on_action = atd_enh_daily_check days = 1 }
 	trigger_event_silently = { on_action = atd_enh_daily_check days = 2 }
@@ -207,27 +294,61 @@ atd_enh_schedule_daily_checks = {
 	trigger_event_silently = { on_action = atd_enh_daily_check days = 30 }
 }
 
-# Performs Improve Cultural View on scope:atd_enh_cv_target and records it.
+# Performs Improve Cultural View on scope:atd_enh_cv_target, then checks right
+# away whether its culture's view of yours really moved.
+# mode = accept, as in every perform_diplomatic_action call in the game's own
+# script (peace_treaties/hegemon_demands.txt) and in other mods that automate
+# country interactions. Without a mode the action is only a proposal ("can be
+# rejected": DIPLO_ACTION_IS_PROPOSAL), and from script it never went through:
+# a 1360.1.1 save (reported 2026-10-18) logged 16 attempts on Kanem, Mali and
+# Tunis, each costing a diplomat, with every favor still unspent and no view
+# changed. Their consent still counts: only countries that would accept are
+# picked (atd_enh_cultural_view_target: opinion of you above 50, no rivals).
+# Every attempt starts a two-month wait with that country (atd_enh_cv_attempt),
+# so even a failure can never be repeated daily again.
 # Scope: player country (scope:atd_enh_actor).
 atd_enh_improve_cultural_view_now = {
+	scope:atd_enh_cv_target = {
+		atd_enh_save_cv_view = yes
+		set_variable = { name = atd_enh_cv_attempt value = yes months = 2 }
+	}
 	perform_diplomatic_action = {
 		type = improve_cultural_view
 		actor = scope:atd_enh_actor
 		recipient = scope:atd_enh_cv_target
+		mode = accept
 	}
-	add_to_variable_list = { name = atd_enh_cv_improved_this_tick target = scope:atd_enh_cv_target }
-	# Named by the "Cultural View Improved" alert.
-	set_variable = { name = atd_enh_cv_improved_last value = scope:atd_enh_cv_target }
 	scope:atd_enh_cv_target = {
-		# The curry that built these favors is over; let Curry Favors start the
-		# next one right away instead of waiting out its 6-month safety marker.
-		if = {
-			limit = { has_variable = atd_enh_curry_attempt }
-			remove_variable = atd_enh_curry_attempt
-		}
 		save_scope_as = cmf_log_arg2
+		if = {
+			limit = { atd_enh_cv_view_unchanged = no }
+			remove_variable = atd_enh_cv_view_before
+			# The curry that built these favors is over; let Curry Favors start the
+			# next one right away instead of waiting out its 6-month safety marker.
+			if = {
+				limit = { has_variable = atd_enh_curry_attempt }
+				remove_variable = atd_enh_curry_attempt
+			}
+			root = {
+				atd_enh_report_cultural_view_improved = yes
+				# The game's own cost should have taken the 50 favors. Say so if it
+				# did not, so a free improvement shows up in the log (the two-month
+				# wait already stops it from repeating).
+				if = {
+					limit = { scope:cmf_log_arg2 = { prev_favors_with_this >= 50 } }
+					cmf_log_with_scope_arg = { action = atd_enh_log_cv_not_charged }
+				}
+			}
+		}
+		else = {
+			# Not applied (yet): logged now, and checked again when the two months
+			# are up (atd_enh_verify_cultural_view_attempts).
+			root = {
+				add_to_variable_list = { name = atd_enh_cv_pending target = prev }
+				cmf_log_with_scope_arg = { action = atd_enh_log_cv_pending }
+			}
+		}
 	}
-	cmf_log_with_scope_arg = { action = atd_enh_log_cv_improved }
 }
 
 # ----- Curry Favors for Cultural Views --------------------------------------

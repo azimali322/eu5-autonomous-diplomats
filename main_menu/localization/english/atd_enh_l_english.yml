@@ -10,9 +10,9 @@
  atd__enh_curry_cv_count_desc: "How many of these curries to keep running at the same time. Each one ties up a diplomat. Curries you started yourself with such countries count too."
  atd__enh_curry_cv_count_format: "[CMMV('atd__enh_curry_cv_count')|0]"
  atd__enh_auto_improve_cv_enabled_name: "Auto Improve Cultural View"
- atd__enh_auto_improve_cv_enabled_desc: "Automatically use Improve Cultural View the day you have 50 favors with a country that would accept it. The game stops a curry at exactly 50 and favors decay by 1% a month, so the 50 can be gone within the month: this checks every day, not just once a month. It ignores your diplomat reserve and only needs the one free diplomat the action itself uses. Spends the 50 favors and that diplomat, and moves that culture's view of yours one step closer to kindred. If a country you have 50 favors with is skipped, the Mod Action Log says why: a rival, their opinion of you not above 50 (they would refuse), or no free diplomat. When off, the notification tells you instead, and a country that reached 50 is not curried again until its favors fall below 45."
+ atd__enh_auto_improve_cv_enabled_desc: "Automatically use Improve Cultural View the day you have 50 favors with a country that would accept it: its opinion of you is above 50 and neither of you is the other's rival. The game stops a curry at exactly 50 and favors decay by 1% a month, so the 50 can be gone within the month: this checks every day, not just once a month. Like every automated action, it keeps your Reserve settings (Settings tab): it only acts while you have more diplomats than Minimum Diplomats Reserve and a monthly gain of at least Minimum Diplomat Gain. Spends the 50 favors and a diplomat, and moves that culture's view of yours one step closer to kindred. The Mod Action Log records every attempt and whether the view really changed, and a country is tried at most once every two months. If a country you have 50 favors with is skipped, the log says why: a rival, their opinion of you not above 50 (they would refuse), no diplomat above your reserve, or a monthly diplomat gain below your minimum. When off, the notification tells you instead, and a country that reached 50 is not curried again until its favors fall below 45."
  atd__enh_culture_view_notify_enabled_name: "Notify When a Cultural View Can Be Improved"
- atd__enh_culture_view_notify_enabled_desc: "Show an alert whenever you can use Improve Cultural View on a country yourself: it leads its own culture, isn't your subject, would accept (its opinion of you is above 50 and neither of you is the other's rival), its culture doesn't already see yours as kindred, and you have the 50 favors the action costs. Up to three are named; left-click the alert to open the full list. With Auto Improve on, it only shows countries the automation could not handle, such as when no diplomat was free. Also shows a 'Cultural View Improved' alert when Auto Improve uses the action. Only while you lead your own culture and Enabled is on in the Settings tab."
+ atd__enh_culture_view_notify_enabled_desc: "Show an alert whenever you can use Improve Cultural View on a country yourself: it leads its own culture, isn't your subject, would accept (its opinion of you is above 50 and neither of you is the other's rival), its culture doesn't already see yours as kindred, and you have the 50 favors the action costs. Up to three are named; left-click the alert to open the full list. With Auto Improve on, it only shows countries the automation could not handle, such as when you had no diplomat above your reserve or an attempt did not go through. Also shows a 'Cultural View Improved' alert when Auto Improve raises a view. Only while you lead your own culture and Enabled is on in the Settings tab."
 
  # Cultural View alerts - one variant per count, so the tooltip can name them.
  atd_enh_alert_culture_view_1: "atd_enh_alert_culture_view_1"
@@ -36,12 +36,12 @@
  atd_enh_alert_culture_view_more_name: "Cultural Views Ready"
  atd_enh_alert_culture_view_more_tooltip: "You have enough favors to improve how the cultures of [Player.MakeScope.GetVariable('atd_enh_cv_t1').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_cv_t2').Country.GetName], [Player.MakeScope.GetVariable('atd_enh_cv_t3').Country.GetName] and more view yours. Left-click to open the list; right-click to dismiss."
 
- # Shown when Auto Improve Cultural View used the action.
+ # Shown when Auto Improve Cultural View raised a view.
  atd_enh_alert_culture_view_improved: "atd_enh_alert_culture_view_improved"
  atd_enh_alert_culture_view_improved_color: "green"
  atd_enh_alert_culture_view_improved_icon: "@culture!"
  atd_enh_alert_culture_view_improved_name: "Cultural View Improved"
- atd_enh_alert_culture_view_improved_tooltip: "Auto Improve Cultural View spent 50 favors to improve how [Player.MakeScope.GetVariable('atd_enh_cv_improved_last').Country.GetName]'s culture views yours. The Mod Action Log lists every improvement. Click to dismiss."
+ atd_enh_alert_culture_view_improved_tooltip: "Auto Improve Cultural View spent 50 favors to improve how [Player.MakeScope.GetVariable('atd_enh_cv_improved_last').Country.GetName]'s culture views yours. The Mod Action Log lists every attempt. Click to dismiss."
 
  # Cultural Views window and its action-bar button
  atd_enh_open_culture_view_name: "Cultural Views"
@@ -62,18 +62,22 @@
 
  # Mod Action Log entries ([action] [country name])
  atd_enh_log_subject_cv: "Improved the cultural view of"
- atd_enh_log_cv_improved: "Spent 50 favors to improve the cultural view of"
+ atd_enh_log_cv_improved: "Spent 50 favors and improved the cultural view of"
+ atd_enh_log_cv_pending: "Used Improve Cultural View, but the view has not changed yet (checking again in two months) with"
+ atd_enh_log_cv_failed: "Improve Cultural View did not go through (the view is unchanged after two months) with"
+ atd_enh_log_cv_not_charged: "The game did not charge the 50 favors for improving the cultural view of"
  atd_enh_log_curry_started: "Started currying favors with"
  atd_enh_log_cv_wait_rival: "Has 50 favors but will not improve the cultural view (you are rivals) of"
  atd_enh_log_cv_wait_opinion: "Has 50 favors but waits to improve the cultural view (they would refuse until their opinion of you is above 50) of"
- atd_enh_log_cv_wait_diplomat: "Has 50 favors but waits to improve the cultural view (no free diplomat) of"
+ atd_enh_log_cv_wait_diplomat: "Has 50 favors but waits to improve the cultural view (no diplomat free above your Minimum Diplomats Reserve) of"
+ atd_enh_log_cv_wait_gain: "Has 50 favors but waits to improve the cultural view (your monthly diplomat gain is below Minimum Diplomat Gain) of"
  atd_enh_log_cv_wait_trust: "Favors stuck just under 50 (curries can't pass their trust in you, which is below 50) with"
 
  # Settings (settings) Tab - Automation Priority list
  atd__settings__enh_priority_name: "Automation Priority"
  atd__settings__enh_priority_desc: "The order in which the monthly automations claim your free diplomats."
  atd__enh_priority_name: "Automation Priority"
- atd__enh_priority_desc: "Drag to set which automation gets free diplomats first each month (higher = first). Auto Improve Cultural View always runs before all of these, so a cultural view you can improve is never lost to favor decay. Every step still keeps your diplomat reserve and its own on/off setting; this only decides who spends the diplomats above the reserve. It never cancels actions already running."
+ atd__enh_priority_desc: "Drag to set which automation gets free diplomats first each month (higher = first). Auto Improve Cultural View always runs before all of these, so a cultural view you can improve is not lost to favor decay. Every step, Auto Improve included, keeps the Reserve settings (Minimum Diplomats Reserve and Minimum Diplomat Gain) and its own on/off setting; this only decides who spends the diplomats above the reserve. It never cancels actions already running."
  atd__enh_priority_item_column_name: "Automation"
  atd__enh_priority_i1_name: "Subject Actions"
  atd__enh_priority_i1_desc: "Enforce Religion, Enforce Culture and Improve Cultural View on your subjects. Their own order is set in the Subject Actions list on the Subjects tab."

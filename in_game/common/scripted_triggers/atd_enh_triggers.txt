@@ -56,23 +56,42 @@ atd_enh_can_improve_cultural_view = {
 	prev_favors_with_this >= 50
 }
 
-# Auto Improve Cultural View's pick: as above, and not already improved earlier
-# in this pass. Favors drop by 50 when it works, so this only matters if an
-# attempt somehow did not spend them - it stops the loop from retrying the same
-# country (and spending a diplomat each time) until the next month.
-atd_enh_can_auto_improve_now = {
-	atd_enh_can_improve_cultural_view = yes
-	root = {
-		OR = {
-			NOT = { has_variable_list = atd_enh_cv_improved_this_tick }
-			NOT = {
-				is_target_in_variable_list = {
-					name = atd_enh_cv_improved_this_tick
-					target = prev
-				}
-			}
+# After an attempt: its culture still views ours at the level recorded just
+# before it (atd_enh_save_cv_view), so the attempt did not go through.
+# Scope: the target country. Root: the player.
+atd_enh_cv_view_unchanged = {
+	OR = {
+		AND = {
+			var:atd_enh_cv_view_before = flag:enemy
+			culture = { cultural_view = { target = root.culture value = enemy } }
+		}
+		AND = {
+			var:atd_enh_cv_view_before = flag:negative
+			culture = { cultural_view = { target = root.culture value = negative } }
+		}
+		AND = {
+			var:atd_enh_cv_view_before = flag:neutral
+			culture = { cultural_view = { target = root.culture value = neutral } }
+		}
+		AND = {
+			var:atd_enh_cv_view_before = flag:positive
+			culture = { cultural_view = { target = root.culture value = positive } }
+		}
+		AND = {
+			var:atd_enh_cv_view_before = flag:kindred
+			culture = { cultural_view = { target = root.culture value = kindred } }
 		}
 	}
+}
+
+# Auto Improve Cultural View's pick: as above, and not tried in the last two
+# months (atd_enh_cv_attempt, set by every attempt). Favors drop by 50 when it
+# works, but one that does not go through leaves them at 50 - and before this
+# wait, the daily check repeated such an attempt every day, spending a diplomat
+# each time (reported 2026-10-18: 8 tries on Kanem, 6 on Mali).
+atd_enh_can_auto_improve_now = {
+	atd_enh_can_improve_cultural_view = yes
+	NOT = { has_variable = atd_enh_cv_attempt }
 }
 
 # A country Curry Favors for Cultural Views should start currying now. On top

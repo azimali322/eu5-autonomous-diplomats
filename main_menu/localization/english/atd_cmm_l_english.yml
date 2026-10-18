@@ -91,7 +91,8 @@
  atd__min_diplomats_desc: "Minimum number of banked diplomats to keep in reserve. Shared with the Minimum Monthly Diplomats slider on the Diplomacy Interactions automation card."
  atd__min_diplomats_format: "[CMMV('atd__min_diplomats')|1]"
  atd__min_diplomat_gain_name: "Minimum Diplomat Gain"
- atd__min_diplomat_gain_desc: "Improving relations is paused while your monthly diplomat gain is below this value. At 0 there is no minimum. It does not apply to enforcing on subjects or to auto-gifting."
+ # [ATD-ENH] Every automated action keeps this minimum now, not just Improve Relations.
+ atd__min_diplomat_gain_desc: "Every automated action - improving relations, auto-gifting, subject actions, currying favors and improving cultural views - is paused while your monthly diplomat gain is below this value. At 0 there is no minimum."
 
  # Automation Panel
  atd_automation_open_settings: "Open Autonomous Diplomats"

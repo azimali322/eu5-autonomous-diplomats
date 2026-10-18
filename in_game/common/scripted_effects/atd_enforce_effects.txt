@@ -4,6 +4,7 @@
 	if = {
 		limit = {
 			num_of_diplomats >= var:atd_enforce_threshold
+			atd_meets_min_diplomat_gain = yes # [ATD-ENH] Every action keeps the Reserve settings (Minimum Diplomat Gain too)
 		}
 		cmm_for_each_list_item = {
 			setting = atd__enforce

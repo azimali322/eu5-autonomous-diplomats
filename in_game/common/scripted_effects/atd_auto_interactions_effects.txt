@@ -2,6 +2,8 @@
 # atd_gui_sync_step before atd_improve_relations so gifts get first claim on
 # banked diplomats. The min-diplomat-gain reserve does not apply here; a gift is
 # a one-time diplomat cost, not a continuous drain like improving.
+# [ATD-ENH] It does in Enhanced: every automated action keeps both Reserve
+# settings (the player's call, 2026-10-18) - see the tagged line below.
 # Scope: player country.
 atd_process_auto_interactions = {
 	save_scope_as = atd_actor_scope
@@ -141,7 +143,12 @@ atd_send_gift = {
 		cmm_set_list_text_value = { mod_id = atd setting_id = auto_interactions field_id = status item = $slot$ value = flag:atd_cmm_status_blocked }
 	}
 	else_if = {
-		limit = { NOT = { num_of_diplomats >= var:atd_gift_threshold } }
+		limit = {
+			OR = {
+				NOT = { num_of_diplomats >= var:atd_gift_threshold }
+				atd_meets_min_diplomat_gain = no # [ATD-ENH] Every action keeps the Reserve settings (Minimum Diplomat Gain too)
+			}
+		}
 		cmm_set_list_text_value = { mod_id = atd setting_id = auto_interactions field_id = status item = $slot$ value = flag:atd_cmm_status_no_diplomats }
 	}
 	else = {
