@@ -32,13 +32,19 @@ countries can now refuse Improve Cultural View.
 every eligible subject. See check 3c.
 
 **Changed on October 18:**
-- **Auto Improve Cultural View works now.** The mod used to send it as a
-  proposal, and from a script a proposal never goes through. Your 1360.1.1
-  autosave showed 16 tries: 8 on Kanem, 6 on Mali and 2 on Tunis. Each cost a
-  diplomat and spent none of the favors, and every view stayed the same. The
-  mod now pushes the action through the way the game's own scripts do, still
-  only with countries that would accept. It checks right away whether the view
-  moved, and tries each country at most once every two months. See 2g.
+- **Auto Improve Cultural View applies the action itself now.** Asking the
+  game to do it failed twice over:
+  - as a plain request it never went through. Your 1360.1.1 autosave showed
+    16 tries (8 on Kanem, 6 on Mali, 2 on Tunis), each costing a diplomat;
+  - with `mode = accept` the game only settled it weeks later, and only if
+    your favors were still at 50 by then. They decay from the moment a curry
+    tops out, so Mali failed once and succeeded once, and Kanem sat unresolved
+    from April 2nd to April 8th, 1363.
+
+  The mod now does what the game's action does, at once: the view goes one
+  step up, and it takes the 50 favors and one diplomat. It still only targets
+  countries that would accept, and tries each country at most once every two
+  months. See 2g.
 - **Every automated action keeps both Reserve settings** (Settings tab →
   Reserve), as you asked:
   - Minimum Diplomat Gain now applies to Auto-Gifting and Subject Actions too,
@@ -185,10 +191,11 @@ stopped at 50, Auto Improve didn't fire, and the 50 decayed away. It keeps your
   used;
 - your monthly gain is at least Minimum Diplomat Gain (0.1 in your save).
 
-**Fixed on October 18:** it used to send a proposal that never went through
-(see the note at the top). Your favors with Kanem and Mali are at about 48.7
-now, so their curries have to top them back up to 50 first. You can also give
-them 50 in the console.
+**Fixed on October 18:** it now applies the action itself (see the note at the
+top). The quickest test is your **SP_MOR_1363_04_08** save, where Kanem is at
+50.16 favors. Load it on the new build and unpause. Kanem's earlier unanswered
+try is cleared once on load, so Auto Improve should improve Kanem within a day
+or two.
 
 - [ ] **2g. It really works, the same day.** Turn it on. **On the day** a
   curried country reaches **50 favors**, not at the next month:
@@ -201,11 +208,12 @@ them 50 in the console.
 
   **This is the most important check.** Tell Claude straight away if the log
   says either of these instead:
-  - "Used Improve Cultural View, but the view has not changed yet": the action
-    still didn't apply;
-  - "The game did not charge the 50 favors…": the view went up for free.
-- [ ] **2h.** No refusal appears. The game's own notification, if one shows,
-  says it was accepted.
+  - "Used Improve Cultural View, but the view has not changed yet": the view
+    change didn't apply;
+  - "The 50 favors were not taken…": the view went up for free.
+- [ ] **2h.** No game popup or "accepted" notification appears for it, because
+  the mod applies it directly. Its own green alert and log entry are the
+  record.
 - [ ] **2i. Its own reserve (the Mali case).** On the Settings tab, the
   Reserve group has a third slider, **Improve Cultural View Reserve**, with a
   tooltip. Set Minimum Diplomats Reserve to 4 and Improve Cultural View Reserve
